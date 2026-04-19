@@ -1,0 +1,39 @@
+#pragma once
+#include "Frame.h"
+
+#include <vector>
+#include <string>
+#include <memory>
+
+#include "GuiDependencies.h"
+
+#include "BasicTypes.h"
+#include "MlText.h"
+
+class TextFrame : public Frame
+{
+public:
+	TextFrame(IPoint newPosition = IPoint(0,0), tsmType::Size<int> newSize = tsmType::Size<int>(300,200));
+
+	void addTextLine(std::string text, unsigned int textPxlsSize = 8, tsmType::Color_RGBA color = tsmType::Color_RGBA(0,0,0,255), bool bold = false) noexcept;
+
+
+	void setPadding(int leftBorder_pxls, int topBorder_pxls, int betweenTextLine_pxls = 3);
+
+	void removeLine(size_t index) noexcept;
+	void removeFirstLine() noexcept;
+	void removeLastLine() noexcept;
+
+	void setTextsAlign(GuiAlign align = GuiAlign::TopLeft);
+
+private:
+	int actualTextLinePos_pxls = 0;
+	int linePadding_pxls = 3;
+	int leftPadding = 0;
+	int topPadding = 0;
+	GuiAlign usedAlign = GuiAlign::TopLeft;
+
+	[[nodiscard]] size_t getAllTextsHeight();
+	void redrawTextFrame();
+};
+

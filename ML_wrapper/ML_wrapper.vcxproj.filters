@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="GraphicDependencies.h" />
+    <ClInclude Include="include\GraphicDependencies.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ImageHolder.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MlCurve.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MlEvent.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MlGameWrapper.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MlImage.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MlText.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MlVerticesObject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ShapeInterpreter.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Shapes.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{8c251b66-25ad-4d4e-89f2-ce412053397e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{568fd7de-472e-451a-bfa6-e89bc28297d9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\ImageHolder.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MlCurve.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MlEvent.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MlGameWrapper.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MlImage.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MlText.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MlVerticesObject.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ShapeInterpreter.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

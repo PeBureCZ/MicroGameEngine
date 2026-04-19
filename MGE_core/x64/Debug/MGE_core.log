@@ -1,0 +1,6 @@
+﻿  BasicShapes.cpp
+  BasicTypes.cpp
+  CollisionHandler.cpp
+  GlobalFunctions.cpp
+  Generating Code...
+  MGE_core.vcxproj -> D:\VS_projects\MicroGameEngine\build\x64\Debug\MGE_core.lib

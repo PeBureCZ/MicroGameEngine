@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\BasicShapes.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BasicTypes.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CollisionHandler.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GlobalFunctions.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\EventTable.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GlobalFunctions.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Trigger.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\BasicShapes.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\BasicTypes.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CollisionHandler.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{993cf914-690b-48fa-91e4-4bcd9e33efe6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{f9d5fe10-846b-4bb2-8267-2d1cdb471164}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Actor.cpp" />
+    <ClCompile Include="ActorConstructor.cpp" />
+    <ClCompile Include="ActorDispatcher.cpp" />
+    <ClCompile Include="GameScreen.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainScreen.cpp" />
+    <ClCompile Include="Rail.cpp" />
+    <ClCompile Include="RailConstructor.cpp" />
+    <ClCompile Include="TsmConsole.cpp" />
+    <ClCompile Include="WorldCollide.cpp" />
+    <ClCompile Include="WorldMap.cpp" />
+    <ClCompile Include="WorldMapActorLogic.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Actor.h" />
+    <ClInclude Include="ActorConstructor.h" />
+    <ClInclude Include="ActorDispatcher.h" />
+    <ClInclude Include="ActorEnums.h" />
+    <ClInclude Include="BlockChannels.h" />
+    <ClInclude Include="ConsoleEnums.h" />
+    <ClInclude Include="CustomColors.h" />
+    <ClInclude Include="GameScreen.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="ImagePaths.h" />
+    <ClInclude Include="MainScreen.h" />
+    <ClInclude Include="Rail.h" />
+    <ClInclude Include="RailConstructor.h" />
+    <ClInclude Include="Settings.h" />
+    <ClInclude Include="TsmConsole.h" />
+    <ClInclude Include="WorldCollide.h" />
+    <ClInclude Include="WorldMap.h" />
+    <ClInclude Include="WorldMapActorLogic.h" />
+  </ItemGroup>
+</Project>

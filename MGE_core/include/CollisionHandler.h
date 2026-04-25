@@ -27,13 +27,26 @@ public:
 		return elements;
 	}
 
+	[[nodiscard]] const std::vector<T>& getElements() const noexcept
+	{
+		return elements;
+	}
+
+	void removeElement(size_t index)
+	{
+		if (index < elements.size())
+			elements.erase(elements.begin() + index);
+		else
+		{
+			_ASSERT(false); //try to remove index out of range
+		}
+	}
+
 	void removeElement(const T& element)
 	{
 		auto it = std::find(elements.begin(), elements.end(), element);
 		if (it != elements.end())
-		{
 			elements.erase(it);
-		}
 	}
 
 private:

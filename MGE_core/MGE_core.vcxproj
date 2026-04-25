@@ -23,6 +23,7 @@
     <ClCompile Include="src\BasicTypes.cpp" />
     <ClCompile Include="src\CollisionHandler.cpp" />
     <ClCompile Include="src\GlobalFunctions.cpp" />
+    <ClCompile Include="Trigger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BasicShapes.h" />

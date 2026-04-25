@@ -6,6 +6,8 @@
 #include <variant>
 #include <cmath>
 #include <vector>
+#include <memory>
+#include <array>
 
 template<typename T>
 class Trigger
@@ -197,6 +199,32 @@ private:
 	bool isEnabled = false;
 	bool isBlocking = true;
 	SHAPE_TYPE type = SHAPE_TYPE::box;
+	std::vector<int> blockedChannels;
+};
+
+class TriggerManager
+{
+public:
+
+	void addTrigger(std::shared_ptr<Trigger<float>> trigger, bool recalculate = true);
+	void addTriggers(std::vector<std::shared_ptr<Trigger<float>>> triggers);
+	[[nodiscard]] std::vector<std::shared_ptr<Trigger<float>>>& getTriggers() noexcept;
+	[[nodiscard]] bool getIsBlocking() const noexcept;
+	[[nodiscard]] const std::vector<int>& getCollideChannels() const noexcept;
+	virtual ~TriggerManager() = default;
+
+protected:
+	bool isBlocking = false;
+	Trigger<float> boundTrigger{ false, tsmShape::Circle<float>(tsmType::Point<float>(), 0.f) };
+	std::vector<std::shared_ptr<Trigger<float>>> triggers = {};
+
+private:	
+
+	FPoint origin; //absolute position
+
+	void recalculateTriggerBound();
+	
+
 	std::vector<int> blockedChannels;
 };
 

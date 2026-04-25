@@ -68,6 +68,7 @@ namespace ML_wrapper
 		void setMaxScreenZoom(double zoomFactor) noexcept;
 		void setMinScreenZoom(double zoomFactor) noexcept;
 		void setZoom(double zoomFactor) noexcept;
+        [[nodiscard]] double getZoom() const noexcept;
 
         void setDrawToGuiView() const noexcept;
         void setDrawToWorldView() const noexcept;

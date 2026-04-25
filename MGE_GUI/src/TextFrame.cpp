@@ -64,7 +64,7 @@ size_t TextFrame::getAllTextsHeight()
 {
 	size_t allTextHeight_pxls = 0;
 	for (const auto& text : frameTexts)
-		allTextHeight_pxls += (size_t)text.second.getTextSize().height;
+		allTextHeight_pxls += (size_t)text.second.getTextSize().height + linePadding_pxls;
 	return allTextHeight_pxls;
 }
 
@@ -87,7 +87,7 @@ void TextFrame::redrawTextFrame()
 		case GuiAlign::MiddleRight: _ASSERT(false); break; //not yet
 		case GuiAlign::BottomLeft: 
 		{
-			actualAbsolutePos_pxls.y = getAbsolutePosition().y + getSize().height - static_cast<int>(getAllTextsHeight());
+			actualAbsolutePos_pxls.y += getSize().height - static_cast<int>(getAllTextsHeight());
 			break;
 		}
 		case GuiAlign::BottomCenter: _ASSERT(false); break; //not yet

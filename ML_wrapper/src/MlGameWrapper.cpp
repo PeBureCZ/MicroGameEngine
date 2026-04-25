@@ -164,6 +164,11 @@ namespace ML_wrapper
 		}
     }
 
+    [[nodiscard]] double MlGameWrapper::getZoom() const noexcept
+    {
+        return zoom;
+	}
+
     void MlGameWrapper::pollMlEvents()
     {
         //cursor position

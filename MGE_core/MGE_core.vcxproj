@@ -21,7 +21,6 @@
   <ItemGroup>
     <ClCompile Include="src\BasicShapes.cpp" />
     <ClCompile Include="src\BasicTypes.cpp" />
-    <ClCompile Include="src\CollisionHandler.cpp" />
     <ClCompile Include="src\GlobalFunctions.cpp" />
     <ClCompile Include="Trigger.cpp" />
   </ItemGroup>

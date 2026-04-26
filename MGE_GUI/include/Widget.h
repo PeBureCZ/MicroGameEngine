@@ -44,7 +44,7 @@ protected:
 private:
 	std::weak_ptr<Widget> selfPtr;
 	std::weak_ptr<Widget> parent;
-	std::vector< std::shared_ptr<Widget>> children;
+	std::vector<std::shared_ptr<Widget>> children;
 	IPoint relativePosition;
 	tsmType::Size<int> size;
 	bool isVisible = true;

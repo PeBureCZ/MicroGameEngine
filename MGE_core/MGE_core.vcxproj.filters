@@ -7,9 +7,6 @@
     <ClCompile Include="src\BasicTypes.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\CollisionHandler.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\GlobalFunctions.cpp">
       <Filter>src</Filter>
     </ClCompile>

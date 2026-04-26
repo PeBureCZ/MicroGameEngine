@@ -29,8 +29,17 @@ namespace tsmType
 			width = newWidth;
 			height = newHeight;
 		}
-	};
 
+		constexpr bool operator ==(const Size& other) const noexcept
+		{
+			return width == other.width && height == other.height;
+		}
+
+		constexpr bool operator !=(const Size& other) const noexcept
+		{
+			return width != other.width || height != other.height;
+		}
+	};
 
 	template<typename T>
 	class Point

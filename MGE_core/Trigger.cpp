@@ -1,104 +1,35 @@
 #include "Trigger.h"
 
-void TriggerManager::addTrigger(std::shared_ptr<Trigger<float>> trigger, bool recalculate)
+namespace CollisionSystem
 {
-	_ASSERT(trigger);
-	if (!trigger)
-		return;
+	static tsmType::Size<size_t> g_cellSize = tsmType::Size<size_t>(5000, 5000);
 
-	const auto& channels = trigger->getBlockChannels();
-
-	for (const auto& channel : channels)
+	//use Actor position and cell size to determine which cell the actor belongs to,
+	// then use that cell id to store the collision component of the actor in the corresponding cell of the collision channel
+	CellId getCellIdForPosition(FPoint position) noexcept
 	{
-		if (std::find(blockedChannels.begin(), blockedChannels.end(), channel) == blockedChannels.end())
-			blockedChannels.push_back(channel);
-	}
-
-	triggers.push_back(std::move(trigger));
-	if (recalculate)
-		recalculateTriggerBound();
-}
-
-void TriggerManager::addTriggers(std::vector<std::shared_ptr<Trigger<float>>> triggers)
-{
-	for (auto& trigger : triggers)
-		addTrigger(std::move(trigger), false);
-	recalculateTriggerBound();
-}
-
-[[nodiscard]] std::vector<std::shared_ptr<Trigger<float>>>& TriggerManager::getTriggers() noexcept
-{
-	return triggers;
-}
-
-[[nodiscard]] bool TriggerManager::getIsBlocking() const noexcept
-{
-	return isBlocking;
-}
-
-const std::vector<int>& TriggerManager::getCollideChannels() const noexcept
-{
-	return blockedChannels;
-}
-
-void TriggerManager::recalculateTriggerBound()
-{
-	float radiusSum = 0.f;
-	for (const auto& trgr : triggers)
-	{
-		if (trgr->getEnabled())
+		if (g_cellSize.width == 0 || g_cellSize.height == 0)
 		{
-			const auto& shapeOfTrigger = trgr->getShape();
-			if (std::holds_alternative<tsmShape::Rectangle<float>>(shapeOfTrigger))
-			{
-				const auto& rect = std::get<tsmShape::Rectangle<float>>(shapeOfTrigger);
-				const auto pos = rect.getPosition();     // top-left
-				const auto size = rect.getSize();
-				const float rot = rect.getRotation();
-
-				constexpr float DEG_TO_RAD = 3.14159265358979323846f / 180.f;
-				const float rad = rot * DEG_TO_RAD;
-
-				const float cosA = std::cos(rad);
-				const float sinA = std::sin(rad);
-
-				// define corners in local space (relative to top-left)
-				std::array<tsmType::Point<float>, 4> corners =
-				{
-					tsmType::Point<float>{0.f, 0.f},
-					{size.width, 0.f},
-					{0.f, size.height},
-					{size.width, size.height}
-				};
-
-				for (const auto& c : corners)
-				{
-					// rotate corner
-					float rotatedX = c.x * cosA - c.y * sinA;
-					float rotatedY = c.x * sinA + c.y * cosA;
-
-					// move to world space
-					tsmType::Point<float> worldPoint{ pos.x + rotatedX,pos.y + rotatedY };
-
-					float dist = tsmBasic::getDistance(worldPoint, origin);
-					radiusSum = std::max(radiusSum, dist);
-				}
-			}
-			else if (std::holds_alternative<tsmShape::Circle<float>>(shapeOfTrigger))
-			{
-				const auto& circle = std::get<tsmShape::Circle<float>>(shapeOfTrigger);
-
-				auto dist = tsmBasic::getDistance(circle.getPosition(), origin);
-				dist += circle.getRadius();
-				radiusSum = std::max(radiusSum, dist);
-				radiusSum += (dist + 1.f);
-			}
-			else
-			{
-				_ASSERT(false); //unhandled shape type
-			}
+			_ASSERT(false); //invalid cell size
+			g_cellSize = tsmType::Size<size_t>((std::max)(g_cellSize.width, (size_t)1), (std::max)(g_cellSize.height, (size_t)1));
 		}
+
+		return CellId(static_cast<int>(position.x / (float)g_cellSize.width), static_cast<int>(position.y / (float)g_cellSize.height));
 	}
-	isBlocking = (radiusSum > 0.f);
-	boundTrigger = Trigger<float>(isBlocking, tsmShape::Circle<float>(tsmType::Point<float>(), radiusSum));
+
+	void setCellSize(tsmType::Size<size_t> newCellSize) noexcept
+	{
+		_ASSERT(newCellSize.width > 0 && newCellSize.height > 0); //cell size should be positive
+		if (newCellSize.width == 0 || newCellSize.height == 0)
+		{
+			_ASSERT(false); //invalid cell size
+			newCellSize = tsmType::Size<size_t>((std::max)(newCellSize.width, (size_t)1), (std::max)(newCellSize.height, (size_t)1));
+		}
+		g_cellSize = newCellSize;
+	}
+
+	tsmType::Size<size_t> getCellSize() noexcept
+	{
+		return g_cellSize;
+	}
 }

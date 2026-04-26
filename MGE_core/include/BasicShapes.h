@@ -68,6 +68,27 @@ namespace tsmShape
 		};
 
 		tsmType::Size<T> getSize() const { return size; }
+
+		//return the center of the rectangle, taking into account its rotation (absolute position)
+		tsmType::Point<T> getCenter() const
+		{
+			auto rotation = Shape<T>::getRotation();
+			if (rotation == 0.0f)
+				return tsmType::Point<T>(Shape<T>::getPosition().x + size.width / 2, Shape<T>::getPosition().y + size.height / 2);
+			else
+			{
+				constexpr float DEG_TO_RAD = 3.14159265358979323846f / 180.f;
+				const float rad = rotation * DEG_TO_RAD;
+				const float cosA = std::cos(rad);
+				const float sinA = std::sin(rad);
+				// Calculate the center of the rectangle before rotation
+				tsmType::Point<T> centerBeforeRotation(Shape<T>::getPosition().x + size.width / 2, Shape<T>::getPosition().y + size.height / 2);
+				// Rotate the center point around the rectangle's position
+				T rotatedX = (centerBeforeRotation.x - Shape<T>::getPosition().x) * cosA - (centerBeforeRotation.y - Shape<T>::getPosition().y) * sinA + Shape<T>::getPosition().x;
+				T rotatedY = (centerBeforeRotation.x - Shape<T>::getPosition().x) * sinA + (centerBeforeRotation.y - Shape<T>::getPosition().y) * cosA + Shape<T>::getPosition().y;
+				return tsmType::Point<T>(rotatedX, rotatedY);
+			}
+		}
 	};
 
 	template<typename T>

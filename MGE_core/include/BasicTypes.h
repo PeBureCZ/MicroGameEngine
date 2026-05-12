@@ -51,67 +51,63 @@ namespace tsmType
 			: x(newX), y(newY)
 		{}
 
-		inline Point<int> asInt() const noexcept
+		[[nodiscard]] constexpr Point<int> asInt() const noexcept
 		{
 			return Point<int>(static_cast<int>(x), static_cast<int>(y));
 		}
 
-		inline Point<float> asFloat() const noexcept
+		[[nodiscard]] constexpr Point<float> asFloat() const noexcept
 		{
 			return Point<float>(static_cast<float>(x), static_cast<float>(y));
 		}
 
-		bool operator ==(const Point<T>& other) const noexcept
+		constexpr bool operator ==(const Point<T>& other) const noexcept
 		{
 			return x == other.x && y == other.y;
 		}
 
-		Point<T> operator+(const Point<T>& other) const noexcept
+		[[nodiscard]] constexpr Point<T> operator+(const Point<T>& other) const noexcept
 		{
 			return Point<T>(x + other.x, y + other.y);
 		}
 
-		Point<T> operator -(const Point<T>& other) const noexcept
+		[[nodiscard]] constexpr Point<T> operator -(const Point<T>& other) const noexcept
 		{
 			return Point<T>(x - other.x, y - other.y);
 		}
 
-		Point<T>& operator +=(const Point<T>& other) noexcept
+		constexpr Point<T>& operator +=(const Point<T>& other) noexcept
 		{
 			x += other.x;
 			y += other.y;
 			return *this;
 		}
 
-		Point<T>& operator /(float divider) noexcept
+		[[nodiscard]] constexpr Point<T> operator /(T divider) const noexcept
 		{
-			x /= divider;
-			y /= divider;
-			return *this;
+			return Point<T>(x / divider, y / divider);
 		}
 
-		Point<T>& operator *(float multiplier) noexcept
+		[[nodiscard]] constexpr Point<T> operator *(T multiplier)	const noexcept
 		{
-			x *= multiplier;
-			y *= multiplier;
-			return *this;
+			return Point<T>(x * multiplier, y * multiplier);
 		}
 
-		Point<T>& operator -=(const Point<T>& other) noexcept
+		constexpr Point<T>& operator -=(const Point<T>& other) noexcept
 		{
 			x -= other.x;
 			y -= other.y;
 			return *this;
 		}
 
-		Point<T>& operator /=(const T divider) noexcept
+		constexpr Point<T>& operator /=(const T divider) noexcept
 		{
 			x /= divider;
 			y /= divider;
 			return *this;
 		}
 
-		Point<T>& operator *=(const T multiplier) noexcept
+		constexpr Point<T>& operator *=(const T multiplier) noexcept
 		{
 			x *= multiplier;	
 			y *= multiplier;
@@ -119,7 +115,7 @@ namespace tsmType
 		}
 
 		template<typename U>
-		Point<T>& operator=(const Point<U>& other) noexcept
+		constexpr Point<T>& operator=(const Point<U>& other) noexcept
 		{
 			x = static_cast<T>(other.x);
 			y = static_cast<T>(other.y);

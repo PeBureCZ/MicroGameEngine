@@ -22,7 +22,7 @@ void ImageHolder::removeTexture(TextureId textureId)
 	}
 }
 
-TextureId ImageHolder::appendTexture(MlImage& image)
+TextureId ImageHolder::appendTexture(const MlImage& image)
 {
 	auto textureId = image.getTextureID();
 	if (textures.contains(textureId))
@@ -42,7 +42,7 @@ ImageHolder::ImageHolder()
 
 }
 
-void ImageHolder::appendGuiImage(MlImage& image, FPoint position)
+void ImageHolder::appendGuiImage(const MlImage& image, FPoint position)
 {
 	appendImage(image, GraphicItemLayer::GUI_LAYER, position);
 }
@@ -64,6 +64,10 @@ void ImageHolder::setImageAbsolutePosition(SPRITE_ID image, size_t layer, FPoint
 		{
 			_ASSERT(false); //wrong image management
 		}
+	}
+	else
+	{
+		_ASSERT(false); //wrong layer management
 	}
 }
 
@@ -104,6 +108,25 @@ void ImageHolder::setSpriteColor(SPRITE_ID image, tsmType::Color_RGBA newColor, 
 		_ASSERT(false); //wrong image management
 		return tsmType::Color_RGBA();
 	}
+}
+
+void ImageHolder::changeSpriteLayer(const TextureId& textureId, SPRITE_ID imageId, size_t newLayer, size_t oldLayer)
+{
+	FPoint oldPosition;
+	auto findedLayer = sprites.find(oldLayer);
+	if (findedLayer != sprites.end())
+	{
+		auto it = findedLayer->second.find(imageId);
+		if (it != findedLayer->second.end())
+		{
+			auto spritePos = it->second.getPosition();
+			oldPosition = FPoint(spritePos.x, spritePos.y);
+		}
+	}
+
+	MlImage image(textureId, GraphicItemLayer::GUI_LAYER, oldPosition);
+	removeImage(textureId, imageId, oldLayer);
+	appendImage(image, newLayer, oldPosition);
 }
 
 [[nodiscard]] tsmType::Size<int> ImageHolder::getTextureSize(TextureId id)
@@ -155,7 +178,7 @@ void ImageHolder::setSpriteRotation(SPRITE_ID image, float newRotation, size_t l
 	return spriteIt->second.getRotation().asDegrees();
 }
 
-void ImageHolder::appendImage(MlImage& image, size_t layer, FPoint position)
+void ImageHolder::appendImage(const MlImage& image, size_t layer, FPoint position)
 {
 	auto textureId = appendTexture(image);
 	auto sprite = sf::Sprite(textures[textureId.path].second);
@@ -177,11 +200,29 @@ void ImageHolder::appendImage(MlImage& image, size_t layer, FPoint position)
 
 void ImageHolder::removeImage(TextureId textureId, SPRITE_ID spriteId, size_t layer)
 {
-	if (sprites.find(layer) != sprites.end() && sprites[layer].find(spriteId) != sprites[layer].end())
-	{
-		sprites[layer].erase(spriteId);
-		removeTexture(std::move(textureId));
+	_ASSERT(textureId.getPath() != UNDEFINED_TEXTURE_PATH);
+
+	auto spriteIt = sprites.find(layer);
+	bool continueToRemove = true;
+	if (spriteIt == sprites.end())
+		{
+		_ASSERT(false); //wrong layer management
+		continueToRemove = false;
 	}
+	else
+	{ //correct layer found, now check if sprite exists
+		auto spriteLayerIt = sprites[layer].find(spriteId);
+		if (spriteLayerIt == sprites[layer].end())
+		{ //correct layer found, but sprite not found
+			_ASSERT(false); //wrong image management
+			continueToRemove = false;
+		}
+	}
+
+	if (continueToRemove)
+		sprites[layer].erase(spriteId);
+
+	removeTexture(std::move(textureId));
 }
 
 [[nodiscard]] const std::optional<const SPRITES*> ImageHolder::getGuiSprites() const noexcept

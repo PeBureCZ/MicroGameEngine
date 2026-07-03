@@ -10,6 +10,7 @@ public:
 	TextureId(std::string usedPath = std::string(UNDEFINED_TEXTURE_PATH))
 		: path(std::move(usedPath))
 	{
+
 	}
 	std::string path;
 
@@ -28,6 +29,10 @@ public:
 		return path == other;
 	}
 
+	const std::string getPath() const
+	{
+		return path;
+	}
 };
 
 namespace std

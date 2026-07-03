@@ -112,6 +112,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)MGE_core\include;$(SolutionDir)ML_wrapper\include;$(SolutionDir)..\SFML_3.0.2\include\;$(ProjectDir)include\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

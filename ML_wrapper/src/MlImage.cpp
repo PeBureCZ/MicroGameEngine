@@ -11,6 +11,11 @@ MlImage::MlImage(TextureId usedTextureId, size_t usedLayer, FPoint newPosition)
 	absolutePosition = newPosition;
 }
 
+MlImage::MlImage()
+{
+	
+}
+
 MlImage::MlImage(const MlImage& other)
 {
 	imageId = reinterpret_cast<uintptr_t>(this);
@@ -36,8 +41,33 @@ MlImage::MlImage(const MlImage&& other) noexcept
 	ML_wrapper::getGlobalGameWrapper()->getImageHolder().appendImage(*this, layer, other.getAbsolutePosition());
 }
 
+MlImage& MlImage::operator=(const MlImage& other)
+{
+	if (this == &other)
+		return *this;
+	imageId = reinterpret_cast<uintptr_t>(this);
+	layer = other.getLayer();
+	usedTexture = other.usedTexture;
+	ML_wrapper::getGlobalGameWrapper()->getImageHolder().appendImage(*this, layer, other.getAbsolutePosition());
+	size = ML_wrapper::getGlobalGameWrapper()->getImageHolder().getTextureSize(usedTexture);
+	return *this;
+}
+
+MlImage& MlImage::operator=(const MlImage&& other) noexcept
+{
+	if (this == &other)
+		return *this;
+	imageId = reinterpret_cast<uintptr_t>(this);
+	layer = other.getLayer();
+	usedTexture = std::move(other.usedTexture);
+	ML_wrapper::getGlobalGameWrapper()->getImageHolder().appendImage(*this, layer, other.getAbsolutePosition());
+	size = ML_wrapper::getGlobalGameWrapper()->getImageHolder().getTextureSize(usedTexture);
+	return *this;
+}
+
 MlImage::~MlImage()
 {
+	_ASSERT(usedTexture.getPath() != UNDEFINED_TEXTURE_PATH);
 	ML_wrapper::getGlobalGameWrapper()->getImageHolder().removeImage(usedTexture, imageId, layer);
 }
 
@@ -66,7 +96,6 @@ void MlImage::setVisible(bool visible) const noexcept
 void MlImage::setOrigin(FPoint newOrigin) const noexcept
 {
 	ML_wrapper::getGlobalGameWrapper()->getImageHolder().setImageAbsolutePosition(imageId, layer, newOrigin);
-	//ML_wrapper::getGlobalGameWrapper()->getImageHolder().setGuiImageOrigin(imageId, newOrigin);
 }
 
 void MlImage::setRotation(float newRotation) const noexcept
@@ -90,6 +119,12 @@ size_t MlImage::getLayer() const noexcept
 	return layer;
 }
 
+void MlImage::setLayer(size_t newLayer) noexcept
+{
+	layer = newLayer;
+	ML_wrapper::getGlobalGameWrapper()->getImageHolder().changeSpriteLayer(usedTexture, imageId, newLayer, layer);
+}
+
 void  MlImage::setImgAbsolutePosition(FPoint newPosition)
 {
 	absolutePosition = newPosition;
@@ -97,3 +132,12 @@ void  MlImage::setImgAbsolutePosition(FPoint newPosition)
 }
 
 
+[[nodiscard]] uPtr_MlImage MlImage::loadTexture(std::string path, size_t layer)
+{
+	return std::make_unique<MlImage>(TextureId(path), layer);
+}
+
+uPtr_MlImage MlImage::loadTexture(const TextureId& textureId, size_t layer)
+{
+	return std::make_unique<MlImage>(TextureId(textureId.getPath()), layer);
+}

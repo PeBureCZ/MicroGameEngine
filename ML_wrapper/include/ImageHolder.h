@@ -25,20 +25,22 @@ private:
 	LAYERED_SPRITES sprites;
 
 	void removeTexture(TextureId textureId);
-	TextureId appendTexture(MlImage& image);
+	TextureId appendTexture(const MlImage& image);
 
 public:
 	ImageHolder();
 
-	void appendImage(MlImage& image, size_t layer, FPoint position = FPoint());
+	void appendImage(const MlImage& image, size_t layer, FPoint position = FPoint());
 	void removeImage(TextureId textureId, SPRITE_ID spriteId, size_t layer);
 
-	void appendGuiImage(MlImage& image, FPoint position = FPoint());
+	void appendGuiImage(const MlImage& image, FPoint position = FPoint());
 	void removeGuiImage(TextureId textureId, SPRITE_ID spriteId);
 
 	void setImageAbsolutePosition(SPRITE_ID image, size_t layer, FPoint newPosition = FPoint());
 	void setSpriteColor(SPRITE_ID image, tsmType::Color_RGBA newColor, size_t layer);
 	[[nodiscard]] tsmType::Color_RGBA getSpriteColor(SPRITE_ID image, size_t layer);
+
+	void changeSpriteLayer(const TextureId& textureId, SPRITE_ID imageId, size_t newLayer, size_t oldLayer);
 
 	void setSpriteRotation(SPRITE_ID image, float newRotation, size_t layer) noexcept;
 	[[nodiscard]] float getSpriteRotation(SPRITE_ID image, size_t layer) const noexcept;

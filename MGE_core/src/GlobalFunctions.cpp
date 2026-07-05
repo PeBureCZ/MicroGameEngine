@@ -6,7 +6,7 @@ static std::thread::id mainThreadId;
 
 namespace tsmCore
 {
-    std::string getExecutablePath(bool includeExeName)
+    [[nodiscard]] std::string getExecutablePath(bool includeExeName)
     {
         char buffer[MAX_PATH];
         GetModuleFileNameA(nullptr, buffer, MAX_PATH);
@@ -22,6 +22,7 @@ namespace tsmCore
 
         return path;
     }
+
     void setThisThreadAsMain()
     {
         mainThreadRun = true;
@@ -31,12 +32,90 @@ namespace tsmCore
         _ASSERT(usedMainThreadCounter++ == 0); // "set main thread only once!"
 #endif // _DEBUG
     }
-    bool mainThreadIsSet()
+
+    [[nodiscard]] bool mainThreadIsSet()
     {
         return mainThreadRun;
     }
-    bool isMainThread()
+
+    [[nodiscard]] bool isMainThread()
     {
         return std::this_thread::get_id() == mainThreadId;
+    }
+
+    [[nodiscard]] std::string toUTF8(const std::wstring& wstr)
+    {
+        if (wstr.empty())
+            return {};
+
+        int size = WideCharToMultiByte
+            (
+                CP_UTF8,
+                0,
+                wstr.data(),
+                static_cast<int>(wstr.size()),
+                nullptr,
+                0,
+                nullptr,
+                nullptr
+            );
+
+        if (size <= 0)
+            return {};
+
+        std::string result(size, '\0');
+
+        int written = WideCharToMultiByte
+            (
+                CP_UTF8,
+                0,
+                wstr.data(),
+                static_cast<int>(wstr.size()),
+                result.data(),
+                size,
+                nullptr,
+                nullptr
+            );
+
+        if (written <= 0 || written != size)
+            return {};
+
+        return result;
+    }
+
+    [[nodiscard]] std::wstring fromUTF8(const std::string& str)
+    {
+        if (str.empty())
+            return {};
+
+        int size = MultiByteToWideChar
+            (
+                CP_UTF8,
+                0,
+                str.data(),
+                static_cast<int>(str.size()),
+                nullptr,
+                0
+            );
+
+        if (size <= 0)
+            return {};
+
+        std::wstring result(size, L'\0');
+
+        int written = MultiByteToWideChar
+            (
+                CP_UTF8,
+                0,
+                str.data(),
+                static_cast<int>(str.size()),
+                result.data(),
+                size
+            );
+
+        if (written <= 0 || written != size)
+            return {};
+
+        return result;
     }
 }

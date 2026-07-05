@@ -147,6 +147,24 @@ public:
         return getPositionAt(distance);
     }
 
+    size_t getSegmentCount() const noexcept
+    {
+		return segmentsCount;
+    }
+
+    tsmType::Point<float> pointAtSegment(size_t segmentIndex) const
+    {
+        if (segmentIndex >= segmentsCount)
+        {
+            _ASSERT(false);
+            auto& point = sampledPoints.back();
+            return { point.x, point.y };
+        }
+
+        const auto& findedSegment = sampledPoints[segmentIndex];
+        return { findedSegment.x, findedSegment.y };
+    }
+
 private:
     std::vector<sf::Vector2f> sampledPoints;
     float totalLength = 0.f;
@@ -157,7 +175,7 @@ private:
 
 private:
     MlVerticesObject vertices;
-    int segmentsCount = 0;
+    size_t segmentsCount = 0;
     float segmentLength = 0.f;
     float thickness = 1.0f;
     T positions[4];

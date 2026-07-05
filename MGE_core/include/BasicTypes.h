@@ -196,7 +196,7 @@ using DPoint = tsmType::Point<double>;
 
 namespace tsmBasic
 {
-	[[nodiscard]] inline float getDistance(FPoint pointA, FPoint pointB)
+	[[nodiscard]] inline float getDistance(const FPoint& pointA, const FPoint& pointB)
 	{
 		tsmType::FLine line(pointA, pointB);
 		return line.length();

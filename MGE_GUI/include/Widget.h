@@ -8,10 +8,12 @@
 #include "MlVerticesObject.h"
 #include "GuiDependencies.h"
 
+using WidgetId = uintptr_t;
+
 class Widget
 {
 public:
-	uintptr_t getWidgetId()  const noexcept;
+	WidgetId getWidgetId()  const noexcept;
 	Widget(IPoint newPosition, tsmType::Size<int> newSize);
 
 
@@ -19,7 +21,7 @@ public:
 	[[nodiscard]] IPoint getRelativePosition() const noexcept;
 	[[nodiscard]] IPoint getAbsolutePosition() const noexcept;
 
-	bool removeChildFromWidget(uintptr_t childId) noexcept;
+	bool removeChildFromWidget(WidgetId childId) noexcept;
 	[[nodiscard]] const std::vector<std::shared_ptr<Widget>>& getChildren() const noexcept;
 	[[nodiscard]] std::vector<std::shared_ptr<Widget>>& editChildren() noexcept;
 	[[nodiscard]] const std::shared_ptr<Widget> getParent() const noexcept;

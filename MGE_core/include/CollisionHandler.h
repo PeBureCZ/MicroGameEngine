@@ -132,29 +132,34 @@ public:
 
 private:
 	std::unordered_map< CellId, std::vector<std::shared_ptr<CollisionComponent<T>>>> cellsOfCollisions;
-	uint32_t channelId;
+	uint32_t channelId = 0;
 };
 
 
 template<typename T>
 class CollisionHandler
 {
-	public:
-		CollisionHandler() = default;
-		virtual ~CollisionHandler() = default;
+public:
+	CollisionHandler() = default;
+	virtual ~CollisionHandler() = default;
 
-		void addCollisionChannel(int newChannelId)
+	void addCollisionChannel(int newChannelId)
+	{
+		for (const auto& channel : channels)
 		{
-			for (const auto& channel : channels)
+			if (channel.getChannelId() == newChannelId)
 			{
-				if (channel.getChannelId() == newChannelId)
-				{
-					_ASSERT(false); //channel with this id already exists
-					return;
-				}
+				_ASSERT(false); //channel with this id already exists
+				return;
 			}
-			this->channels.emplace_back(CollisionChannel<T>{newChannelId});
 		}
+		this->channels.emplace_back(CollisionChannel<T>{newChannelId});
+	}
+
+	void wipeAll()
+	{
+		channels.clear();
+	}
 
 protected:
 	std::vector<CollisionChannel<T>> channels;

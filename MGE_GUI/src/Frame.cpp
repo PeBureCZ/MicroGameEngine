@@ -40,7 +40,7 @@ void Frame::setImage(TextureId textureId)
 	frameObject = std::move(image);
 }
 
-void Frame::setVerticesId(uintptr_t newId) noexcept
+void Frame::setVerticesId(VerticesId newId) noexcept
 {
 	mlVerticesId = newId;
 }

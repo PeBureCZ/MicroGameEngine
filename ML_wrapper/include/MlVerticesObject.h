@@ -20,7 +20,7 @@ public:
 
     void addObjects(std::vector <DrawableObject<float>> content) noexcept;
     void addObjects(sf::VertexArray content) noexcept;
-    uintptr_t getUniqueId() const noexcept;
+    VerticesId getUniqueId() const noexcept;
     void setRotation(float newRotation) noexcept;
     float getRotation() const noexcept;
 

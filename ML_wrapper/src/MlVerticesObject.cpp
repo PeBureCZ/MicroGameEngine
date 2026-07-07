@@ -21,9 +21,9 @@ void MlVerticesObject::addObjects(sf::VertexArray content) noexcept
 		batch.append(content[i]);
 }
 
-uintptr_t MlVerticesObject::getUniqueId() const noexcept
+VerticesId MlVerticesObject::getUniqueId() const noexcept
 {
-    return reinterpret_cast<uintptr_t>(this);
+    return reinterpret_cast<VerticesId>(this);
 }
 
 void MlVerticesObject::setRotation(float newRotation) noexcept

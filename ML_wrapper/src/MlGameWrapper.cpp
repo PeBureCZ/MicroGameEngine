@@ -23,7 +23,7 @@ namespace ML_wrapper
         return events;
     }
 
-    void MlGameWrapper::setMlVerticesColor(uintptr_t id, tsmType::Color_RGBA newColor)
+    void MlGameWrapper::setMlVerticesColor(VerticesId id, tsmType::Color_RGBA newColor)
     {
         for (const auto& [layerNum, Layer] : mlVerticesLayers)
         {
@@ -37,7 +37,7 @@ namespace ML_wrapper
         _ASSERT(false);  //wrong it management
     }
 
-    void MlGameWrapper::setMlVerticesLayer(uintptr_t id, size_t newLayer)
+    void MlGameWrapper::setMlVerticesLayer(VerticesId id, size_t newLayer)
     {
         std::unique_ptr<MlVerticesObject> object;
         for (const auto& [layerNum, Layer] : mlVerticesLayers)
@@ -59,7 +59,7 @@ namespace ML_wrapper
         }
     }
 
-    void MlGameWrapper::moveMlVerticesPosition(uintptr_t id, FPoint newPos)
+    void MlGameWrapper::moveMlVerticesPosition(VerticesId id, FPoint newPos)
     {
         for (const auto& [layerNum, Layer] : mlVerticesLayers)
         {
@@ -73,7 +73,7 @@ namespace ML_wrapper
         _ASSERT(false); //wrong it management
     }
 
-    void MlGameWrapper::setMlVerticesRotation(uintptr_t id, float newRotation) noexcept
+    void MlGameWrapper::setMlVerticesRotation(VerticesId id, float newRotation) noexcept
     {
         for (const auto& [layerNum, Layer] : mlVerticesLayers)
         {
@@ -87,7 +87,7 @@ namespace ML_wrapper
         _ASSERT(false); //wrong it management
     }
 
-    void MlGameWrapper::setSpriteRotation(uintptr_t id, float newRotation) noexcept
+    void MlGameWrapper::setSpriteRotation(VerticesId id, float newRotation) noexcept
     {
         for (const auto& [layerNum, Layer] : mlVerticesLayers)
         {
@@ -101,7 +101,7 @@ namespace ML_wrapper
         _ASSERT(false); //wrong it management
     }
 
-    std::optional<size_t> MlGameWrapper::getLayerOfMlVerticesObject(uintptr_t objectId)
+    std::optional<size_t> MlGameWrapper::getLayerOfMlVerticesObject(VerticesId objectId)
     {
         for (const auto& [layerNum, Layer] : mlVerticesLayers)
         {
@@ -296,7 +296,7 @@ namespace ML_wrapper
         }
     }
 
-    void MlGameWrapper::drawGuiVertices(uintptr_t objectID) const
+    void MlGameWrapper::drawGuiVertices(VerticesId objectID) const
     {
 		const auto mlGuiVerticesObjects_opt = getMlGuiObjects();
         if (mlGuiVerticesObjects_opt.has_value() && mlGuiVerticesObjects_opt.value()) //opt_ptr -> raw ptr!
@@ -393,7 +393,7 @@ namespace ML_wrapper
 		mainWindow.reset();
     }
 
-    void MlGameWrapper::removeMlVerticesObject(uintptr_t objectID)
+    void MlGameWrapper::removeMlVerticesObject(VerticesId objectID)
     {
         auto layer_opt = getLayerOfMlVerticesObject(objectID);
         if (layer_opt)
@@ -427,15 +427,15 @@ namespace ML_wrapper
         return imageHolder;
     }
 
-    uintptr_t MlGameWrapper::addMlVerticesObject(size_t layer, std::unique_ptr<MlVerticesObject> newWidget)
+    VerticesId MlGameWrapper::addMlVerticesObject(size_t layer, std::unique_ptr<MlVerticesObject> newWidget)
     {
         if (!newWidget)
         {
             _ASSERT(false); //invalid widget
-            return uintptr_t();
+            return VerticesId();
 		}
 
-        uintptr_t id = newWidget->getUniqueId();
+        VerticesId id = newWidget->getUniqueId();
         auto it = std::lower_bound(mlVerticesLayers.begin(),mlVerticesLayers.end(),layer,[](const auto& lhs, size_t value)
             {return lhs.first < value;});
 

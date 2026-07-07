@@ -28,14 +28,14 @@ public:
 	Frame(IPoint newPosition, TextureId textureId);
 
 	void setImage(TextureId textureId);
-	void setVerticesId(uintptr_t newId) noexcept;
+	void setVerticesId(VerticesId newId) noexcept;
 	[[nodiscard]] std::vector<Trigger<int>>& editCollision() noexcept;
 	[[nodiscard]] const std::vector<Trigger<int>>& getCollision() const noexcept;
 	void addCollision(Trigger<int> addedCollision);
 
 	void setColor(tsmType::Color_RGBA newColor);
 	[[nodiscard]] const FRAME_OBJECT& getFrameObject() const noexcept;
-	[[nodiscard]] uintptr_t getVerticesId() const noexcept;
+	[[nodiscard]] VerticesId getVerticesId() const noexcept;
 	void addTextToFrame(MlText newText, GuiAlign align = GuiAlign::MiddleCenter);
 	const std::deque<std::pair<GuiAlign, MlText>>& getTextsFromFrame() const noexcept;
 
@@ -64,7 +64,7 @@ protected:
 
 private:
 	std::vector<Trigger<int>> collisions;
-	uintptr_t mlVerticesId = 0;
+	VerticesId mlVerticesId = 0;
 	FRAME_OBJECT frameObject = false;
 
 	std::function<void()> onCursorEnter = nullptr;

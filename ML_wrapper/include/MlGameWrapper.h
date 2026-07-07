@@ -11,6 +11,7 @@
 #include "MlText.h"
 
 #include "BasicTypes.h"
+#include "GraphicDependencies.h"
 
 namespace sf
 {
@@ -20,7 +21,7 @@ namespace sf
 
 class MlVerticesObject;
 
-using LAYER = std::unordered_map<uintptr_t, std::unique_ptr<MlVerticesObject>>;
+using LAYER = std::unordered_map<VerticesId, std::unique_ptr<MlVerticesObject>>;
 using VERTICES_LAYERS = std::vector<std::pair<size_t, std::unique_ptr<LAYER>>>; //size_t = layer number, LAYER = map of objects in this layer
 
 namespace ML_wrapper
@@ -36,7 +37,7 @@ namespace ML_wrapper
         void displayActualFrame();
 
         void drawGuiSprite(SPRITE_ID id) const;
-        void drawGuiVertices(uintptr_t objectID) const;
+        void drawGuiVertices(VerticesId objectID) const;
         void drawText(const MlText& textToDraw);
 
         void drawVertices() const;
@@ -45,22 +46,22 @@ namespace ML_wrapper
         std::deque<MlEventType>& getMlEvents();
         void clearEvents();
         void resetMainWindow();
-        void removeMlVerticesObject(uintptr_t objectID);
+        void removeMlVerticesObject(VerticesId objectID);
 
-        std::optional<size_t> getLayerOfMlVerticesObject(uintptr_t objectId);
+        std::optional<size_t> getLayerOfMlVerticesObject(VerticesId objectId);
 
         [[nodiscard]] const DPoint& getCursorWorldPosition() const noexcept;
         [[nodiscard]] const IPoint& getCursorGuiPosition() const noexcept;
         [[nodiscard]] std::optional<MlText> createText(std::string newText, unsigned int charSize_pxls = 30, FPoint position = FPoint()) noexcept;
         [[nodiscard]] ImageHolder& getImageHolder() noexcept;
-        [[nodiscard]] uintptr_t addMlVerticesObject(size_t layer, std::unique_ptr<MlVerticesObject> newWidget);
+        [[nodiscard]] VerticesId addMlVerticesObject(size_t layer, std::unique_ptr<MlVerticesObject> newWidget);
 
         //GUI
-        void setMlVerticesColor(uintptr_t id, tsmType::Color_RGBA newColor);
-        void setMlVerticesLayer(uintptr_t id, size_t newLayer);
-        void moveMlVerticesPosition(uintptr_t id, FPoint newPos);
-        void setMlVerticesRotation(uintptr_t id, float newRotation) noexcept;
-        void setSpriteRotation(uintptr_t id, float newRotation) noexcept;
+        void setMlVerticesColor(VerticesId id, tsmType::Color_RGBA newColor);
+        void setMlVerticesLayer(VerticesId id, size_t newLayer);
+        void moveMlVerticesPosition(VerticesId id, FPoint newPos);
+        void setMlVerticesRotation(VerticesId id, float newRotation) noexcept;
+        void setSpriteRotation(VerticesId id, float newRotation) noexcept;
 
         [[nodiscard]] std::optional<LAYER*> getMlGuiObjects() const noexcept;
         [[nodiscard]] tsmType::Size<int> getScreenSize() const noexcept;

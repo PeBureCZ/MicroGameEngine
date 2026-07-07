@@ -37,7 +37,7 @@ void Widget::addChild(std::shared_ptr<Widget> child) noexcept
 	children.push_back(std::move(child));
 }
 
-bool Widget::removeChildFromWidget(uintptr_t childId) noexcept
+bool Widget::removeChildFromWidget(WidgetId childId) noexcept
 {
 	for (auto it = children.begin(); it != children.end(); ++it)
 	{
@@ -105,9 +105,9 @@ void Widget::layout() noexcept
 		child->layout();
 }
 
-uintptr_t Widget::getWidgetId() const noexcept
+WidgetId Widget::getWidgetId() const noexcept
 {
-	return reinterpret_cast<uintptr_t>(this);
+	return reinterpret_cast<WidgetId>(this);
 }
 
 void Widget::initializeSelf(std::weak_ptr<Widget> self)

@@ -4,6 +4,8 @@
 
 inline const char* UNDEFINED_TEXTURE_PATH = "undefined";
 
+using VerticesId = uintptr_t;
+
 struct TextureId
 {
 public:

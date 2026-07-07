@@ -4,7 +4,7 @@
 #include "MlGameWrapper.h"
 
 MlImage::MlImage(TextureId usedTextureId, size_t usedLayer, FPoint newPosition)
-	: usedTexture(std::move(usedTextureId)), imageId(reinterpret_cast<uintptr_t>(this)/*=unique*/), layer(usedLayer)
+	: usedTexture(std::move(usedTextureId)), imageId(reinterpret_cast<VerticesId>(this)), layer(usedLayer)
 {
 	ML_wrapper::getGlobalGameWrapper()->getImageHolder().appendImage(*this, usedLayer, newPosition);
 	size = ML_wrapper::getGlobalGameWrapper()->getImageHolder().getTextureSize(usedTexture);
@@ -18,7 +18,7 @@ MlImage::MlImage()
 
 MlImage::MlImage(const MlImage& other)
 {
-	imageId = reinterpret_cast<uintptr_t>(this);
+	imageId = reinterpret_cast<VerticesId>(this);
 	layer = other.getLayer();
 	usedTexture = other.usedTexture;
 	ML_wrapper::getGlobalGameWrapper()->getImageHolder().appendImage(*this, layer, other.getAbsolutePosition());
@@ -35,7 +35,7 @@ MlImage::MlImage(const MlImage&& other) noexcept
 {
 	if (this == &other)
 		return;
-	imageId = reinterpret_cast<uintptr_t>(this);
+	imageId = reinterpret_cast<VerticesId>(this);
 	usedTexture = other.usedTexture;
 	layer = other.getLayer();
 	ML_wrapper::getGlobalGameWrapper()->getImageHolder().appendImage(*this, layer, other.getAbsolutePosition());
@@ -45,7 +45,7 @@ MlImage& MlImage::operator=(const MlImage& other)
 {
 	if (this == &other)
 		return *this;
-	imageId = reinterpret_cast<uintptr_t>(this);
+	imageId = reinterpret_cast<VerticesId>(this);
 	layer = other.getLayer();
 	usedTexture = other.usedTexture;
 	ML_wrapper::getGlobalGameWrapper()->getImageHolder().appendImage(*this, layer, other.getAbsolutePosition());
@@ -57,7 +57,7 @@ MlImage& MlImage::operator=(const MlImage&& other) noexcept
 {
 	if (this == &other)
 		return *this;
-	imageId = reinterpret_cast<uintptr_t>(this);
+	imageId = reinterpret_cast<VerticesId>(this);
 	layer = other.getLayer();
 	usedTexture = std::move(other.usedTexture);
 	ML_wrapper::getGlobalGameWrapper()->getImageHolder().appendImage(*this, layer, other.getAbsolutePosition());

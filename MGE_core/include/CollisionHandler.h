@@ -143,6 +143,11 @@ public:
 	CollisionHandler() = default;
 	virtual ~CollisionHandler() = default;
 
+	CollisionHandler(const CollisionHandler&) = delete;
+	CollisionHandler(const CollisionHandler&&) = delete;
+	CollisionHandler operator= (CollisionHandler&) = delete;
+	CollisionHandler operator= (CollisionHandler&&) = delete;
+
 	void addCollisionChannel(int newChannelId)
 	{
 		for (const auto& channel : channels)

@@ -20,14 +20,17 @@ public:
 
     void addObjects(std::vector <DrawableObject<float>> content) noexcept;
     void addObjects(sf::VertexArray content) noexcept;
-    VerticesId getUniqueId() const noexcept;
+    [[nodiscard]] VerticesId getUniqueId() const noexcept;
     void setRotation(float newRotation) noexcept;
-    float getRotation() const noexcept;
+    [[nodiscard]] float getRotation() const noexcept;
 
-    const sf::VertexArray& getVertices() const noexcept;
+    void setPosition(const FPoint& newPosition);
+    [[nodiscard]] FPoint getPosition() const noexcept; //absolute
+
+    [[nodiscard]] const sf::VertexArray& getVertices() const noexcept;
     void setColor(tsmType::Color_RGBA newColor) noexcept;
-    tsmType::Color_RGBA getColor() noexcept;
-    void moveAbsolutePosition(FPoint& newPos) noexcept;
+    [[nodiscard]] tsmType::Color_RGBA getColor() noexcept;
+    void moveAbsolutePosition(const FPoint& newPos) noexcept;
 
     [[nodiscard]] const sf::RenderStates& getRenderState() const noexcept;
 };

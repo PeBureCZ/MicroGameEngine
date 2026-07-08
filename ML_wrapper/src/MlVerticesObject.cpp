@@ -21,7 +21,7 @@ void MlVerticesObject::addObjects(sf::VertexArray content) noexcept
 		batch.append(content[i]);
 }
 
-VerticesId MlVerticesObject::getUniqueId() const noexcept
+[[nodiscard]] VerticesId MlVerticesObject::getUniqueId() const noexcept
 {
     return reinterpret_cast<VerticesId>(this);
 }
@@ -37,12 +37,22 @@ void MlVerticesObject::setRotation(float newRotation) noexcept
     state.transform.rotate(sf::degrees(rotation));
 }
 
-float MlVerticesObject::getRotation() const noexcept
+[[nodiscard]] float MlVerticesObject::getRotation() const noexcept
 {
     return rotation;
 }
 
-const sf::VertexArray& MlVerticesObject::getVertices() const noexcept
+void MlVerticesObject::setPosition(const FPoint& newPosition)
+{
+    moveAbsolutePosition(newPosition - absolutePositionOffset);
+}
+
+[[nodiscard]] FPoint MlVerticesObject::getPosition() const noexcept
+{
+    return absolutePositionOffset;
+}
+
+[[nodiscard]] const sf::VertexArray& MlVerticesObject::getVertices() const noexcept
 {
     return batch;
 }
@@ -54,20 +64,20 @@ void MlVerticesObject::setColor(tsmType::Color_RGBA newColor) noexcept
 		batch[i].color = color;
 }
 
-tsmType::Color_RGBA MlVerticesObject::getColor() noexcept
+[[nodiscard]] tsmType::Color_RGBA MlVerticesObject::getColor() noexcept
 {
     if (batch.getVertexCount() > 0)
         return tsmType::Color_RGBA(batch[0].color.r, batch[0].color.g, batch[0].color.b, batch[0].color.a);
     return tsmType::Color_RGBA();
 }
 
-void MlVerticesObject::moveAbsolutePosition(FPoint& newPos) noexcept
+void MlVerticesObject::moveAbsolutePosition(const FPoint& newPos) noexcept
 {
     absolutePositionOffset += newPos;
     state.transform.translate(sf::Vector2f(newPos.x, newPos.y));
 }
 
-const sf::RenderStates& MlVerticesObject::getRenderState() const noexcept
+[[nodiscard]] const sf::RenderStates& MlVerticesObject::getRenderState() const noexcept
 {
     return state;
 }

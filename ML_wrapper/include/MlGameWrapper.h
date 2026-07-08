@@ -48,7 +48,7 @@ namespace ML_wrapper
         void resetMainWindow();
         void removeMlVerticesObject(VerticesId objectID);
 
-        std::optional<size_t> getLayerOfMlVerticesObject(VerticesId objectId);
+        std::optional<size_t> getLayerOfMlVerticesObject(VerticesId objectId, std::optional<size_t> knownLayer = std::nullopt);
 
         [[nodiscard]] const DPoint& getCursorWorldPosition() const noexcept;
         [[nodiscard]] const IPoint& getCursorGuiPosition() const noexcept;
@@ -56,12 +56,14 @@ namespace ML_wrapper
         [[nodiscard]] ImageHolder& getImageHolder() noexcept;
         [[nodiscard]] VerticesId addMlVerticesObject(size_t layer, std::unique_ptr<MlVerticesObject> newWidget);
 
-        //GUI
-        void setMlVerticesColor(VerticesId id, tsmType::Color_RGBA newColor);
-        void setMlVerticesLayer(VerticesId id, size_t newLayer);
-        void moveMlVerticesPosition(VerticesId id, FPoint newPos);
-        void setMlVerticesRotation(VerticesId id, float newRotation) noexcept;
-        void setSpriteRotation(VerticesId id, float newRotation) noexcept;
+        void setMlVerticesColor(VerticesId id, tsmType::Color_RGBA newColor, std::optional<size_t> knownLayer = std::nullopt);
+        void setMlVerticesLayer(VerticesId id, std::optional<size_t> knownLayer = std::nullopt);
+        void setMlVerticesPosition(VerticesId id, const FPoint& newPos, std::optional<size_t> knownLayer = std::nullopt);
+        void moveMlVerticesPosition(VerticesId id, const FPoint& newPos, std::optional<size_t> knownLayer = std::nullopt);
+        [[nodiscard]] std::optional<FPoint> getVericesPosition(VerticesId id, std::optional<size_t> knownLayer = std::nullopt);
+
+        void setMlVerticesRotation(VerticesId id, float newRotation, std::optional<size_t> knownLayer = std::nullopt) noexcept;
+        void setSpriteRotation(VerticesId id, float newRotation, std::optional<size_t> knownLayer = std::nullopt) noexcept;
 
         [[nodiscard]] std::optional<LAYER*> getMlGuiObjects() const noexcept;
         [[nodiscard]] tsmType::Size<int> getScreenSize() const noexcept;

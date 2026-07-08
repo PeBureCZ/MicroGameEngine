@@ -57,7 +57,7 @@ namespace ML_wrapper
         [[nodiscard]] VerticesId addMlVerticesObject(size_t layer, std::unique_ptr<MlVerticesObject> newWidget);
 
         void setMlVerticesColor(VerticesId id, tsmType::Color_RGBA newColor, std::optional<size_t> knownLayer = std::nullopt);
-        void setMlVerticesLayer(VerticesId id, std::optional<size_t> knownLayer = std::nullopt);
+        void setMlVerticesLayer(VerticesId id, size_t newLayer, std::optional<size_t> knownLayer = std::nullopt);
         void setMlVerticesPosition(VerticesId id, const FPoint& newPos, std::optional<size_t> knownLayer = std::nullopt);
         void moveMlVerticesPosition(VerticesId id, const FPoint& newPos, std::optional<size_t> knownLayer = std::nullopt);
         [[nodiscard]] std::optional<FPoint> getVericesPosition(VerticesId id, std::optional<size_t> knownLayer = std::nullopt);

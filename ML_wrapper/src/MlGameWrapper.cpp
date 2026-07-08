@@ -41,7 +41,7 @@ namespace ML_wrapper
         _ASSERT(false);  //wrong it management
     }
 
-    void MlGameWrapper::setMlVerticesLayer(VerticesId id, std::optional<size_t> knownLayer)
+    void MlGameWrapper::setMlVerticesLayer(VerticesId id, size_t newLayer, std::optional<size_t> knownLayer)
     {
         std::unique_ptr<MlVerticesObject> object;
         bool checkLayerNum = (knownLayer.has_value()) ? true : false;
@@ -61,7 +61,7 @@ namespace ML_wrapper
 
         if (object)
         {
-            auto unchangedID = addMlVerticesObject(knownLayer.value_or(0), std::move(object));
+            auto unchangedID = addMlVerticesObject(newLayer, std::move(object));
         }
         else
         {

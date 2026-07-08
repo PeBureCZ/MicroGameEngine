@@ -161,6 +161,11 @@ public:
 		channels.clear();
 	}
 
+	[[nodiscard]] size_t getChannelSize() noexcept
+	{
+		return channels.size();
+	}
+
 protected:
 	std::vector<CollisionChannel<T>> channels;
 private:

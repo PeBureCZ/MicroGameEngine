@@ -1,7 +1,10 @@
 #pragma once
 
 #include <vector>
+#include <string>
 #include <cmath>
+#include <optional>
+#include <charconv>
 #include <type_traits>
 
 namespace tsmType
@@ -200,5 +203,44 @@ namespace tsmBasic
 	{
 		tsmType::FLine line(pointA, pointB);
 		return line.length();
+	}
+
+	[[nodiscard]] inline std::string convertFPointToStr(const FPoint& point)
+	{
+		return { std::to_string(point.x) + ":" + std::to_string(point.y)};
+	}
+
+	/**from format "floatX:floatY"*/
+	[[nodiscard]] inline std::optional<FPoint> convertStrToFPoint(std::string_view text)
+	{
+		const auto colon = text.find(':');
+		if (colon == std::string_view::npos)
+			return std::nullopt;
+
+		FPoint point;
+
+		// Parse X
+		auto result = std::from_chars
+			(
+				text.data(),
+				text.data() + colon,
+				point.x
+			);
+
+		if (result.ec != std::errc{} || result.ptr != text.data() + colon)
+			return std::nullopt;
+
+		// Parse Y
+		result = std::from_chars
+			(
+				text.data() + colon + 1,
+				text.data() + text.size(),
+				point.y
+			);
+
+		if (result.ec != std::errc{} || result.ptr != text.data() + text.size())
+			return std::nullopt;
+
+		return point;
 	}
 }

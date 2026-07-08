@@ -13,6 +13,8 @@ using EVENT_DATA = std::variant
 		int32_t,
 		std::string,
 		std::vector<std::string>,
+		std::wstring,
+		std::vector<std::wstring>,
 		std::vector<int32_t>,
 		uintptr_t
 	>;
@@ -24,6 +26,11 @@ class ScreenEvent
 	ScreenEvent(EventType typeOfEvent)
 		: eventType(typeOfEvent)
 	{}
+
+	ScreenEvent(EventType typeOfEvent, EVENT_DATA data)
+		: eventType(typeOfEvent), eventData(std::move(data))
+	{}
+
 	EventType eventType = -1;
 	EVENT_DATA eventData;
 };

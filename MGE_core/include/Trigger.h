@@ -387,7 +387,7 @@ public:
 		return origin;
 	}
 
-	void setOrigin(const FPoint& newOrigin, bool recalculate) noexcept
+	void setOrigin(const FPoint& newOrigin, bool recalculate)
 	{
 		origin = newOrigin;
 		if (recalculate)

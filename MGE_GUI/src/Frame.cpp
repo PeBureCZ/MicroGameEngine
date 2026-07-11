@@ -202,7 +202,7 @@ void Frame::layout() noexcept
 		Widget::layout();
 	} //try block end
 #ifdef _DEBUG
-	catch (std::exception& e)
+	catch ([[maybe_unused]] std::exception& e)
 	{
 		_ASSERT(false);
 	}

@@ -29,20 +29,20 @@ public:
 	MlImage(const MlImage& other);
 	MlImage(const MlImage&& other) noexcept;
 	MlImage& operator= (const MlImage& other);
-	MlImage& operator= (const MlImage&& other) noexcept;
+	MlImage& operator= (MlImage&& other);
 
 	[[nodiscard]] tsmType::Size<int> getSize() const noexcept;
 
 	void setImgAbsolutePosition(FPoint newPosition);
-	void setColor(tsmType::Color_RGBA& newColor) const noexcept;
-	void setVisible(bool visible) const noexcept;
+	void setColor(tsmType::Color_RGBA& newColor) const;
+	void setVisible(bool visible) const;
 
-	void setRotation(float newRotation) const noexcept;
-	void setOrigin(FPoint newOrigin) const noexcept;
-	[[nodiscard]] float getRotation() const noexcept;
+	void setRotation(float newRotation) const;
+	void setOrigin(FPoint newOrigin) const;
+	[[nodiscard]] float getRotation() const;
 	[[nodiscard]] FPoint getAbsolutePosition() const noexcept;
 	size_t getLayer() const noexcept;
-	void setLayer(size_t newLayer) noexcept;
+	void setLayer(size_t newLayer);
 
 	static [[nodiscard]] uPtr_MlImage loadTexture(std::string path, size_t layer = GraphicItemLayer::DEFAULT_LAYER);
 	static [[nodiscard]] uPtr_MlImage loadTexture(const TextureId& textureId, size_t layer = GraphicItemLayer::DEFAULT_LAYER);

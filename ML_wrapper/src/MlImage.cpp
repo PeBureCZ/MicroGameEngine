@@ -53,7 +53,7 @@ MlImage& MlImage::operator=(const MlImage& other)
 	return *this;
 }
 
-MlImage& MlImage::operator=(const MlImage&& other) noexcept
+MlImage& MlImage::operator=(MlImage&& other)
 {
 	if (this == &other)
 		return *this;
@@ -81,29 +81,29 @@ TextureId MlImage::getTextureID() const noexcept
 	return usedTexture;
 }
 
-void MlImage::setColor(tsmType::Color_RGBA& newColor) const noexcept
+void MlImage::setColor(tsmType::Color_RGBA& newColor) const
 {
 	ML_wrapper::getGlobalGameWrapper()->getImageHolder().setSpriteColor(imageId, newColor, layer);
 }
 
-void MlImage::setVisible(bool visible) const noexcept
+void MlImage::setVisible(bool visible) const
 {
 	auto color = ML_wrapper::getGlobalGameWrapper()->getImageHolder().getSpriteColor(imageId, layer);
 	color.a = visible ? 255 : 0;
 	setColor(color);
 }
 
-void MlImage::setOrigin(FPoint newOrigin) const noexcept
+void MlImage::setOrigin(FPoint newOrigin) const
 {
 	ML_wrapper::getGlobalGameWrapper()->getImageHolder().setImageAbsolutePosition(imageId, layer, newOrigin);
 }
 
-void MlImage::setRotation(float newRotation) const noexcept
+void MlImage::setRotation(float newRotation) const
 {
 	ML_wrapper::getGlobalGameWrapper()->getImageHolder().setSpriteRotation(imageId, newRotation, layer);
 }
 
-[[nodiscard]] float MlImage::getRotation() const noexcept
+[[nodiscard]] float MlImage::getRotation() const
 {
 	return ML_wrapper::getGlobalGameWrapper()->getImageHolder().getSpriteRotation(imageId, layer);
 }
@@ -119,7 +119,7 @@ size_t MlImage::getLayer() const noexcept
 	return layer;
 }
 
-void MlImage::setLayer(size_t newLayer) noexcept
+void MlImage::setLayer(size_t newLayer)
 {
 	layer = newLayer;
 	ML_wrapper::getGlobalGameWrapper()->getImageHolder().changeSpriteLayer(usedTexture, imageId, newLayer, layer);

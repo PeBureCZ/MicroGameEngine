@@ -39,7 +39,7 @@ public:
 	void setColor(tsmType::Color_RGBA newColor);
 	void setBold(bool setBold);
 
-	[[nodiscard]] tsmType::Size<int> getTextSize() const noexcept;
+	[[nodiscard]] tsmType::Size<int> getTextSize() const;
 	[[nodiscard]] sf::Text* getTextObject() const noexcept;
 
 	~MlText() = default;

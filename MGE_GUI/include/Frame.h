@@ -41,7 +41,7 @@ public:
 
 	void setRelativeRotation(float newRotation);
 	float getRelativeRotation();
-	void setOrigin(IPoint newOrigin) noexcept;
+	void setOrigin(IPoint newOrigin);
 
 	//to define function which will be call when mouse is over the widget
 	void setOnCursorOver(Callback cursorEnterFunction, Callback cursorLeaveFunction = nullptr);

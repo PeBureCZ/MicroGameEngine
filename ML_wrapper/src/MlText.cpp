@@ -77,7 +77,7 @@ IPoint MlText::getAbsolutePosition()
 	return IPoint();
 }
 
-tsmType::Size<int> MlText::getTextSize() const noexcept
+tsmType::Size<int> MlText::getTextSize() const
 {
 	if (text)
 	{

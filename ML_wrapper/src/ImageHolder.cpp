@@ -147,7 +147,7 @@ void ImageHolder::changeSpriteLayer(const TextureId& textureId, SPRITE_ID imageI
 	return tsmType::Size<int>();
 }
 
-void ImageHolder::setSpriteRotation(SPRITE_ID image, float newRotation, size_t layer) noexcept
+void ImageHolder::setSpriteRotation(SPRITE_ID image, float newRotation, size_t layer)
 {
 	auto findedLayer = sprites.find(layer);
 	if (findedLayer != sprites.end())
@@ -158,7 +158,7 @@ void ImageHolder::setSpriteRotation(SPRITE_ID image, float newRotation, size_t l
 	}
 }
 
-[[nodiscard]] float ImageHolder::getSpriteRotation(SPRITE_ID image, size_t layer) const noexcept
+[[nodiscard]] float ImageHolder::getSpriteRotation(SPRITE_ID image, size_t layer) const
 {
 	auto layerIt = sprites.find(layer);
 	if (layerIt == sprites.end())
@@ -225,7 +225,7 @@ void ImageHolder::removeImage(TextureId textureId, SPRITE_ID spriteId, size_t la
 	removeTexture(std::move(textureId));
 }
 
-[[nodiscard]] const std::optional<const SPRITES*> ImageHolder::getGuiSprites() const noexcept
+[[nodiscard]] const std::optional<const SPRITES*> ImageHolder::getGuiSprites() const
 {
 	auto it = sprites.find(GraphicItemLayer::GUI_LAYER);
 	if (it != sprites.end())

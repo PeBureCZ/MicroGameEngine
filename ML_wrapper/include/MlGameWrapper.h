@@ -62,19 +62,19 @@ namespace ML_wrapper
         void moveMlVerticesPosition(VerticesId id, const FPoint& newPos, std::optional<size_t> knownLayer = std::nullopt);
         [[nodiscard]] std::optional<FPoint> getVericesPosition(VerticesId id, std::optional<size_t> knownLayer = std::nullopt);
 
-        void setMlVerticesRotation(VerticesId id, float newRotation, std::optional<size_t> knownLayer = std::nullopt) noexcept;
-        void setSpriteRotation(VerticesId id, float newRotation, std::optional<size_t> knownLayer = std::nullopt) noexcept;
+        void setMlVerticesRotation(VerticesId id, float newRotation, std::optional<size_t> knownLayer = std::nullopt);
+        void setSpriteRotation(VerticesId id, float newRotation, std::optional<size_t> knownLayer = std::nullopt);
 
         [[nodiscard]] std::optional<LAYER*> getMlGuiObjects() const noexcept;
         [[nodiscard]] tsmType::Size<int> getScreenSize() const noexcept;
 		void moveScreenOffset(FPoint offset) noexcept;
 		void setMaxScreenZoom(double zoomFactor) noexcept;
 		void setMinScreenZoom(double zoomFactor) noexcept;
-		void setZoom(double zoomFactor) noexcept;
+		void setZoom(double zoomFactor);
         [[nodiscard]] double getZoom() const noexcept;
 
-        void setDrawToGuiView() const noexcept;
-        void setDrawToWorldView() const noexcept;
+        void setDrawToGuiView() const;
+        void setDrawToWorldView() const;
 
         ~MlGameWrapper();
 

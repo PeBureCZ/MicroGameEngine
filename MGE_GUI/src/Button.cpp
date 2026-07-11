@@ -35,23 +35,23 @@ void Button::setMouseOverButtonColor(tsmType::Color_RGBA newColor)
 	mouseOverColor = newColor;
 }
 
-void Button::setOnLMBClick(Callback clickFunction)
+void Button::setOnLMBClick(Callback clickFunction) noexcept
 {
 	onLMBClick  = std::move(clickFunction);
 }
 
-void Button::setOnRMBClick(Callback clickFunction)
+void Button::setOnRMBClick(Callback clickFunction) noexcept
 {
 	onRMBClick = std::move(clickFunction);
 }
 
-void Button::onLmbClickCall()
+void Button::onLmbClickCall() noexcept
 {
 	if (onLMBClick)
 		onLMBClick();
 }
 
-void Button::onRmbClickCall()
+void Button::onRmbClickCall() noexcept
 {
 	if (onRMBClick)
 		onRMBClick();
@@ -78,43 +78,57 @@ void Button::setButtonTextColors(tsmType::Color_RGBA defaultColor, tsmType::Colo
 
 void Button::onCursorEnterCall() noexcept
 {
-	if (std::holds_alternative<DrawableObject<float>>(getFrameObject()))
-		setColor(mouseOverColor);
-	if (std::holds_alternative<std::shared_ptr<MlImage>>(getFrameObject())
-		&& selectedTexture.path != UNDEFINED_TEXTURE_PATH)
+	try
 	{
-		setImage(selectedTexture);
-	}
-	else if (std::holds_alternative<std::shared_ptr<MlImage>>(getFrameObject()))
-		setColor(mouseOverColor);
-	if (frameTexts.size() > 0)
-	{
+		if (std::holds_alternative<DrawableObject<float>>(getFrameObject()))
+			setColor(mouseOverColor);
+		if (std::holds_alternative<std::shared_ptr<MlImage>>(getFrameObject())
+			&& selectedTexture.path != UNDEFINED_TEXTURE_PATH)
+		{
+			setImage(selectedTexture);
+		}
+		else if (std::holds_alternative<std::shared_ptr<MlImage>>(getFrameObject()))
+			setColor(mouseOverColor);
+		if (frameTexts.size() > 0)
+		{
 
-		for (auto& text : frameTexts)
-			text.second.setColor(mouseOverTextColor);
+			for (auto& text : frameTexts)
+				text.second.setColor(mouseOverTextColor);
+		}
+		Frame::onCursorEnterCall();
 	}
-	Frame::onCursorEnterCall();
+	catch (...)
+	{
+		_ASSERT(false);
+	}
 }
 
 void Button::onCursorLeaveCall() noexcept
 {
-	if (std::holds_alternative<DrawableObject<float>>(getFrameObject()))
-		setColor(defaultColor);
+	try
+	{
+		if (std::holds_alternative<DrawableObject<float>>(getFrameObject()))
+			setColor(defaultColor);
 
-	if (std::holds_alternative<std::shared_ptr<MlImage>>(getFrameObject())
-		&& selectedTexture.path != UNDEFINED_TEXTURE_PATH
-		&& unselectedTexture.path != UNDEFINED_TEXTURE_PATH)
-	{
-		setImage(unselectedTexture);
+		if (std::holds_alternative<std::shared_ptr<MlImage>>(getFrameObject())
+			&& selectedTexture.path != UNDEFINED_TEXTURE_PATH
+			&& unselectedTexture.path != UNDEFINED_TEXTURE_PATH)
+		{
+			setImage(unselectedTexture);
+		}
+		else if (std::holds_alternative<std::shared_ptr<MlImage>>(getFrameObject()))
+			setColor(defaultColor);
+		if (frameTexts.size() > 0)
+		{
+			for (auto& text : frameTexts)
+				text.second.setColor(defaultTextColor);
+		}
+		Frame::onCursorLeaveCall();
 	}
-	else if (std::holds_alternative<std::shared_ptr<MlImage>>(getFrameObject()))
-		setColor(defaultColor);
-	if (frameTexts.size() > 0)
+	catch (...)
 	{
-		for (auto& text : frameTexts)
-			text.second.setColor(defaultTextColor);
+		_ASSERT(false);
 	}
-	Frame::onCursorLeaveCall();
 }
 
 void Button::setBasicCollision()

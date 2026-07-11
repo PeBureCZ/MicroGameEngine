@@ -60,7 +60,7 @@ void TextFrame::setTextsAlign(GuiAlign align)
 	usedAlign = align;
 }
 
-size_t TextFrame::getAllTextsHeight()
+size_t TextFrame::getAllTextsHeight() noexcept
 {
 	size_t allTextHeight_pxls = 0;
 	for (const auto& text : frameTexts)
@@ -68,24 +68,26 @@ size_t TextFrame::getAllTextsHeight()
 	return allTextHeight_pxls;
 }
 
-void TextFrame::redrawTextFrame()
+void TextFrame::redrawTextFrame() noexcept
 {
 	if (frameTexts.empty())
 		return;
 
-	IPoint actualAbsolutePos_pxls = getAbsolutePosition();
-	actualAbsolutePos_pxls.y += topPadding;
-	actualAbsolutePos_pxls.x += leftPadding;
-
-	switch (usedAlign)
+	try
 	{
+		IPoint actualAbsolutePos_pxls = getAbsolutePosition();
+		actualAbsolutePos_pxls.y += topPadding;
+		actualAbsolutePos_pxls.x += leftPadding;
+
+		switch (usedAlign)
+		{
 		case GuiAlign::TopLeft: break;	//used as default
 		case GuiAlign::TopCenter: _ASSERT(false); break; //not yet
 		case GuiAlign::TopRight: _ASSERT(false); break; //not yet
 		case GuiAlign::MiddleLeft: _ASSERT(false); break; //not yet
 		case GuiAlign::MiddleCenter: _ASSERT(false); break; //not yet
 		case GuiAlign::MiddleRight: _ASSERT(false); break; //not yet
-		case GuiAlign::BottomLeft: 
+		case GuiAlign::BottomLeft:
 		{
 			actualAbsolutePos_pxls.y += getSize().height - static_cast<int>(getAllTextsHeight());
 			break;
@@ -93,11 +95,22 @@ void TextFrame::redrawTextFrame()
 		case GuiAlign::BottomCenter: _ASSERT(false); break; //not yet
 		case GuiAlign::BottomRight: _ASSERT(false); break; //not yet
 		default: {}
-	}
+		}
 
-	for (auto& text : frameTexts)
+		for (auto& text : frameTexts)
+		{
+			text.second.setAbsolutePosition(actualAbsolutePos_pxls);
+			actualAbsolutePos_pxls.y += linePadding_pxls + text.second.getTextSize().height;
+		}
+	}
+#ifdef _DEBUG
+	catch ([[maybe_unused]] const std::exception& e)
 	{
-		text.second.setAbsolutePosition(actualAbsolutePos_pxls);
-		actualAbsolutePos_pxls.y += linePadding_pxls + text.second.getTextSize().height;
+		_ASSERT(false);
+	}
+#endif
+	catch (...)
+	{
+		_ASSERT(false);
 	}
 }

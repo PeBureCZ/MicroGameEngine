@@ -6,7 +6,7 @@ RollMenu::RollMenu(IPoint newPosition, tsmType::Size<int> newSize, std::string t
 	mainButtonText = text;
 }
 
-std::shared_ptr<Button> RollMenu::addRollButton(std::string butText, Callback onLMBClickFunc, Callback onRMBClickFunc) noexcept
+std::shared_ptr<Button> RollMenu::addRollButton(std::string butText, Callback onLMBClickFunc, Callback onRMBClickFunc)
 {
 	getMainButton(); //generate main but if not exist
 
@@ -56,8 +56,15 @@ void RollMenu::setAutoClose(bool newAutoClose) noexcept
 
 void RollMenu::layout() noexcept
 {
-	Frame::layout();
-	generateNewRollMenuCollision();
+	try
+	{
+		Frame::layout();
+		generateNewRollMenuCollision();
+	}
+	catch (...)
+	{
+		_ASSERT(false);
+	}
 }
 
 void RollMenu::onCursorLeaveCall() noexcept
@@ -74,7 +81,7 @@ void RollMenu::onCursorEnterCall() noexcept
 	Frame::onCursorEnterCall();
 }
 
-void RollMenu::openOrCloseMenu(bool open)
+void RollMenu::openOrCloseMenu(bool open) noexcept
 {
 	isRolled = open;
 	for (auto& button : getChildren())

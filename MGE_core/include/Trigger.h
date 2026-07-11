@@ -140,37 +140,51 @@ public:
 
 	void setAbsolutePosition(tsmType::Point<T> newPosition) noexcept
 	{
-		if (std::holds_alternative<tsmShape::Rectangle<T>>(collisionShape))
+		try
 		{
-			auto& shape = std::get<tsmShape::Rectangle<T>>(collisionShape);
-			shape.setShapeAbsolutePosition(newPosition);
+			if (std::holds_alternative<tsmShape::Rectangle<T>>(collisionShape))
+			{
+				auto& shape = std::get<tsmShape::Rectangle<T>>(collisionShape);
+				shape.setShapeAbsolutePosition(newPosition);
+			}
+			else if (std::holds_alternative<tsmShape::Circle<T>>(collisionShape))
+			{
+				auto& shape = std::get<tsmShape::Circle<T>>(collisionShape);
+				shape.setShapeAbsolutePosition(newPosition);
+			}
+			else
+			{
+				_ASSERT(false); //unhandled
+			}
 		}
-		else if (std::holds_alternative<tsmShape::Circle<T>>(collisionShape))
+		catch (...)
 		{
-			auto& shape = std::get<tsmShape::Circle<T>>(collisionShape);
-			shape.setShapeAbsolutePosition(newPosition);
-		}
-		else
-		{
-			_ASSERT(false); //unhandled
+			_ASSERT(false);
 		}
 	}
 
 	[[nodiscard]] tsmType::Point<T> getAbsolutePosition() noexcept
 	{
-		if (std::holds_alternative<tsmShape::Rectangle<T>>(collisionShape))
+		try
 		{
-			tsmShape::Rectangle<T> shape = std::get<tsmShape::Rectangle<T>>(collisionShape);
-			return shape.getPosition();
+			if (std::holds_alternative<tsmShape::Rectangle<T>>(collisionShape))
+			{
+				tsmShape::Rectangle<T> shape = std::get<tsmShape::Rectangle<T>>(collisionShape);
+				return shape.getPosition();
+			}
+			else if (std::holds_alternative<tsmShape::Rectangle<T>>(collisionShape))
+			{
+				tsmShape::Circle<T> shape = std::get<tsmShape::Circle<T>>(collisionShape);
+				return shape.getPosition();
+			}
+			else
+			{
+				_ASSERT(false); //unhandled
+			}
 		}
-		else if (std::holds_alternative<tsmShape::Rectangle<T>>(collisionShape))
+		catch (...)
 		{
-			tsmShape::Circle<T> shape = std::get<tsmShape::Circle<T>>(collisionShape);
-			return shape.getPosition();
-		}
-		else
-		{
-			_ASSERT(false); //unhandled
+			_ASSERT(false);
 		}
 		return tsmType::Point<T>();
 	}
@@ -182,19 +196,28 @@ public:
 
 	[[nodiscard]] float getRotation() const noexcept
 	{
-		return std::visit([&](const auto& usedShape) -> float
-			{
-				using ShapeType = std::decay_t<decltype(usedShape)>;
-
-				if constexpr (std::is_same_v<ShapeType, tsmShape::Rectangle<T>>)
-					return usedShape.getRotation();
-				else
+		try
+		{
+			return std::visit([&](const auto& usedShape) -> float
 				{
-					_ASSERT(false); // unsupported shape
-					return 0.f;
-				}
-			}, collisionShape);
+					using ShapeType = std::decay_t<decltype(usedShape)>;
+
+					if constexpr (std::is_same_v<ShapeType, tsmShape::Rectangle<T>>)
+						return usedShape.getRotation();
+					else
+					{
+						_ASSERT(false); // unsupported shape
+						return 0.f;
+					}
+				}, collisionShape);
+		}
+		catch (...)
+		{}
+
+		_ASSERT(false);
+		return 0.f;
 	}
+
 	void setRotation(float newRotation)
 	{
 		std::visit([&](auto& usedShape)
@@ -329,14 +352,22 @@ public:
 
 	[[nodiscard]] float getBoundTriggerRadius() const noexcept
 	{
-		const auto& shape = boundTrigger.getShape();
-		if (!std::holds_alternative<tsmShape::Circle<float>>(shape))
+		try
 		{
-			_ASSERT(false); //bound trigger should always be circle
-			static float dummyRadius = 0.f; //to avoid warning, this line should never be reached
-			return dummyRadius; //to avoid warning, this line should never be reached
+			const auto& shape = boundTrigger.getShape();
+			if (!std::holds_alternative<tsmShape::Circle<float>>(shape))
+			{
+				_ASSERT(false); //bound trigger should always be circle
+				static float dummyRadius = 0.f; //to avoid warning, this line should never be reached
+				return dummyRadius; //to avoid warning, this line should never be reached
+			}
+			return std::get<tsmShape::Circle<float>>(shape).getRadius();
 		}
-		return std::get<tsmShape::Circle<float>>(shape).getRadius();
+		catch (...)
+		{
+			_ASSERT(false);
+		}
+		return 0.f;
 	}
 
 	virtual ~CollisionComponent() = default;
@@ -480,38 +511,45 @@ private:
 
 	void recalculateCellIds()
 	{
-		occupiedCells.clear();
-		occupiedCells.emplace_back(CollisionSystem::getCellIdForPosition(origin)); //get cell id for current position
-		float r = getBoundTriggerRadius();
+		try
+		{
+			occupiedCells.clear();
+			occupiedCells.emplace_back(CollisionSystem::getCellIdForPosition(origin)); //get cell id for current position
+			float r = getBoundTriggerRadius();
 
-		//todo: uncompleted solution, currently only consider 8 cells around the center cell
-		_ASSERT(r <= CollisionSystem::getCellSize().height && r <= CollisionSystem::getCellSize().width);
+			//todo: uncompleted solution, currently only consider 8 cells around the center cell
+			_ASSERT(r <= CollisionSystem::getCellSize().height && r <= CollisionSystem::getCellSize().width);
 
-		auto addCellIdIfNotExists = [&](const CellId& id)
-			{
-				if (std::find(occupiedCells.begin(), occupiedCells.end(), id) == occupiedCells.end())
-					occupiedCells.push_back(id);
-			};
+			auto addCellIdIfNotExists = [&](const CellId& id)
+				{
+					if (std::find(occupiedCells.begin(), occupiedCells.end(), id) == occupiedCells.end())
+						occupiedCells.push_back(id);
+				};
 
-		auto leftMiddleId = CollisionSystem::getCellIdForPosition(origin + FPoint(-r, 0.f));
-		addCellIdIfNotExists(leftMiddleId);
-		auto rightMiddleId = CollisionSystem::getCellIdForPosition(origin + FPoint(r, 0.f));
-		addCellIdIfNotExists(rightMiddleId);
-		auto upMiddleId = CollisionSystem::getCellIdForPosition(origin + FPoint(0.f, -r));
-		addCellIdIfNotExists(upMiddleId);
-		auto downMiddleId = CollisionSystem::getCellIdForPosition(origin + FPoint(0.f, r));
-		addCellIdIfNotExists(downMiddleId);
+			auto leftMiddleId = CollisionSystem::getCellIdForPosition(origin + FPoint(-r, 0.f));
+			addCellIdIfNotExists(leftMiddleId);
+			auto rightMiddleId = CollisionSystem::getCellIdForPosition(origin + FPoint(r, 0.f));
+			addCellIdIfNotExists(rightMiddleId);
+			auto upMiddleId = CollisionSystem::getCellIdForPosition(origin + FPoint(0.f, -r));
+			addCellIdIfNotExists(upMiddleId);
+			auto downMiddleId = CollisionSystem::getCellIdForPosition(origin + FPoint(0.f, r));
+			addCellIdIfNotExists(downMiddleId);
 
-		float diag = r / std::sqrt(2.0f);
+			float diag = r / std::sqrt(2.0f);
 
-		auto leftUpId = CollisionSystem::getCellIdForPosition(origin + FPoint(-diag, -diag));
-		addCellIdIfNotExists(leftUpId);
-		auto rightUpId = CollisionSystem::getCellIdForPosition(origin + FPoint(diag, -diag));
-		addCellIdIfNotExists(rightUpId);
-		auto leftDownId = CollisionSystem::getCellIdForPosition(origin + FPoint(-diag, diag));
-		addCellIdIfNotExists(leftDownId);
-		auto rightDownId = CollisionSystem::getCellIdForPosition(origin + FPoint(diag, diag));
-		addCellIdIfNotExists(rightDownId);
+			auto leftUpId = CollisionSystem::getCellIdForPosition(origin + FPoint(-diag, -diag));
+			addCellIdIfNotExists(leftUpId);
+			auto rightUpId = CollisionSystem::getCellIdForPosition(origin + FPoint(diag, -diag));
+			addCellIdIfNotExists(rightUpId);
+			auto leftDownId = CollisionSystem::getCellIdForPosition(origin + FPoint(-diag, diag));
+			addCellIdIfNotExists(leftDownId);
+			auto rightDownId = CollisionSystem::getCellIdForPosition(origin + FPoint(diag, diag));
+			addCellIdIfNotExists(rightDownId);
+		}
+		catch (...)
+		{
+			_ASSERT(false);
+		}
 	}
 
 	std::vector<CellId> occupiedCells;

@@ -37,7 +37,7 @@ void Widget::addChild(std::shared_ptr<Widget> child) noexcept
 	children.push_back(std::move(child));
 }
 
-bool Widget::removeChildFromWidget(WidgetId childId) noexcept
+bool Widget::removeChildFromWidget(WidgetId childId)
 {
 	for (auto it = children.begin(); it != children.end(); ++it)
 	{
@@ -101,8 +101,15 @@ tsmType::Size<int> Widget::getSize() const noexcept
 
 void Widget::layout() noexcept
 {
-	for (auto& child : getChildren()) //to call layout in children
-		child->layout();
+	try
+	{
+		for (auto& child : getChildren()) //to call layout in children
+			child->layout();
+	}
+	catch (...)
+	{
+		_ASSERT(false);
+	}
 }
 
 WidgetId Widget::getWidgetId() const noexcept

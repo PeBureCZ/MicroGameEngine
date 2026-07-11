@@ -119,7 +119,7 @@ namespace ML_wrapper
         return std::nullopt;
     }
 
-    void MlGameWrapper::setMlVerticesRotation(VerticesId id, float newRotation, std::optional<size_t> knownLayer) noexcept
+    void MlGameWrapper::setMlVerticesRotation(VerticesId id, float newRotation, std::optional<size_t> knownLayer)
     {
         bool checkLayerNum = (knownLayer.has_value()) ? true : false;
         for (const auto& [layerNum, Layer] : mlVerticesLayers)
@@ -137,7 +137,7 @@ namespace ML_wrapper
         _ASSERT(false); //wrong it management
     }
 
-    void MlGameWrapper::setSpriteRotation(VerticesId id, float newRotation, std::optional<size_t> knownLayer) noexcept
+    void MlGameWrapper::setSpriteRotation(VerticesId id, float newRotation, std::optional<size_t> knownLayer)
     {
         bool checkLayerNum = (knownLayer.has_value()) ? true : false;
         for (const auto& [layerNum, Layer] : mlVerticesLayers)
@@ -212,7 +212,7 @@ namespace ML_wrapper
 			minZoom = zoomFactor;
     }
 
-    void MlGameWrapper::setZoom(double zoomFactor) noexcept
+    void MlGameWrapper::setZoom(double zoomFactor)
     {
         if (zoomFactor > 0.0 && zoomFactor <= maxZoom && zoomFactor >= minZoom)
         {
@@ -311,14 +311,14 @@ namespace ML_wrapper
             return;
     }
 
-    void MlGameWrapper::setDrawToGuiView() const noexcept
+    void MlGameWrapper::setDrawToGuiView() const
     {
         _ASSERT(mainWindow);
         if (mainWindow)
             mainWindow->setView(guiView);
     }
 
-    void MlGameWrapper::setDrawToWorldView() const noexcept
+    void MlGameWrapper::setDrawToWorldView() const
     {
         _ASSERT(mainWindow);
         if (mainWindow)

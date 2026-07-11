@@ -142,7 +142,7 @@ float Frame::getRelativeRotation()
 	return {0.f};
 }
 
-void Frame::setOrigin(IPoint newOrigin) noexcept
+void Frame::setOrigin(IPoint newOrigin)
 {
 	if (std::holds_alternative<DrawableObject<float>>(frameObject))
 		_ASSERT(false); //not yet
@@ -163,38 +163,54 @@ void Frame::setOnCursorOver(Callback cursorEnterFunction, Callback cursorLeaveFu
 
 void Frame::layout() noexcept
 {
-	auto differencePos = getAbsolutePosition() - lastLayoutAbsolutePosition;
-	lastLayoutAbsolutePosition = getAbsolutePosition();
-
-	if (editCollision().size() > 0)
+	try
 	{
-		for (auto& col : editCollision())
-			col.setAbsolutePosition(col.getAbsolutePosition() + differencePos);
-	}
+		auto differencePos = getAbsolutePosition() - lastLayoutAbsolutePosition;
+		lastLayoutAbsolutePosition = getAbsolutePosition();
 
-	for (auto& text : frameTexts)
-		text.second.setAbsolutePosition(text.second.getAbsolutePosition() + differencePos);
+		if (editCollision().size() > 0)
+		{
+			for (auto& col : editCollision())
+				col.setAbsolutePosition(col.getAbsolutePosition() + differencePos);
+		}
 
-	if (std::holds_alternative<DrawableObject<float>>(frameObject))
-	{
-		auto& obj = std::get<DrawableObject<float>>(frameObject);
-		auto difPos = obj.getPosition() + differencePos.asFloat();
-		obj.setAbsoluteDrawablePosition(difPos.asFloat());
-		ML_wrapper::getGlobalGameWrapper()->moveMlVerticesPosition(getVerticesId(), differencePos.asFloat());
-	}
-	else if (std::holds_alternative<std::shared_ptr<MlImage>>(frameObject))
-	{
-		auto& img = std::get<std::shared_ptr<MlImage>>(frameObject);
-		if (img)
-			img->setImgAbsolutePosition(getAbsolutePosition().asFloat());
-	}
+		for (auto& text : frameTexts)
+			text.second.setAbsolutePosition(text.second.getAbsolutePosition() + differencePos);
+
+		if (std::holds_alternative<DrawableObject<float>>(frameObject))
+		{
+			auto& obj = std::get<DrawableObject<float>>(frameObject);
+			auto difPos = obj.getPosition() + differencePos.asFloat();
+			obj.setAbsoluteDrawablePosition(difPos.asFloat());
+			ML_wrapper::getGlobalGameWrapper()->moveMlVerticesPosition(getVerticesId(), differencePos.asFloat());
+		}
+		else if (std::holds_alternative<std::shared_ptr<MlImage>>(frameObject))
+		{
+			auto& img = std::get<std::shared_ptr<MlImage>>(frameObject);
+			if (img)
+				img->setImgAbsolutePosition(getAbsolutePosition().asFloat());
+		}
+
 #ifdef _DEBUG
-	else if (std::holds_alternative<UNDEFINED_FRAME_OBJECT>(frameObject))
-	{} //nothing to draw
-	else
-		_ASSERT(false); //unhandled
+		else if (std::holds_alternative<UNDEFINED_FRAME_OBJECT>(frameObject))
+		{
+		} //nothing to draw
+		else
+			_ASSERT(false); //unhandled
 #endif // _DEBUG
-	Widget::layout();
+
+		Widget::layout();
+	} //try block end
+#ifdef _DEBUG
+	catch (std::exception& e)
+	{
+		_ASSERT(false);
+	}
+#endif
+	catch (...)
+	{
+		_ASSERT(false);
+	}
 }
 
 void Frame::onCursorEnterCall() noexcept

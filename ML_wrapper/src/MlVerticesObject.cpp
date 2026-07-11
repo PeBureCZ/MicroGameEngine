@@ -8,14 +8,14 @@ MlVerticesObject::MlVerticesObject()
     batch.setPrimitiveType(sf::PrimitiveType::Triangles);
 }
 
-void MlVerticesObject::addObjects(std::vector <DrawableObject<float>> content) noexcept
+void MlVerticesObject::addObjects(std::vector <DrawableObject<float>> content)
 {
     sf::VertexArray convertedShapes = ShapeInterpreter::convertRectangleToVertices(content);
     for (size_t i = 0; i < convertedShapes.getVertexCount(); ++i)
         batch.append(convertedShapes[i]);
 }
 
-void MlVerticesObject::addObjects(sf::VertexArray content) noexcept
+void MlVerticesObject::addObjects(sf::VertexArray content)
 {
     for (size_t i = 0; i < content.getVertexCount(); ++i)
 		batch.append(content[i]);
@@ -57,7 +57,7 @@ void MlVerticesObject::setPosition(const FPoint& newPosition)
     return batch;
 }
 
-void MlVerticesObject::setColor(tsmType::Color_RGBA newColor) noexcept
+void MlVerticesObject::setColor(tsmType::Color_RGBA newColor)
 {
     sf::Color color(newColor.r, newColor.g, newColor.b, newColor.a);
     for (size_t i = 0; i < batch.getVertexCount(); ++i)
@@ -71,7 +71,7 @@ void MlVerticesObject::setColor(tsmType::Color_RGBA newColor) noexcept
     return tsmType::Color_RGBA();
 }
 
-void MlVerticesObject::moveAbsolutePosition(const FPoint& newPos) noexcept
+void MlVerticesObject::moveAbsolutePosition(const FPoint& newPos)
 {
     absolutePositionOffset += newPos;
     state.transform.translate(sf::Vector2f(newPos.x, newPos.y));

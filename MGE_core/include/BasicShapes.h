@@ -104,7 +104,8 @@ namespace tsmShape
 			radius = newRadius;
 		};
 
-		T getRadius() const { return radius; }
+		T getRadius() const noexcept
+		{ return radius; }
 	};
 }
 

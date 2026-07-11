@@ -18,8 +18,8 @@ private:
 public:
     MlVerticesObject();
 
-    void addObjects(std::vector <DrawableObject<float>> content) noexcept;
-    void addObjects(sf::VertexArray content) noexcept;
+    void addObjects(std::vector <DrawableObject<float>> content);
+    void addObjects(sf::VertexArray content);
     [[nodiscard]] VerticesId getUniqueId() const noexcept;
     void setRotation(float newRotation) noexcept;
     [[nodiscard]] float getRotation() const noexcept;
@@ -28,9 +28,9 @@ public:
     [[nodiscard]] FPoint getPosition() const noexcept; //absolute
 
     [[nodiscard]] const sf::VertexArray& getVertices() const noexcept;
-    void setColor(tsmType::Color_RGBA newColor) noexcept;
+    void setColor(tsmType::Color_RGBA newColor);
     [[nodiscard]] tsmType::Color_RGBA getColor() noexcept;
-    void moveAbsolutePosition(const FPoint& newPos) noexcept;
+    void moveAbsolutePosition(const FPoint& newPos);
 
     [[nodiscard]] const sf::RenderStates& getRenderState() const noexcept;
 };

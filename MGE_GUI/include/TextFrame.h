@@ -33,7 +33,7 @@ private:
 	int topPadding = 0;
 	GuiAlign usedAlign = GuiAlign::TopLeft;
 
-	[[nodiscard]] size_t getAllTextsHeight();
-	void redrawTextFrame();
+	[[nodiscard]] size_t getAllTextsHeight() noexcept;
+	void redrawTextFrame() noexcept;
 };
 

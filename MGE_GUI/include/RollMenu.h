@@ -11,7 +11,7 @@ class RollMenu : public Frame
 public: 
 	RollMenu(IPoint newPosition, tsmType::Size<int> newSize = tsmType::Size<int>(100,60), std::string text = "");
 
-	std::shared_ptr<Button> addRollButton(std::string butText, Callback onLMBClickFunc = nullptr, Callback onRMBClickFunc = nullptr) noexcept;
+	std::shared_ptr<Button> addRollButton(std::string butText, Callback onLMBClickFunc = nullptr, Callback onRMBClickFunc = nullptr);
 	std::shared_ptr<Button> getMainButton();
 
 	void setAutoOpen(bool newAutoOpen) noexcept;
@@ -33,7 +33,7 @@ private:
 	bool autoOpen = false;
 	bool autoClose = true;
 
-	void openOrCloseMenu(bool open);
+	void openOrCloseMenu(bool open) noexcept;
 	void generateNewRollMenuCollision();
 	void onRollMenuLMBClick();
 };

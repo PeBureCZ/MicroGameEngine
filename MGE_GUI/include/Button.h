@@ -27,11 +27,11 @@ public:
 	void setDefaultButtonColor(tsmType::Color_RGBA newColor = DEFAULT_FRAME_COLOR);
 	void setMouseOverButtonColor(tsmType::Color_RGBA newColor = MOUSE_OVER_FRAME_COLOR);
 
-	void setOnLMBClick(Callback clickFunction);
-	void setOnRMBClick(Callback clickFunction);
+	void setOnLMBClick(Callback clickFunction) noexcept;
+	void setOnRMBClick(Callback clickFunction) noexcept;
 
-	void onLmbClickCall();
-	void onRmbClickCall();
+	void onLmbClickCall() noexcept;
+	void onRmbClickCall() noexcept;
 
 	void setButtonTextColors(tsmType::Color_RGBA defaultColor, tsmType::Color_RGBA mouseOverColor);
 

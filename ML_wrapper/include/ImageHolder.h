@@ -42,12 +42,12 @@ public:
 
 	void changeSpriteLayer(const TextureId& textureId, SPRITE_ID imageId, size_t newLayer, size_t oldLayer);
 
-	void setSpriteRotation(SPRITE_ID image, float newRotation, size_t layer) noexcept;
-	[[nodiscard]] float getSpriteRotation(SPRITE_ID image, size_t layer) const noexcept;
+	void setSpriteRotation(SPRITE_ID image, float newRotation, size_t layer);
+	[[nodiscard]] float getSpriteRotation(SPRITE_ID image, size_t layer) const;
 
 	[[nodiscard]] tsmType::Size<int> getTextureSize(TextureId id);
 
-	[[nodiscard]] const std::optional<const SPRITES*> getGuiSprites() const noexcept;
+	[[nodiscard]] const std::optional<const SPRITES*> getGuiSprites() const;
 	[[nodiscard]] const LAYERED_SPRITES& getSprites() const noexcept;
 
 	~ImageHolder();

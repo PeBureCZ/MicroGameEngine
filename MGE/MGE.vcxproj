@@ -136,6 +136,7 @@
   <ItemGroup>
     <ClInclude Include="include\BaseApp.h" />
     <ClInclude Include="include\MgeGui.h" />
+    <ClInclude Include="MgeInstance.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BaseApp.cpp" />

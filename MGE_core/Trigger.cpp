@@ -6,7 +6,7 @@ namespace CollisionSystem
 
 	//use Actor position and cell size to determine which cell the actor belongs to,
 	// then use that cell id to store the collision component of the actor in the corresponding cell of the collision channel
-	CellId getCellIdForPosition(FPoint position) noexcept
+	CellId getCellIdForPosition(const FPoint& position) noexcept
 	{
 		if (g_cellSize.width == 0 || g_cellSize.height == 0)
 		{

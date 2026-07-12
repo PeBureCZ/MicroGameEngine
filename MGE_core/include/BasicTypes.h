@@ -199,6 +199,8 @@ using DPoint = tsmType::Point<double>;
 
 namespace tsmBasic
 {
+	constexpr double PI = 3.14159265358979323846;
+
 	[[nodiscard]] inline float getDistance(const FPoint& pointA, const FPoint& pointB)
 	{
 		tsmType::FLine line(pointA, pointB);
@@ -208,6 +210,24 @@ namespace tsmBasic
 	[[nodiscard]] inline std::string convertFPointToStr(const FPoint& point)
 	{
 		return { std::to_string(point.x) + ":" + std::to_string(point.y)};
+	}
+
+	/**calculate rotation from two points in wolrd or relative coordination*/
+	inline float makeRotation(FPoint pointA, FPoint pointB)
+	{
+		float dx = pointB.x - pointA.x;
+		float dy = pointB.y - pointA.y;
+		float angleRadians = std::atan2(dy, dx);
+		return angleRadians * static_cast<float>(180.0 / PI);
+	}
+
+	[[nodiscard]] inline FPoint getRotatedPointArountPivot(const FPoint& point, const FPoint& pivot, const double angle)
+	{
+		float radian = static_cast<float>(angle * PI / 180.0);
+
+		float newX = round((point.x - pivot.x) * cos(radian) - (point.y - pivot.y) * sin(radian) + pivot.x);
+		float newY = round((point.x - pivot.x) * sin(radian) + (point.y - pivot.y) * cos(radian) + pivot.y);
+		return { newX, newY };
 	}
 
 	/**from format "floatX:floatY"*/

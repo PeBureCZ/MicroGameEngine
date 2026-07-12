@@ -25,10 +25,10 @@ class BaseApp
 {
 public:
 	BaseApp();
-
-	void tickApplication(double deltaTime);
+	
 	bool isRunning() const;
 
+	void runApp();
 	void terminateApplication() noexcept;
 
 	std::shared_ptr< ML_wrapper::MlGameWrapper> getMlGameWrapper();
@@ -39,6 +39,11 @@ protected:
 	virtual void callScreenEvents(SCREEN_EVENTS& events);
 	void setActualScreen(std::shared_ptr<BaseScreen> newScreen);
 
+	/**could be managed in derived*/
+	virtual void onAppTick(double deltaTime);
+	/**could be managed in derived*/
+	virtual void afterAppTick();
+
 	TsmGui gui;
 
 private:
@@ -47,5 +52,6 @@ private:
 	std::shared_ptr<BaseScreen> actualScreen;
 
 	void processMlEvents();
+	void tickApplication(double deltaTime);
 };
 

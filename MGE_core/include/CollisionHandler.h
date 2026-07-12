@@ -21,6 +21,10 @@ public:
 
 	void addElement(std::shared_ptr<CollisionComponent<T>> element)
 	{
+		_ASSERT(element);
+		if (!element)
+			return;
+
 		auto& usedPosition = element->getOrigin();
 		auto cellId = CollisionSystem::getCellIdForPosition(usedPosition);
 
@@ -36,6 +40,10 @@ public:
 
 	void addElement(std::shared_ptr<CollisionComponent<T>> element, const CellId newId)
 	{
+		_ASSERT(element);
+		if (!element)
+			return;
+
 #ifdef _DEBUG
 		auto it = cellsOfCollisions.find(newId);
 		if (it != cellsOfCollisions.end())
@@ -69,7 +77,7 @@ public:
 		return it->second;
 	}
 
-	inline std::vector<CellId> getCellIdsForPosition(FPoint position, float boundRadius) const noexcept
+	inline std::vector<CellId> getCellIdsForPosition(const FPoint& position, float boundRadius) const noexcept
 	{
 		_ASSERT(boundRadius >= 0.f);
 

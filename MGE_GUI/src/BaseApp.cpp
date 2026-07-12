@@ -11,8 +11,20 @@ BaseApp::BaseApp()
     gameIsRunning = true;
 }
 
+void BaseApp::onAppTick(double deltaTime)
+{
+    //could be used in derived classes
+}
+
+void BaseApp::afterAppTick()
+{
+    //could be used in derived classes
+}
+
 void BaseApp::tickApplication(double deltaTime)
 {
+    onAppTick(deltaTime);
+
     if (!sharedMlGameWrapper)
     {
         _ASSERT(false);
@@ -39,6 +51,8 @@ void BaseApp::tickApplication(double deltaTime)
         callScreenEvents(screenEvents);
 
 	sharedMlGameWrapper->displayActualFrame(); //draw everything to main window and display it
+
+    afterAppTick();
 }
 
 void BaseApp::processMlEvents()
@@ -86,6 +100,18 @@ void BaseApp::processMlEvents()
 bool BaseApp::isRunning() const
 {
     return gameIsRunning;
+}
+
+void BaseApp::runApp()
+{
+    std::chrono::duration<double> delta_sec(0.0);
+    while (isRunning())
+    {
+        auto tick_start = std::chrono::high_resolution_clock::now();
+        tickApplication(delta_sec.count());
+        auto tick_end = std::chrono::high_resolution_clock::now();
+        delta_sec = tick_end - tick_start;
+    }
 }
 
 void BaseApp::terminateApplication() noexcept

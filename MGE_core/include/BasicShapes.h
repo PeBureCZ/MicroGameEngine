@@ -99,9 +99,9 @@ namespace tsmShape
 		T radius;
 	public:
 		Circle(tsmType::Point<T> newPosition, T newRadius)
-			: Shape<T>(newPosition, 0.f)
+			: Shape<T>(newPosition, 0.f), radius(newRadius)
 		{
-			radius = newRadius;
+			Shape<T>::type = SHAPE_TYPE::circle;
 		};
 
 		T getRadius() const noexcept

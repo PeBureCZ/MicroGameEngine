@@ -54,9 +54,9 @@ public:
         {
             auto& shape = object.getShape();
             auto color = object.getColor();
-            if (std::holds_alternative<tsmShape::Rectangle<float>>(shape))
+            if (std::holds_alternative<mgeShape::Rectangle<float>>(shape))
             {
-                tsmShape::Rectangle<float> rectanglesFloat = std::get<tsmShape::Rectangle<float>>(shape);
+                mgeShape::Rectangle<float> rectanglesFloat = std::get<mgeShape::Rectangle<float>>(shape);
                 addRect
                 (
                     sf::Vector2f{ rectanglesFloat.getPosition().x, rectanglesFloat.getPosition().y },
@@ -66,7 +66,7 @@ public:
 
                 );
             }
-            else if (std::holds_alternative<tsmShape::Circle<float>>(shape))
+            else if (std::holds_alternative<mgeShape::Circle<float>>(shape))
             {
                 //not yet implemented
             }

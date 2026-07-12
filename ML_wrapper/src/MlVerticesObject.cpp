@@ -57,18 +57,18 @@ void MlVerticesObject::setPosition(const FPoint& newPosition)
     return batch;
 }
 
-void MlVerticesObject::setColor(tsmType::Color_RGBA newColor)
+void MlVerticesObject::setColor(mgeType::Color_RGBA newColor)
 {
     sf::Color color(newColor.r, newColor.g, newColor.b, newColor.a);
     for (size_t i = 0; i < batch.getVertexCount(); ++i)
 		batch[i].color = color;
 }
 
-[[nodiscard]] tsmType::Color_RGBA MlVerticesObject::getColor() noexcept
+[[nodiscard]] mgeType::Color_RGBA MlVerticesObject::getColor() noexcept
 {
     if (batch.getVertexCount() > 0)
-        return tsmType::Color_RGBA(batch[0].color.r, batch[0].color.g, batch[0].color.b, batch[0].color.a);
-    return tsmType::Color_RGBA();
+        return mgeType::Color_RGBA(batch[0].color.r, batch[0].color.g, batch[0].color.b, batch[0].color.a);
+    return mgeType::Color_RGBA();
 }
 
 void MlVerticesObject::moveAbsolutePosition(const FPoint& newPos)

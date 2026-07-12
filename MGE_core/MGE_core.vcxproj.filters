@@ -4,7 +4,7 @@
     <ClCompile Include="src\GlobalFunctions.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="Trigger.cpp">
+    <ClCompile Include="src\Trigger.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -25,6 +25,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\CollisionHandler.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Transform.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

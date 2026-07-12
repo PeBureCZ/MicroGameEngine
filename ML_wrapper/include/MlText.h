@@ -36,10 +36,10 @@ public:
 	void setAbsolutePosition(IPoint newPosition);
 	[[nodiscard]] IPoint getAbsolutePosition();
 
-	void setColor(tsmType::Color_RGBA newColor);
+	void setColor(mgeType::Color_RGBA newColor);
 	void setBold(bool setBold);
 
-	[[nodiscard]] tsmType::Size<int> getTextSize() const;
+	[[nodiscard]] mgeType::Size<int> getTextSize() const;
 	[[nodiscard]] sf::Text* getTextObject() const noexcept;
 
 	~MlText() = default;

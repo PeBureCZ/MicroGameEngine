@@ -1,7 +1,7 @@
 #include "BaseScreen.h"
 
 BaseScreen::BaseScreen(SCREEN_EVENTS eventDeque)
-	: Widget(IPoint(), tsmType::Size<int>())
+	: Widget(IPoint(), mgeType::Size<int>())
 {
 	_ASSERT(eventDeque);
 	mlGameWrapper = ML_wrapper::getGlobalGameWrapper();

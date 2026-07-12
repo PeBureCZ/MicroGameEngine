@@ -13,9 +13,9 @@
 class TextFrame : public Frame
 {
 public:
-	TextFrame(IPoint newPosition = IPoint(0,0), tsmType::Size<int> newSize = tsmType::Size<int>(300,200));
+	TextFrame(IPoint newPosition = IPoint(0,0), mgeType::Size<int> newSize = mgeType::Size<int>(300,200));
 
-	void addTextLine(std::string text, unsigned int textPxlsSize = 8, tsmType::Color_RGBA color = tsmType::Color_RGBA(0,0,0,255), bool bold = false) noexcept;
+	void addTextLine(std::string text, unsigned int textPxlsSize = 8, mgeType::Color_RGBA color = mgeType::Color_RGBA(0,0,0,255), bool bold = false) noexcept;
 
 
 	void setPadding(int leftBorder_pxls, int topBorder_pxls, int betweenTextLine_pxls = 3);

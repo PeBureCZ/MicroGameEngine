@@ -37,15 +37,15 @@ public:
 	void removeGuiImage(TextureId textureId, SPRITE_ID spriteId);
 
 	void setImageAbsolutePosition(SPRITE_ID image, size_t layer, FPoint newPosition = FPoint());
-	void setSpriteColor(SPRITE_ID image, tsmType::Color_RGBA newColor, size_t layer);
-	[[nodiscard]] tsmType::Color_RGBA getSpriteColor(SPRITE_ID image, size_t layer);
+	void setSpriteColor(SPRITE_ID image, mgeType::Color_RGBA newColor, size_t layer);
+	[[nodiscard]] mgeType::Color_RGBA getSpriteColor(SPRITE_ID image, size_t layer);
 
 	void changeSpriteLayer(const TextureId& textureId, SPRITE_ID imageId, size_t newLayer, size_t oldLayer);
 
 	void setSpriteRotation(SPRITE_ID image, float newRotation, size_t layer);
 	[[nodiscard]] float getSpriteRotation(SPRITE_ID image, size_t layer) const;
 
-	[[nodiscard]] tsmType::Size<int> getTextureSize(TextureId id);
+	[[nodiscard]] mgeType::Size<int> getTextureSize(TextureId id);
 
 	[[nodiscard]] const std::optional<const SPRITES*> getGuiSprites() const;
 	[[nodiscard]] const LAYERED_SPRITES& getSprites() const noexcept;

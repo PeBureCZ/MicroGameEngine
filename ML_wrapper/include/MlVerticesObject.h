@@ -28,8 +28,8 @@ public:
     [[nodiscard]] FPoint getPosition() const noexcept; //absolute
 
     [[nodiscard]] const sf::VertexArray& getVertices() const noexcept;
-    void setColor(tsmType::Color_RGBA newColor);
-    [[nodiscard]] tsmType::Color_RGBA getColor() noexcept;
+    void setColor(mgeType::Color_RGBA newColor);
+    [[nodiscard]] mgeType::Color_RGBA getColor() noexcept;
     void moveAbsolutePosition(const FPoint& newPos);
 
     [[nodiscard]] const sf::RenderStates& getRenderState() const noexcept;

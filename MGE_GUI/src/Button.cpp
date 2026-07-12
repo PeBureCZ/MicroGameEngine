@@ -2,7 +2,7 @@
 
 #include "MlText.h"
 
-Button::Button(IPoint newPosition, tsmType::Size<int> newSize)
+Button::Button(IPoint newPosition, mgeType::Size<int> newSize)
 	: Frame(newPosition, newSize)
 	
 {
@@ -23,14 +23,14 @@ Button::Button
 	setBasicCollision();
 }
 
-void Button::setDefaultButtonColor(const tsmType::Color_RGBA& newColor)
+void Button::setDefaultButtonColor(const mgeType::Color_RGBA& newColor)
 {
 	defaultColor = newColor;
 	if (!isUnderCursor())
 		setColor(defaultColor);
 }
 
-void Button::setMouseOverButtonColor(const tsmType::Color_RGBA& newColor)
+void Button::setMouseOverButtonColor(const mgeType::Color_RGBA& newColor)
 {
 	mouseOverColor = newColor;
 	if (isUnderCursor()) 
@@ -59,7 +59,7 @@ void Button::onRmbClickCall() noexcept
 		onRMBClick();
 }
 
-void Button::setButtonTextColors(tsmType::Color_RGBA defaultColor, tsmType::Color_RGBA mouseOverColor)
+void Button::setButtonTextColors(mgeType::Color_RGBA defaultColor, mgeType::Color_RGBA mouseOverColor)
 {
 	defaultTextColor = defaultColor;
 	mouseOverTextColor = mouseOverColor;
@@ -134,6 +134,6 @@ void Button::onCursorLeaveCall() noexcept
 
 void Button::setBasicCollision()
 {
-	editCollision().push_back(Trigger<int>(true, tsmShape::Rectangle<int>(getAbsolutePosition(), getSize())));
+	editCollision().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition(), getSize())));
 	_ASSERT(editCollision().size() == 1);
 }

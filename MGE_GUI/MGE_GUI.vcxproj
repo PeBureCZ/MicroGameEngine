@@ -148,7 +148,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\BaseApp.h" />
     <ClInclude Include="include\BaseScreen.h" />
     <ClInclude Include="include\Button.h" />
     <ClInclude Include="include\Frame.h" />
@@ -156,17 +155,14 @@
     <ClInclude Include="include\RollMenu.h" />
     <ClInclude Include="include\ScreenEvent.h" />
     <ClInclude Include="include\TextFrame.h" />
-    <ClInclude Include="include\TsmGui.h" />
     <ClInclude Include="include\Widget.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\BaseApp.cpp" />
     <ClCompile Include="src\BaseScreen.cpp" />
     <ClCompile Include="src\Button.cpp" />
     <ClCompile Include="src\Frame.cpp" />
     <ClCompile Include="src\RollMenu.cpp" />
     <ClCompile Include="src\TextFrame.cpp" />
-    <ClCompile Include="src\TsmGui.cpp" />
     <ClCompile Include="src\Widget.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

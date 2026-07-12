@@ -10,10 +10,10 @@
 
 
 
-Frame::Frame(IPoint newPosition, tsmType::Size<int> newSize)
+Frame::Frame(IPoint newPosition, mgeType::Size<int> newSize)
 	: Widget(newPosition, newSize)
 {
-	DrawableObject<float> drawable = DrawableObject<float>(tsmShape::Rectangle<float>(newPosition.asFloat(), tsmType::Size<float>((float)newSize.width, (float)newSize.height)), tsmType::Color_RGBA(100, 100, 100, 150));
+	DrawableObject<float> drawable = DrawableObject<float>(mgeShape::Rectangle<float>(newPosition.asFloat(), mgeType::Size<float>((float)newSize.width, (float)newSize.height)), mgeType::Color_RGBA(100, 100, 100, 150));
 	frameObject = drawable;
 	auto newWidgetVertices = std::make_unique<MlVerticesObject>();
 	newWidgetVertices->addObjects({ drawable });
@@ -22,11 +22,11 @@ Frame::Frame(IPoint newPosition, tsmType::Size<int> newSize)
 }
 
 Frame::Frame(IPoint newPosition, TextureId textureId)
-	: Widget(newPosition, tsmType::Size<int>())
+	: Widget(newPosition, mgeType::Size<int>())
 {
 	auto image = std::make_shared<MlImage>(std::move(textureId), GraphicItemLayer::GUI_LAYER, newPosition.asFloat());
 	ML_wrapper::getGlobalGameWrapper()->getImageHolder().appendGuiImage(*image, newPosition.asFloat());
-	setSize(tsmType::Size<int>(ML_wrapper::getGlobalGameWrapper()->getImageHolder().getTextureSize(image->getTextureID())));
+	setSize(mgeType::Size<int>(ML_wrapper::getGlobalGameWrapper()->getImageHolder().getTextureSize(image->getTextureID())));
 	frameObject = std::move(image);
 }
 
@@ -34,9 +34,9 @@ void Frame::setImage(TextureId textureId)
 {
 	auto image = std::make_shared<MlImage>(std::move(textureId), GraphicItemLayer::GUI_LAYER, getAbsolutePosition().asFloat());
 	ML_wrapper::getGlobalGameWrapper()->getImageHolder().appendGuiImage(*image, getAbsolutePosition().asFloat());
-	setSize(tsmType::Size<int>(ML_wrapper::getGlobalGameWrapper()->getImageHolder().getTextureSize(image->getTextureID())));
+	setSize(mgeType::Size<int>(ML_wrapper::getGlobalGameWrapper()->getImageHolder().getTextureSize(image->getTextureID())));
 	editCollision().clear();
-	editCollision().push_back(Trigger<int>(true, tsmShape::Rectangle<int>(getAbsolutePosition(), getSize())));
+	editCollision().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition(), getSize())));
 	frameObject = std::move(image);
 }
 
@@ -62,7 +62,7 @@ void Frame::addCollision(Trigger<int> addedCollision)
 	collisions.push_back(std::move(addedCollision));
 }
 
-void Frame::setColor(tsmType::Color_RGBA newColor)
+void Frame::setColor(mgeType::Color_RGBA newColor)
 {
 	if (std::holds_alternative<DrawableObject<float>>(frameObject))
 	{
@@ -239,7 +239,7 @@ bool Frame::isUnderCursor() const noexcept
 	return isUnderMouseCursor;
 }
 
-IPoint Frame::getAlignedPosition(GuiAlign align, tsmType::Size<int> objectSize)
+IPoint Frame::getAlignedPosition(GuiAlign align, mgeType::Size<int> objectSize)
 {
 	IPoint framePos = getAbsolutePosition();
 	auto frameSize = getSize();

@@ -24,7 +24,7 @@ using FRAME_OBJECT = std::variant<UNDEFINED_FRAME_OBJECT, DrawableObject<float>,
 class Frame : public Widget
 {
 public:
-	Frame(IPoint newPosition, tsmType::Size<int> newSize);
+	Frame(IPoint newPosition, mgeType::Size<int> newSize);
 	Frame(IPoint newPosition, TextureId textureId);
 
 	void setImage(TextureId textureId);
@@ -33,7 +33,7 @@ public:
 	[[nodiscard]] const std::vector<Trigger<int>>& getCollision() const noexcept;
 	void addCollision(Trigger<int> addedCollision);
 
-	void setColor(tsmType::Color_RGBA newColor);
+	void setColor(mgeType::Color_RGBA newColor);
 	[[nodiscard]] const FRAME_OBJECT& getFrameObject() const noexcept;
 	[[nodiscard]] VerticesId getVerticesId() const noexcept;
 	void addTextToFrame(MlText newText, GuiAlign align = GuiAlign::MiddleCenter);
@@ -70,6 +70,6 @@ private:
 	std::function<void()> onCursorEnter = nullptr;
 	std::function<void()> onCursorLeave = nullptr;
 
-	IPoint getAlignedPosition(GuiAlign align, tsmType::Size<int> objectSize);
+	IPoint getAlignedPosition(GuiAlign align, mgeType::Size<int> objectSize);
 };
 

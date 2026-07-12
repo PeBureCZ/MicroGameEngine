@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\GlobalFunctions.cpp" />
-    <ClCompile Include="Trigger.cpp" />
+    <ClCompile Include="src\Trigger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BasicShapes.h" />
@@ -28,6 +28,7 @@
     <ClInclude Include="include\CollisionHandler.h" />
     <ClInclude Include="include\EventTable.h" />
     <ClInclude Include="include\GlobalFunctions.h" />
+    <ClInclude Include="include\Transform.h" />
     <ClInclude Include="include\Trigger.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

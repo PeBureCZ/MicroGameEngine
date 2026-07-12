@@ -14,7 +14,7 @@ class Widget
 {
 public:
 	WidgetId getWidgetId()  const noexcept;
-	Widget(IPoint newPosition, tsmType::Size<int> newSize);
+	Widget(IPoint newPosition, mgeType::Size<int> newSize);
 
 
 	void setRelativePosition(IPoint newPosition, bool makeLayout = true) noexcept;
@@ -26,7 +26,7 @@ public:
 	[[nodiscard]] std::vector<std::shared_ptr<Widget>>& editChildren() noexcept;
 	[[nodiscard]] const std::shared_ptr<Widget> getParent() const noexcept;
 
-	tsmType::Size<int> getSize() const noexcept;
+	mgeType::Size<int> getSize() const noexcept;
 
 	void setIsVisible(bool visible) noexcept;
 	[[nodiscard]] bool getIsVisible() const noexcept;
@@ -39,7 +39,7 @@ public:
 	virtual ~Widget() = default;
 protected:
 	std::weak_ptr<Widget> getSelfPtr() const noexcept;
-	void setSize(tsmType::Size<int> newSize);
+	void setSize(mgeType::Size<int> newSize);
 
 	IPoint lastLayoutAbsolutePosition;
 
@@ -48,7 +48,7 @@ private:
 	std::weak_ptr<Widget> parent;
 	std::vector<std::shared_ptr<Widget>> children;
 	IPoint relativePosition;
-	tsmType::Size<int> size;
+	mgeType::Size<int> size;
 	bool isVisible = true;
 };
 

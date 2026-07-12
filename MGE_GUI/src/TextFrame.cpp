@@ -4,13 +4,13 @@
 
 #include "GuiDependencies.h"
 
-TextFrame::TextFrame(IPoint newPosition, tsmType::Size<int> newSize)
+TextFrame::TextFrame(IPoint newPosition, mgeType::Size<int> newSize)
 	: Frame(newPosition, newSize)
 {
 
 }
 
-void TextFrame::addTextLine(std::string text, unsigned int textPxlsSize, tsmType::Color_RGBA color, bool bold) noexcept
+void TextFrame::addTextLine(std::string text, unsigned int textPxlsSize, mgeType::Color_RGBA color, bool bold) noexcept
 {
 	auto newText = ML_wrapper::getGlobalGameWrapper()->createText(std::move(text), textPxlsSize, bold);
 	if (newText.has_value())

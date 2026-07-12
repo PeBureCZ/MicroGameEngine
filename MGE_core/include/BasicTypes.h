@@ -7,9 +7,8 @@
 #include <charconv>
 #include <type_traits>
 
-namespace tsmType
+namespace mgeType
 {
-
 	struct Color_RGBA
 	{
 		unsigned char r;
@@ -193,9 +192,9 @@ namespace tsmType
 	};
 }
 
-using FPoint = tsmType::Point<float>;
-using IPoint = tsmType::Point<int>;
-using DPoint = tsmType::Point<double>;
+using FPoint = mgeType::Point<float>;
+using IPoint = mgeType::Point<int>;
+using DPoint = mgeType::Point<double>;
 
 namespace tsmBasic
 {
@@ -203,7 +202,7 @@ namespace tsmBasic
 
 	[[nodiscard]] inline float getDistance(const FPoint& pointA, const FPoint& pointB)
 	{
-		tsmType::FLine line(pointA, pointB);
+		mgeType::FLine line(pointA, pointB);
 		return line.length();
 	}
 

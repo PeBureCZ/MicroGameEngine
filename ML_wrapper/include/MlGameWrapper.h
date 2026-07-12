@@ -56,7 +56,7 @@ namespace ML_wrapper
         [[nodiscard]] ImageHolder& getImageHolder() noexcept;
         [[nodiscard]] VerticesId addMlVerticesObject(size_t layer, std::unique_ptr<MlVerticesObject> newWidget);
 
-        void setMlVerticesColor(VerticesId id, tsmType::Color_RGBA newColor, std::optional<size_t> knownLayer = std::nullopt);
+        void setMlVerticesColor(VerticesId id, mgeType::Color_RGBA newColor, std::optional<size_t> knownLayer = std::nullopt);
         void setMlVerticesLayer(VerticesId id, size_t newLayer, std::optional<size_t> knownLayer = std::nullopt);
         void setMlVerticesPosition(VerticesId id, const FPoint& newPos, std::optional<size_t> knownLayer = std::nullopt);
         void moveMlVerticesPosition(VerticesId id, const FPoint& newPos, std::optional<size_t> knownLayer = std::nullopt);
@@ -66,7 +66,7 @@ namespace ML_wrapper
         void setSpriteRotation(VerticesId id, float newRotation, std::optional<size_t> knownLayer = std::nullopt);
 
         [[nodiscard]] std::optional<LAYER*> getMlGuiObjects() const noexcept;
-        [[nodiscard]] tsmType::Size<int> getScreenSize() const noexcept;
+        [[nodiscard]] mgeType::Size<int> getScreenSize() const noexcept;
 		void moveScreenOffset(FPoint offset) noexcept;
 		void setMaxScreenZoom(double zoomFactor) noexcept;
 		void setMinScreenZoom(double zoomFactor) noexcept;

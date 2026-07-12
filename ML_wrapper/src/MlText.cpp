@@ -51,7 +51,7 @@ void MlText::setAbsolutePosition(IPoint newPosition)
 		{_ASSERT(false); }//text not created
 }
 
-void MlText::setColor(tsmType::Color_RGBA newColor)
+void MlText::setColor(mgeType::Color_RGBA newColor)
 {
 	if (text)
 		text->setFillColor(sf::Color(newColor.r, newColor.g, newColor.b, newColor.a));
@@ -77,18 +77,18 @@ IPoint MlText::getAbsolutePosition()
 	return IPoint();
 }
 
-tsmType::Size<int> MlText::getTextSize() const
+mgeType::Size<int> MlText::getTextSize() const
 {
 	if (text)
 	{
 		auto charSize = text->getCharacterSize();
 		auto bounds = text->getLocalBounds();
-		return tsmType::Size<int>(static_cast<int>(bounds.size.x), static_cast<int>(charSize));
+		return mgeType::Size<int>(static_cast<int>(bounds.size.x), static_cast<int>(charSize));
 	}
 	else
 	{ //text not created
 		_ASSERT(false);
-		return tsmType::Size<int>(0, 0);
+		return mgeType::Size<int>(0, 0);
 	} 
 }
 

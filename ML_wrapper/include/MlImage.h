@@ -17,7 +17,7 @@ using uPtr_MlImage = std::unique_ptr<MlImage>;
 class MlImage
 {
 private:
-	tsmType::Size<int> size;
+	mgeType::Size<int> size;
 	SPRITE_ID imageId = 0;
 	TextureId usedTexture = {};
 	FPoint absolutePosition;
@@ -31,10 +31,10 @@ public:
 	MlImage& operator= (const MlImage& other);
 	MlImage& operator= (MlImage&& other);
 
-	[[nodiscard]] tsmType::Size<int> getSize() const noexcept;
+	[[nodiscard]] mgeType::Size<int> getSize() const noexcept;
 
 	void setImgAbsolutePosition(FPoint newPosition);
-	void setColor(tsmType::Color_RGBA& newColor) const;
+	void setColor(mgeType::Color_RGBA& newColor) const;
 	void setVisible(bool visible) const;
 
 	void setRotation(float newRotation) const;

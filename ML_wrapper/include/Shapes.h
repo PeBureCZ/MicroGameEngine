@@ -3,14 +3,14 @@
 
 #include "basicTypes.h"
 
-namespace tsmShape
+namespace mgeShape
 {
 	template<typename T>
 	class Shape
 	{
 	protected:
 		float rotation = 0.0f; // in degrees
-		tsmType::Point<T> position = { 0.0f, 0.0f };
+		mgeType::Point<T> position = { 0.0f, 0.0f };
 	public:
 		virtual ~Shape() = default;
 	};

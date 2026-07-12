@@ -25,7 +25,7 @@ MlImage::MlImage(const MlImage& other)
 	size = ML_wrapper::getGlobalGameWrapper()->getImageHolder().getTextureSize(usedTexture);
 }
 
-tsmType::Size<int> MlImage::getSize() const noexcept
+mgeType::Size<int> MlImage::getSize() const noexcept
 {
 	_ASSERT(size.width != 0 && size.height != 0);
 	return size;
@@ -81,7 +81,7 @@ TextureId MlImage::getTextureID() const noexcept
 	return usedTexture;
 }
 
-void MlImage::setColor(tsmType::Color_RGBA& newColor) const
+void MlImage::setColor(mgeType::Color_RGBA& newColor) const
 {
 	ML_wrapper::getGlobalGameWrapper()->getImageHolder().setSpriteColor(imageId, newColor, layer);
 }

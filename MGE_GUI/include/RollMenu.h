@@ -9,7 +9,7 @@
 class RollMenu : public Frame
 {
 public: 
-	RollMenu(IPoint newPosition, tsmType::Size<int> newSize = tsmType::Size<int>(100,60), std::string text = "");
+	RollMenu(IPoint newPosition, mgeType::Size<int> newSize = mgeType::Size<int>(100,60), std::string text = "");
 
 	std::shared_ptr<Button> addRollButton(std::string butText, Callback onLMBClickFunc = nullptr, Callback onRMBClickFunc = nullptr);
 	std::shared_ptr<Button> getMainButton();

@@ -47,8 +47,8 @@ namespace CollisionSystem
 	//use Actor position and cell size to determine which cell the actor belongs to,
 	// then use that cell id to store the collision component of the actor in the corresponding cell of the collision channel
 	CellId getCellIdForPosition(const FPoint& position) noexcept;
-	void setCellSize(tsmType::Size<size_t> newCellSize) noexcept;
-	tsmType::Size<size_t> getCellSize() noexcept;
+	void setCellSize(mgeType::Size<size_t> newCellSize) noexcept;
+	mgeType::Size<size_t> getCellSize() noexcept;
 }
 
 template<typename T>
@@ -59,9 +59,9 @@ public:
 		: collisionShape(std::move(usedShape)),
 		isEnabled(enabled)
 	{
-		if (std::holds_alternative<tsmShape::Rectangle<T>>(collisionShape))
+		if (std::holds_alternative<mgeShape::Rectangle<T>>(collisionShape))
 			type = SHAPE_TYPE::box;
-		else if (std::holds_alternative<tsmShape::Circle<T>>(collisionShape))
+		else if (std::holds_alternative<mgeShape::Circle<T>>(collisionShape))
 			type = SHAPE_TYPE::circle;
 		else 
 		{
@@ -69,14 +69,14 @@ public:
 		}
 	}
 
-	[[nodiscard]] bool isPointInside(const tsmType::Point<T>& absolutePosition) const noexcept
+	[[nodiscard]] bool isPointInside(const mgeType::Point<T>& absolutePosition) const noexcept
 	{
 		if (!isEnabled)
 			return false;
 
-		if (std::holds_alternative<tsmShape::Rectangle<T>>(collisionShape))
+		if (std::holds_alternative<mgeShape::Rectangle<T>>(collisionShape))
 		{
-			auto& usedShape = std::get<tsmShape::Rectangle<T>>(collisionShape);
+			auto& usedShape = std::get<mgeShape::Rectangle<T>>(collisionShape);
 			const auto pos = usedShape.getPosition();
 			const auto size = usedShape.getSize();
 
@@ -99,9 +99,9 @@ public:
 				rotatedY >= static_cast<T>(0) &&
 				rotatedY <= size.height;
 		}
-		else if (std::holds_alternative<tsmShape::Circle<T>>(collisionShape))
+		else if (std::holds_alternative<mgeShape::Circle<T>>(collisionShape))
 		{
-			auto& usedShape = std::get<tsmShape::Circle<T>>(collisionShape);
+			auto& usedShape = std::get<mgeShape::Circle<T>>(collisionShape);
 			const auto pos = usedShape.getPosition();
 			const auto radius = usedShape.getRadius();
 			const T dx = absolutePosition.x - pos.x;
@@ -138,18 +138,18 @@ public:
 		isEnabled = enabled;
 	}
 
-	void setAbsolutePosition(tsmType::Point<T> newPosition) noexcept
+	void setAbsolutePosition(mgeType::Point<T> newPosition) noexcept
 	{
 		try
 		{
-			if (std::holds_alternative<tsmShape::Rectangle<T>>(collisionShape))
+			if (std::holds_alternative<mgeShape::Rectangle<T>>(collisionShape))
 			{
-				auto& shape = std::get<tsmShape::Rectangle<T>>(collisionShape);
+				auto& shape = std::get<mgeShape::Rectangle<T>>(collisionShape);
 				shape.setShapeAbsolutePosition(newPosition);
 			}
-			else if (std::holds_alternative<tsmShape::Circle<T>>(collisionShape))
+			else if (std::holds_alternative<mgeShape::Circle<T>>(collisionShape))
 			{
-				auto& shape = std::get<tsmShape::Circle<T>>(collisionShape);
+				auto& shape = std::get<mgeShape::Circle<T>>(collisionShape);
 				shape.setShapeAbsolutePosition(newPosition);
 			}
 			else
@@ -163,18 +163,18 @@ public:
 		}
 	}
 
-	[[nodiscard]] tsmType::Point<T> getAbsolutePosition() noexcept
+	[[nodiscard]] mgeType::Point<T> getAbsolutePosition() noexcept
 	{
 		try
 		{
-			if (std::holds_alternative<tsmShape::Rectangle<T>>(collisionShape))
+			if (std::holds_alternative<mgeShape::Rectangle<T>>(collisionShape))
 			{
-				tsmShape::Rectangle<T> shape = std::get<tsmShape::Rectangle<T>>(collisionShape);
+				mgeShape::Rectangle<T> shape = std::get<mgeShape::Rectangle<T>>(collisionShape);
 				return shape.getPosition();
 			}
-			else if (std::holds_alternative<tsmShape::Rectangle<T>>(collisionShape))
+			else if (std::holds_alternative<mgeShape::Rectangle<T>>(collisionShape))
 			{
-				tsmShape::Circle<T> shape = std::get<tsmShape::Circle<T>>(collisionShape);
+				mgeShape::Circle<T> shape = std::get<mgeShape::Circle<T>>(collisionShape);
 				return shape.getPosition();
 			}
 			else
@@ -186,7 +186,7 @@ public:
 		{
 			_ASSERT(false);
 		}
-		return tsmType::Point<T>();
+		return mgeType::Point<T>();
 	}
 
 	[[nodiscard]] bool getEnabled() const noexcept
@@ -202,7 +202,7 @@ public:
 				{
 					using ShapeType = std::decay_t<decltype(usedShape)>;
 
-					if constexpr (std::is_same_v<ShapeType, tsmShape::Rectangle<T>>)
+					if constexpr (std::is_same_v<ShapeType, mgeShape::Rectangle<T>>)
 						return usedShape.getRotation();
 					else
 					{
@@ -224,7 +224,7 @@ public:
 			{
 				using ShapeType = std::decay_t<decltype(usedShape)>;
 
-				if constexpr (std::is_same_v<ShapeType, tsmShape::Rectangle<T>>)
+				if constexpr (std::is_same_v<ShapeType, mgeShape::Rectangle<T>>)
 					usedShape.setRotation(newRotation);
 				else
 				{
@@ -297,14 +297,14 @@ public:
 		std::vector<FPoint> triggerCenters;
 		for (const auto& trigger : getTriggers())
 		{
-			if (std::holds_alternative<tsmShape::Circle<float>>(trigger->getShape()))
+			if (std::holds_alternative<mgeShape::Circle<float>>(trigger->getShape()))
 			{
-				const auto& circle = std::get<tsmShape::Circle<float>>(trigger->getShape());
+				const auto& circle = std::get<mgeShape::Circle<float>>(trigger->getShape());
 				triggerCenters.push_back(circle.getPosition());
 			}
-			else if (std::holds_alternative<tsmShape::Rectangle<float>>(trigger->getShape()))
+			else if (std::holds_alternative<mgeShape::Rectangle<float>>(trigger->getShape()))
 			{
-				const auto& rect = std::get<tsmShape::Rectangle<float>>(trigger->getShape());
+				const auto& rect = std::get<mgeShape::Rectangle<float>>(trigger->getShape());
 				triggerCenters.push_back(rect.getCenter());
 			}
 			else
@@ -355,13 +355,13 @@ public:
 		try
 		{
 			const auto& shape = boundTrigger.getShape();
-			if (!std::holds_alternative<tsmShape::Circle<float>>(shape))
+			if (!std::holds_alternative<mgeShape::Circle<float>>(shape))
 			{
 				_ASSERT(false); //bound trigger should always be circle
 				static float dummyRadius = 0.f; //to avoid warning, this line should never be reached
 				return dummyRadius; //to avoid warning, this line should never be reached
 			}
-			return std::get<tsmShape::Circle<float>>(shape).getRadius();
+			return std::get<mgeShape::Circle<float>>(shape).getRadius();
 		}
 		catch (...)
 		{
@@ -446,9 +446,9 @@ public:
 			if (trgr->getEnabled())
 			{
 				const auto& shapeOfTrigger = trgr->getShape();
-				if (std::holds_alternative<tsmShape::Rectangle<float>>(shapeOfTrigger))
+				if (std::holds_alternative<mgeShape::Rectangle<float>>(shapeOfTrigger))
 				{
-					const auto& rect = std::get<tsmShape::Rectangle<float>>(shapeOfTrigger);
+					const auto& rect = std::get<mgeShape::Rectangle<float>>(shapeOfTrigger);
 					const auto pos = rect.getPosition();     // top-left
 					const auto size = rect.getSize();
 					const float rot = rect.getRotation();
@@ -460,9 +460,9 @@ public:
 					const float sinA = std::sin(rad);
 
 					// define corners in local space (relative to top-left)
-					std::array<tsmType::Point<float>, 4> corners =
+					std::array<mgeType::Point<float>, 4> corners =
 					{
-						tsmType::Point<float>{0.f, 0.f},
+						mgeType::Point<float>{0.f, 0.f},
 						{size.width, 0.f},
 						{0.f, size.height},
 						{size.width, size.height}
@@ -475,15 +475,15 @@ public:
 						float rotatedY = c.x * sinA + c.y * cosA;
 
 						// move to world space
-						tsmType::Point<float> worldPoint{ pos.x + rotatedX,pos.y + rotatedY };
+						mgeType::Point<float> worldPoint{ pos.x + rotatedX,pos.y + rotatedY };
 
 						float dist = tsmBasic::getDistance(worldPoint, origin);
 						radiusSum = (std::max)(radiusSum, dist);
 					}
 				}
-				else if (std::holds_alternative<tsmShape::Circle<float>>(shapeOfTrigger))
+				else if (std::holds_alternative<mgeShape::Circle<float>>(shapeOfTrigger))
 				{
-					const auto& circle = std::get<tsmShape::Circle<float>>(shapeOfTrigger);
+					const auto& circle = std::get<mgeShape::Circle<float>>(shapeOfTrigger);
 
 					auto dist = tsmBasic::getDistance(circle.getPosition(), origin);
 					dist += circle.getRadius();
@@ -496,13 +496,13 @@ public:
 			}
 		}
 		isBlocking = (radiusSum > 0.f);
-		boundTrigger = Trigger<float>(isBlocking, tsmShape::Circle<float>(tsmType::Point<float>(origin), radiusSum));
+		boundTrigger = Trigger<float>(isBlocking, mgeShape::Circle<float>(mgeType::Point<float>(origin), radiusSum));
 		recalculateCellIds();
 	}
 
 protected:
 	bool isBlocking = false;
-	Trigger<float> boundTrigger{ false, tsmShape::Circle<float>(tsmType::Point<float>(), 0.f) };
+	Trigger<float> boundTrigger{ false, mgeShape::Circle<float>(mgeType::Point<float>(), 0.f) };
 	std::vector<std::shared_ptr<Trigger<float>>> triggers = {};
 
 private:	

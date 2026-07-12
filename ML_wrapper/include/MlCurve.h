@@ -87,7 +87,7 @@ public:
     MlCurve() = default;
 
     MlCurve(T P0, T P1, T P2, T P3, float thick = 1.f,
-        tsmType::Color_RGBA color = tsmType::Color_RGBA(), float desiredSegmentLength = 20.f);
+        mgeType::Color_RGBA color = mgeType::Color_RGBA(), float desiredSegmentLength = 20.f);
 
     [[nodiscard]] float getLength() const
     {
@@ -99,7 +99,7 @@ public:
         return vertices.getVertices();
     }
 
-    tsmType::Point<float> getPositionAt(float distance) const
+    mgeType::Point<float> getPositionAt(float distance) const
     {
         if (sampledPoints.empty())
             return {};
@@ -141,7 +141,7 @@ public:
         return { result.x, result.y};
     }
 
-    tsmType::Point<float> pointAtPercent(float percent) const
+    mgeType::Point<float> pointAtPercent(float percent) const
     {
         float distance = percent * totalLength;
         return getPositionAt(distance);
@@ -152,7 +152,7 @@ public:
 		return segmentsCount;
     }
 
-    tsmType::Point<float> pointAtSegment(size_t segmentIndex) const
+    mgeType::Point<float> pointAtSegment(size_t segmentIndex) const
     {
         if (segmentIndex >= segmentsCount)
         {
@@ -171,7 +171,7 @@ private:
 
     float distanceFromLine(const T& P, const T& A, const T& B);
 
-    void build(tsmType::Color_RGBA color, float desiredSegmentLength);
+    void build(mgeType::Color_RGBA color, float desiredSegmentLength);
 
 private:
     MlVerticesObject vertices;
@@ -183,7 +183,7 @@ private:
 
 
 template<typename T>
-MlCurve<T>::MlCurve(T P0, T P1, T P2, T P3, float thick, tsmType::Color_RGBA color, float desiredSegmentLength)
+MlCurve<T>::MlCurve(T P0, T P1, T P2, T P3, float thick, mgeType::Color_RGBA color, float desiredSegmentLength)
     : positions{ P0, P1, P2, P3 },
     thickness(thick)
 {
@@ -202,7 +202,7 @@ float MlCurve<T>::distanceFromLine(const T& P, const T& A, const T& B)
 }
 
 template<typename T>
-void MlCurve<T>::build(tsmType::Color_RGBA color, float desiredSegmentLength)
+void MlCurve<T>::build(mgeType::Color_RGBA color, float desiredSegmentLength)
 {
     // Convert relative to absolute
     T P0 = positions[0];

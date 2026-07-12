@@ -5,7 +5,7 @@
 #include "MlGameWrapper.h"
 #include "MlVerticesObject.h"
 
-Widget::Widget(IPoint newPosition, tsmType::Size<int> newSize)
+Widget::Widget(IPoint newPosition, mgeType::Size<int> newSize)
 	: relativePosition(newPosition), size(newSize), lastLayoutAbsolutePosition(newPosition)
 {
 }
@@ -75,7 +75,7 @@ const std::shared_ptr<Widget> Widget::getParent() const noexcept
 	return parent.lock();
 }
 
-void Widget::setSize(tsmType::Size<int> newSize)
+void Widget::setSize(mgeType::Size<int> newSize)
 {
 	size = newSize;
 	layout();
@@ -94,7 +94,7 @@ void Widget::setRelativePosition(IPoint newPosition, bool makeLayout)  noexcept
 		layout();
 }
 
-tsmType::Size<int> Widget::getSize() const noexcept
+mgeType::Size<int> Widget::getSize() const noexcept
 {
 	return size;
 }

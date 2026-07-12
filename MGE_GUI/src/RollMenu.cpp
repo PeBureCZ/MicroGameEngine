@@ -1,6 +1,6 @@
 #include "RollMenu.h"
 
-RollMenu::RollMenu(IPoint newPosition, tsmType::Size<int> newSize, std::string text)
+RollMenu::RollMenu(IPoint newPosition, mgeType::Size<int> newSize, std::string text)
 	: Frame(newPosition, newSize)
 {
 	mainButtonText = text;
@@ -130,12 +130,12 @@ void RollMenu::generateNewRollMenuCollision()
 		}
 	}
 
-	auto newSize = tsmType::Size<int>(rightUpCorner.x - leftUpCorner.x, rightUpCorner.y - leftUpCorner.y);
+	auto newSize = mgeType::Size<int>(rightUpCorner.x - leftUpCorner.x, rightUpCorner.y - leftUpCorner.y);
 
 	if (!rollMenuCollisionFrame)
 	{ //invisible frame for non-blocking collision up to buttons
-		rollMenuCollisionFrame = std::make_shared<Frame>(IPoint(), tsmType::Size<int>());
-		rollMenuCollisionFrame->setColor(tsmType::Color_RGBA(0,0,0,0)); 
+		rollMenuCollisionFrame = std::make_shared<Frame>(IPoint(), mgeType::Size<int>());
+		rollMenuCollisionFrame->setColor(mgeType::Color_RGBA(0,0,0,0)); 
 		rollMenuCollisionFrame->setOnCursorOver
 			(
 				[this]() noexcept { onCursorEnterCall(); },
@@ -147,7 +147,7 @@ void RollMenu::generateNewRollMenuCollision()
 	else
 		rollMenuCollisionFrame->editCollision().clear();
 	auto newCollision = Trigger<int>
-		(false, tsmShape::Rectangle<int>(leftUpCorner, newSize));
+		(false, mgeShape::Rectangle<int>(leftUpCorner, newSize));
 	newCollision.setIsBlocking(false);
 	rollMenuCollisionFrame->editCollision().push_back(std::move(newCollision));
 

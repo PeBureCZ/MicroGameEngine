@@ -71,7 +71,7 @@ void ImageHolder::setImageAbsolutePosition(SPRITE_ID image, size_t layer, FPoint
 	}
 }
 
-void ImageHolder::setSpriteColor(SPRITE_ID image, tsmType::Color_RGBA newColor, size_t layer)
+void ImageHolder::setSpriteColor(SPRITE_ID image, mgeType::Color_RGBA newColor, size_t layer)
 {
 	auto findedLayer = sprites.find(layer);
 	if (findedLayer != sprites.end())
@@ -86,7 +86,7 @@ void ImageHolder::setSpriteColor(SPRITE_ID image, tsmType::Color_RGBA newColor, 
 	}
 }
 
-[[nodiscard]] tsmType::Color_RGBA ImageHolder::getSpriteColor(SPRITE_ID image, size_t layer)
+[[nodiscard]] mgeType::Color_RGBA ImageHolder::getSpriteColor(SPRITE_ID image, size_t layer)
 {
 	auto findedLayer = sprites.find(layer);
 	if (findedLayer != sprites.end())
@@ -95,18 +95,18 @@ void ImageHolder::setSpriteColor(SPRITE_ID image, tsmType::Color_RGBA newColor, 
 		if (it != findedLayer->second.end())
 		{
 			sf::Color color = it->second.getColor();
-			return tsmType::Color_RGBA(color.r, color.g, color.b, color.a);
+			return mgeType::Color_RGBA(color.r, color.g, color.b, color.a);
 		}
 		else
 		{
 			_ASSERT(false); //wrong image management
-			return tsmType::Color_RGBA();
+			return mgeType::Color_RGBA();
 		}
 	}
 	else
 	{
 		_ASSERT(false); //wrong image management
-		return tsmType::Color_RGBA();
+		return mgeType::Color_RGBA();
 	}
 }
 
@@ -129,14 +129,14 @@ void ImageHolder::changeSpriteLayer(const TextureId& textureId, SPRITE_ID imageI
 	appendImage(image, newLayer, oldPosition);
 }
 
-[[nodiscard]] tsmType::Size<int> ImageHolder::getTextureSize(TextureId id)
+[[nodiscard]] mgeType::Size<int> ImageHolder::getTextureSize(TextureId id)
 {
 	for (const auto&texture : textures)
 	{
 		if (texture.first.path == id.path)
 		{
 			sf::Vector2u texSize = texture.second.second.getSize();
-			static tsmType::Size<int> size;
+			static mgeType::Size<int> size;
 			size.width = static_cast<int>(texSize.x);
 			size.height = static_cast<int>(texSize.y);
 			return size;
@@ -144,7 +144,7 @@ void ImageHolder::changeSpriteLayer(const TextureId& textureId, SPRITE_ID imageI
 	}
 
 	_ASSERT(false); //texture not found - maybe not loaded yet
-	return tsmType::Size<int>();
+	return mgeType::Size<int>();
 }
 
 void ImageHolder::setSpriteRotation(SPRITE_ID image, float newRotation, size_t layer)

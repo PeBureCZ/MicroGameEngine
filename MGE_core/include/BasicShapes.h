@@ -10,17 +10,17 @@ enum class SHAPE_TYPE
 	UNDEFINED
 };
 
-namespace tsmShape
+namespace mgeShape
 {
 	template<typename T>
 	class Shape
 	{
 	public:
-		Shape(tsmType::Point<T> newPosition = tsmType::Point<T>(), float newRotation = 0.0f)
+		Shape(mgeType::Point<T> newPosition = mgeType::Point<T>(), float newRotation = 0.0f)
 			: absolutePosition(newPosition), rotation(newRotation)
 		{}
-		tsmType::Point<T> getPosition() const { return absolutePosition; }
-		void setShapeAbsolutePosition(tsmType::Point<T> newPosition) noexcept
+		mgeType::Point<T> getPosition() const { return absolutePosition; }
+		void setShapeAbsolutePosition(mgeType::Point<T> newPosition) noexcept
 		{ 
 			absolutePosition = newPosition;
 		}
@@ -42,7 +42,7 @@ namespace tsmShape
 
 		virtual ~Shape() = default;
 	protected:
-		tsmType::Point<T> absolutePosition; // default position at origin
+		mgeType::Point<T> absolutePosition; // default position at origin
 		float rotation = 0.0f; // in degrees
 		SHAPE_TYPE type = SHAPE_TYPE::UNDEFINED;
 	};
@@ -52,29 +52,29 @@ namespace tsmShape
 	{
 	private:
 	protected:
-		tsmType::Size<T> size;
+		mgeType::Size<T> size;
 	public:
 		Rectangle()
-			: Shape<T>(tsmType::Point<T>(), 0.0)
+			: Shape<T>(mgeType::Point<T>(), 0.0)
 		{
-			size = tsmType::Size<T>();
+			size = mgeType::Size<T>();
 			Shape<T>::type = SHAPE_TYPE::box;
 		};
-		Rectangle(tsmType::Point<T> newPosition, tsmType::Size<T> newSize, float newRotation = 0.0f)
+		Rectangle(mgeType::Point<T> newPosition, mgeType::Size<T> newSize, float newRotation = 0.0f)
 			: Shape<T>(newPosition, newRotation)
 		{
 			size = newSize;
 			Shape<T>::type = SHAPE_TYPE::box;
 		};
 
-		tsmType::Size<T> getSize() const { return size; }
+		mgeType::Size<T> getSize() const { return size; }
 
 		//return the center of the rectangle, taking into account its rotation (absolute position)
-		tsmType::Point<T> getCenter() const
+		mgeType::Point<T> getCenter() const
 		{
 			auto rotation = Shape<T>::getRotation();
 			if (rotation == 0.0f)
-				return tsmType::Point<T>(Shape<T>::getPosition().x + size.width / 2, Shape<T>::getPosition().y + size.height / 2);
+				return mgeType::Point<T>(Shape<T>::getPosition().x + size.width / 2, Shape<T>::getPosition().y + size.height / 2);
 			else
 			{
 				constexpr float DEG_TO_RAD = 3.14159265358979323846f / 180.f;
@@ -82,11 +82,11 @@ namespace tsmShape
 				const float cosA = std::cos(rad);
 				const float sinA = std::sin(rad);
 				// Calculate the center of the rectangle before rotation
-				tsmType::Point<T> centerBeforeRotation(Shape<T>::getPosition().x + size.width / 2, Shape<T>::getPosition().y + size.height / 2);
+				mgeType::Point<T> centerBeforeRotation(Shape<T>::getPosition().x + size.width / 2, Shape<T>::getPosition().y + size.height / 2);
 				// Rotate the center point around the rectangle's position
 				T rotatedX = (centerBeforeRotation.x - Shape<T>::getPosition().x) * cosA - (centerBeforeRotation.y - Shape<T>::getPosition().y) * sinA + Shape<T>::getPosition().x;
 				T rotatedY = (centerBeforeRotation.x - Shape<T>::getPosition().x) * sinA + (centerBeforeRotation.y - Shape<T>::getPosition().y) * cosA + Shape<T>::getPosition().y;
-				return tsmType::Point<T>(rotatedX, rotatedY);
+				return mgeType::Point<T>(rotatedX, rotatedY);
 			}
 		}
 	};
@@ -98,7 +98,7 @@ namespace tsmShape
 	protected:
 		T radius;
 	public:
-		Circle(tsmType::Point<T> newPosition, T newRadius)
+		Circle(mgeType::Point<T> newPosition, T newRadius)
 			: Shape<T>(newPosition, 0.f), radius(newRadius)
 		{
 			Shape<T>::type = SHAPE_TYPE::circle;
@@ -110,13 +110,13 @@ namespace tsmShape
 }
 
 template<typename T>
-using SHAPE_VARIANT = std::variant<tsmShape::Rectangle<T>,tsmShape::Circle<T>>;
+using SHAPE_VARIANT = std::variant<mgeShape::Rectangle<T>,mgeShape::Circle<T>>;
 
 template<typename T>
 class DrawableObject
 {
 public:
-	DrawableObject(SHAPE_VARIANT<T> shape, tsmType::Color_RGBA usedColor = tsmType::Color_RGBA())
+	DrawableObject(SHAPE_VARIANT<T> shape, mgeType::Color_RGBA usedColor = mgeType::Color_RGBA())
 		: shape(shape), color(usedColor) // default white color
 	{
 
@@ -127,46 +127,46 @@ public:
 		return shape;
 	}
 
-	tsmType::Color_RGBA getColor() const
+	mgeType::Color_RGBA getColor() const
 	{
 		return color;
 	}
 
-	void setColor(tsmType::Color_RGBA& newColor)
+	void setColor(mgeType::Color_RGBA& newColor)
 	{
 		color = newColor;
 	}
 	void setColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 	{
-		color = tsmType::Color_RGBA(r,g,b,a);
+		color = mgeType::Color_RGBA(r,g,b,a);
 	}
 
-	tsmType::Point<T> getPosition()
+	mgeType::Point<T> getPosition()
 	{
-		if (std::holds_alternative<tsmShape::Rectangle<T>>(shape))
+		if (std::holds_alternative<mgeShape::Rectangle<T>>(shape))
 		{
-			auto& obj = std::get<tsmShape::Rectangle<T>>(shape);
+			auto& obj = std::get<mgeShape::Rectangle<T>>(shape);
 			return obj.getPosition();
 		}
 
-		else if (std::holds_alternative<tsmShape::Circle<T>>(shape))
+		else if (std::holds_alternative<mgeShape::Circle<T>>(shape))
 		{
-			auto& obj = std::get<tsmShape::Circle<T>>(shape);
+			auto& obj = std::get<mgeShape::Circle<T>>(shape);
 			return obj.getPosition();
 		}
-		return tsmType::Point<T>();
+		return mgeType::Point<T>();
 	}
 
-	void setAbsoluteDrawablePosition(tsmType::Point<T> newPosition)
+	void setAbsoluteDrawablePosition(mgeType::Point<T> newPosition)
 	{
-		if (std::holds_alternative<tsmShape::Rectangle<T>>(shape))
+		if (std::holds_alternative<mgeShape::Rectangle<T>>(shape))
 		{
-			auto& obj = std::get<tsmShape::Rectangle<T>>(shape);
+			auto& obj = std::get<mgeShape::Rectangle<T>>(shape);
 			obj.setShapeAbsolutePosition(std::move(newPosition));
 		}
-		else if (std::holds_alternative<tsmShape::Circle<T>>(shape))
+		else if (std::holds_alternative<mgeShape::Circle<T>>(shape))
 		{
-			auto& obj = std::get<tsmShape::Circle<T>>(shape);
+			auto& obj = std::get<mgeShape::Circle<T>>(shape);
 			obj.setShapeAbsolutePosition(std::move(newPosition));
 		}
 		else
@@ -177,14 +177,14 @@ public:
 
 	T getRotation() const
 	{
-		if (std::holds_alternative<tsmShape::Rectangle<T>>(shape))
+		if (std::holds_alternative<mgeShape::Rectangle<T>>(shape))
 		{
-			auto& obj = std::get<tsmShape::Rectangle<T>>(shape);
+			auto& obj = std::get<mgeShape::Rectangle<T>>(shape);
 			return obj.getRotation();
 		}
-		else if (std::holds_alternative<tsmShape::Circle<T>>(shape))
+		else if (std::holds_alternative<mgeShape::Circle<T>>(shape))
 		{
-			auto& obj = std::get<tsmShape::Circle<T>>(shape);
+			auto& obj = std::get<mgeShape::Circle<T>>(shape);
 			return obj.getRotation();
 		}
 		return 0;
@@ -192,14 +192,14 @@ public:
 
 	void setRotation(float newRotation)
 	{
-		if (std::holds_alternative<tsmShape::Rectangle<T>>(shape))
+		if (std::holds_alternative<mgeShape::Rectangle<T>>(shape))
 		{
-			auto& obj = std::get<tsmShape::Rectangle<T>>(shape);
+			auto& obj = std::get<mgeShape::Rectangle<T>>(shape);
 			obj.setRotation(newRotation);
 		}
-		else if (std::holds_alternative<tsmShape::Circle<T>>(shape))
+		else if (std::holds_alternative<mgeShape::Circle<T>>(shape))
 		{
-			auto& obj = std::get<tsmShape::Circle<T>>(shape);
+			auto& obj = std::get<mgeShape::Circle<T>>(shape);
 			obj.setRotation(newRotation);
 		}
 		else
@@ -211,7 +211,7 @@ public:
 	virtual ~DrawableObject() = default;
 
 protected:
-	tsmType::Color_RGBA color;
+	mgeType::Color_RGBA color;
 	SHAPE_VARIANT<T> shape;
 
 };

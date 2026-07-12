@@ -23,7 +23,7 @@ namespace ML_wrapper
         return events;
     }
 
-    void MlGameWrapper::setMlVerticesColor(VerticesId id, tsmType::Color_RGBA newColor, std::optional<size_t> knownLayer)
+    void MlGameWrapper::setMlVerticesColor(VerticesId id, mgeType::Color_RGBA newColor, std::optional<size_t> knownLayer)
     {
         bool checkLayerNum = (knownLayer.has_value()) ? true : false;
         for (const auto& [layerNum, Layer] : mlVerticesLayers)
@@ -190,9 +190,9 @@ namespace ML_wrapper
 		return std::nullopt;
     }
 
-    tsmType::Size<int> MlGameWrapper::getScreenSize() const noexcept
+    mgeType::Size<int> MlGameWrapper::getScreenSize() const noexcept
     {
-        return tsmType::Size<int>((int)guiView.getSize().x, (int)guiView.getSize().y);
+        return mgeType::Size<int>((int)guiView.getSize().x, (int)guiView.getSize().y);
     }
 
     void MlGameWrapper::moveScreenOffset(FPoint offset) noexcept

@@ -6,7 +6,8 @@
 #include "GraphicDependencies.h"
 
 constexpr tsmType::Color_RGBA DEFAULT_FRAME_COLOR = tsmType::Color_RGBA(230, 230, 230, 255);
-constexpr tsmType::Color_RGBA MOUSE_OVER_FRAME_COLOR = tsmType::Color_RGBA(255, 255, 255, 255);
+constexpr tsmType::Color_RGBA DEFAULT_COLOR = tsmType::Color_RGBA(255, 255, 255, 255);
+constexpr tsmType::Color_RGBA MOUSE_OVER_FRAME_COLOR = DEFAULT_COLOR;
 
 constexpr tsmType::Color_RGBA DEFAULT_TEXT_COLOR = tsmType::Color_RGBA(61, 201, 245, 255);
 constexpr tsmType::Color_RGBA MOUSE_OVER_TEXT_COLOR = tsmType::Color_RGBA(255, 153, 51, 255);
@@ -24,8 +25,8 @@ public:
 		);
 	~Button() = default;
 
-	void setDefaultButtonColor(tsmType::Color_RGBA newColor = DEFAULT_FRAME_COLOR);
-	void setMouseOverButtonColor(tsmType::Color_RGBA newColor = MOUSE_OVER_FRAME_COLOR);
+	void setDefaultButtonColor(const tsmType::Color_RGBA& newColor = DEFAULT_FRAME_COLOR);
+	void setMouseOverButtonColor(const tsmType::Color_RGBA& newColor = MOUSE_OVER_FRAME_COLOR);
 
 	void setOnLMBClick(Callback clickFunction) noexcept;
 	void setOnRMBClick(Callback clickFunction) noexcept;

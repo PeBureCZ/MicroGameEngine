@@ -23,16 +23,18 @@ Button::Button
 	setBasicCollision();
 }
 
-
-
-void Button::setDefaultButtonColor(tsmType::Color_RGBA newColor)
+void Button::setDefaultButtonColor(const tsmType::Color_RGBA& newColor)
 {
 	defaultColor = newColor;
+	if (!isUnderCursor())
+		setColor(defaultColor);
 }
 
-void Button::setMouseOverButtonColor(tsmType::Color_RGBA newColor)
+void Button::setMouseOverButtonColor(const tsmType::Color_RGBA& newColor)
 {
 	mouseOverColor = newColor;
+	if (isUnderCursor()) 
+		setColor(mouseOverColor);
 }
 
 void Button::setOnLMBClick(Callback clickFunction) noexcept
@@ -91,7 +93,6 @@ void Button::onCursorEnterCall() noexcept
 			setColor(mouseOverColor);
 		if (frameTexts.size() > 0)
 		{
-
 			for (auto& text : frameTexts)
 				text.second.setColor(mouseOverTextColor);
 		}

@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{a8d13c22-09b4-4c5d-a11a-beb135759e9b}</ProjectGuid>
+    <ProjectGuid>{0d646a2a-c9cc-459a-8f18-5386221048c5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
     <ConfigurationType>Application</ConfigurationType>
@@ -57,6 +57,8 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -110,8 +112,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MGE_core\MGE_core.vcxproj">
-      <Project>{2e95b73e-55c6-4002-8edb-4b7d733ee9c0}</Project>
+    <ProjectReference Include="..\MGE\MGE.vcxproj">
+      <Project>{320f40f8-547f-45af-9a4f-da40c6eefb7b}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

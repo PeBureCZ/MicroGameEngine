@@ -8,7 +8,6 @@
 #include "MlText.h"
 #include "MlEvent.h"
 
-
 std::shared_ptr<sf::RenderWindow> mainWindow;
 
 namespace ML_wrapper

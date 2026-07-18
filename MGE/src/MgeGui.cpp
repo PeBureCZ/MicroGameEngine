@@ -56,7 +56,11 @@ void MgeGui::tickWidgets(const std::vector<std::shared_ptr<Widget>>& widgets)
                 sharedMlGameWrapper->drawGuiSprite(image->getSpriteID());
             }
             else if (std::holds_alternative<DrawableObject<float>>(frameObject))
-                sharedMlGameWrapper->drawGuiVertices(frame->getVerticesId());
+            {
+                auto vertices_opt = frame->getVertices();
+                if (vertices_opt.has_value() && vertices_opt.value())
+                    sharedMlGameWrapper->drawGuiVertices(vertices_opt.value());
+            }
             else
             {} // nothing to draw
 

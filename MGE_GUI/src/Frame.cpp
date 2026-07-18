@@ -15,10 +15,10 @@ Frame::Frame(IPoint newPosition, mgeType::Size<int> newSize)
 {
 	DrawableObject<float> drawable = DrawableObject<float>(mgeShape::Rectangle<float>(newPosition.asFloat(), mgeType::Size<float>((float)newSize.width, (float)newSize.height)), mgeType::Color_RGBA(100, 100, 100, 150));
 	frameObject = drawable;
-	auto newWidgetVertices = std::make_unique<MlVerticesObject>();
+	auto newWidgetVertices = std::make_shared<MlVerticesObject>();
 	newWidgetVertices->addObjects({ drawable });
-	auto id = ML_wrapper::getGlobalGameWrapper()->addMlVerticesObject(GraphicItemLayer::GUI_LAYER, std::move(newWidgetVertices));
-	setVerticesId(id);
+	auto id = ML_wrapper::getGlobalGameWrapper()->addMlVerticesObject(GraphicItemLayer::GUI_LAYER, newWidgetVertices);
+	setVertices(newWidgetVertices);
 }
 
 Frame::Frame(IPoint newPosition, TextureId textureId)
@@ -40,9 +40,16 @@ void Frame::setImage(TextureId textureId)
 	frameObject = std::move(image);
 }
 
-void Frame::setVerticesId(VerticesId newId) noexcept
+void Frame::setVertices(const std::shared_ptr<MlVerticesObject>& newVertices) noexcept
 {
-	mlVerticesId = newId;
+	mlVertices = newVertices;
+}
+
+std::optional<std::shared_ptr<MlVerticesObject>> Frame::getVertices()
+{
+	if (mlVertices)
+		return mlVertices;
+	return std::nullopt;
 }
 
 std::vector<Trigger<int>>& Frame::editCollision() noexcept
@@ -68,7 +75,8 @@ void Frame::setColor(mgeType::Color_RGBA newColor)
 	{
 		auto& drawableObject = std::get<DrawableObject<float>>(frameObject);
 		drawableObject.setColor(newColor);
-		ML_wrapper::getGlobalGameWrapper()->setMlVerticesColor(mlVerticesId, std::move(newColor));
+		if (mlVertices)
+			ML_wrapper::getGlobalGameWrapper()->setMlVerticesColor(mlVertices->getUniqueId(), std::move(newColor));
 	}
 	else if (std::holds_alternative<std::shared_ptr<MlImage>>(frameObject))
 	{
@@ -89,7 +97,9 @@ const FRAME_OBJECT& Frame::getFrameObject() const noexcept
 
 size_t Frame::getVerticesId() const noexcept
 {
-	return mlVerticesId;
+	if (mlVertices)
+		return mlVertices->getUniqueId();
+	return 0;
 }
 
 void Frame::addTextToFrame(MlText newText, GuiAlign align)

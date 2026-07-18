@@ -8,14 +8,6 @@
 class MlVerticesObject
 {
 public:
-private:
-    sf::VertexArray batch;
-    sf::RenderStates state;
-    FPoint absolutePositionOffset;
-    float rotation = 0.0f;
-    size_t layer = GraphicItemLayer::DEFAULT_LAYER;
-
-public:
     MlVerticesObject();
 
     void addObjects(std::vector <DrawableObject<float>> content);
@@ -33,5 +25,11 @@ public:
     void moveAbsolutePosition(const FPoint& newPos);
 
     [[nodiscard]] const sf::RenderStates& getRenderState() const noexcept;
+private:
+    sf::VertexArray batch;
+    sf::RenderStates state;
+    FPoint absolutePositionOffset;
+    float rotation = 0.0f;
+    size_t layer = GraphicItemLayer::DEFAULT_LAYER;
 };
 

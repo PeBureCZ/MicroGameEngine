@@ -21,7 +21,7 @@ namespace sf
 
 class MlVerticesObject;
 
-using LAYER = std::unordered_map<VerticesId, std::unique_ptr<MlVerticesObject>>;
+using LAYER = std::vector<std::shared_ptr<MlVerticesObject>>;
 using VERTICES_LAYERS = std::vector<std::pair<size_t, std::unique_ptr<LAYER>>>; //size_t = layer number, LAYER = map of objects in this layer
 
 namespace ML_wrapper
@@ -37,7 +37,7 @@ namespace ML_wrapper
         void displayActualFrame();
 
         void drawGuiSprite(SPRITE_ID id) const;
-        void drawGuiVertices(VerticesId objectID) const;
+        void drawGuiVertices(const std::shared_ptr<MlVerticesObject>& drawableObject) const;
         void drawText(const MlText& textToDraw);
 
         void drawVertices() const;
@@ -46,24 +46,25 @@ namespace ML_wrapper
         std::deque<MlEventType>& getMlEvents();
         void clearEvents();
         void resetMainWindow();
-        void removeMlVerticesObject(VerticesId objectID);
+        void removeMlVerticesObject(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices, std::optional<size_t> knownLayer = std::nullopt);
 
-        std::optional<size_t> getLayerOfMlVerticesObject(VerticesId objectId, std::optional<size_t> knownLayer = std::nullopt);
+        std::optional<size_t> getLayerOfMlVerticesObject(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices, std::optional<size_t> knownLayer = std::nullopt);
 
         [[nodiscard]] const DPoint& getCursorWorldPosition() const noexcept;
         [[nodiscard]] const IPoint& getCursorGuiPosition() const noexcept;
         [[nodiscard]] std::optional<MlText> createText(std::string newText, unsigned int charSize_pxls = 30, FPoint position = FPoint()) noexcept;
         [[nodiscard]] ImageHolder& getImageHolder() noexcept;
-        [[nodiscard]] VerticesId addMlVerticesObject(size_t layer, std::unique_ptr<MlVerticesObject> newWidget);
+        [[nodiscard]] bool addMlVerticesObject(size_t layer, const std::shared_ptr<MlVerticesObject>& newWidget);
 
-        void setMlVerticesColor(VerticesId id, mgeType::Color_RGBA newColor, std::optional<size_t> knownLayer = std::nullopt);
-        void setMlVerticesLayer(VerticesId id, size_t newLayer, std::optional<size_t> knownLayer = std::nullopt);
-        void setMlVerticesPosition(VerticesId id, const FPoint& newPos, std::optional<size_t> knownLayer = std::nullopt);
-        void moveMlVerticesPosition(VerticesId id, const FPoint& newPos, std::optional<size_t> knownLayer = std::nullopt);
-        [[nodiscard]] std::optional<FPoint> getVericesPosition(VerticesId id, std::optional<size_t> knownLayer = std::nullopt);
+        void setMlVerticesColor(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices, mgeType::Color_RGBA newColor, std::optional<size_t> knownLayer = std::nullopt);
+        void setMlVerticesLayer(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices,
+            size_t newLayer, std::optional<size_t> knownLayer = std::nullopt);
 
-        void setMlVerticesRotation(VerticesId id, float newRotation, std::optional<size_t> knownLayer = std::nullopt);
-        void setSpriteRotation(VerticesId id, float newRotation, std::optional<size_t> knownLayer = std::nullopt);
+        void setMlVerticesPosition(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices, const FPoint& newPos, std::optional<size_t> knownLayer = std::nullopt);
+        void moveMlVerticesPosition(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices, const FPoint& newPos, std::optional<size_t> knownLayer = std::nullopt);
+        [[nodiscard]] std::optional<FPoint> getVericesPosition(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices, std::optional<size_t> knownLayer = std::nullopt);
+
+        void setMlVerticesRotation(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices, float newRotation, std::optional<size_t> knownLayer = std::nullopt);
 
         [[nodiscard]] std::optional<LAYER*> getMlGuiObjects() const noexcept;
         [[nodiscard]] mgeType::Size<int> getScreenSize() const noexcept;

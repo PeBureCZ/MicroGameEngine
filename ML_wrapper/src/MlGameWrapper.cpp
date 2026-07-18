@@ -10,6 +10,46 @@
 
 std::shared_ptr<sf::RenderWindow> mainWindow;
 
+struct VerticesMatcher
+{
+    std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices;
+    bool operator()(const std::shared_ptr<MlVerticesObject>& vert) const
+    {
+        if (!vert)
+            return false;
+
+        if (std::holds_alternative<VerticesId>(vertices))
+            return vert->getUniqueId() == std::get<VerticesId>(vertices);
+
+        return vert == std::get<const std::shared_ptr<MlVerticesObject>>(vertices);
+    }
+};
+
+static std::shared_ptr<MlVerticesObject> checkLayerIfMatch(VERTICES_LAYERS& mlVerticesLayers, std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices, std::optional<size_t> knownLayer)
+{
+    for (const auto& [layerNum, layer] : mlVerticesLayers)
+    {
+        _ASSERT(layer);
+
+        if (!layer)
+            continue;
+
+        if (knownLayer.has_value() && layerNum != *knownLayer)
+            continue;
+
+        auto it = std::find_if(layer->begin(), layer->end(), VerticesMatcher(vertices));
+
+        if (it != layer->end() && *it)
+            return (*it);
+        else if (knownLayer.has_value())
+        {
+            _ASSERT(false); //wrong vertices id/ptr
+        }
+    }
+    _ASSERT(false);  //wrong it management
+    return std::make_shared<MlVerticesObject>();
+}
+
 namespace ML_wrapper
 {
     void MlGameWrapper::clearEvents()
@@ -22,45 +62,40 @@ namespace ML_wrapper
         return events;
     }
 
-    void MlGameWrapper::setMlVerticesColor(VerticesId id, mgeType::Color_RGBA newColor, std::optional<size_t> knownLayer)
+    void MlGameWrapper::setMlVerticesColor(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices, mgeType::Color_RGBA newColor,
+        std::optional<size_t> knownLayer)
     {
-        bool checkLayerNum = (knownLayer.has_value()) ? true : false;
-        for (const auto& [layerNum, Layer] : mlVerticesLayers)
+        auto checkedVertices = checkLayerIfMatch(mlVerticesLayers, vertices, knownLayer);
+        if (checkedVertices)
+            checkedVertices->setColor(newColor);
+        else
         {
-            if (checkLayerNum && layerNum != knownLayer.value())
-                continue;
-
-            auto it = Layer->find(id);
-            if (it != Layer->end())
-            {
-                it->second->setColor(std::move(newColor));
-                return;
-			}
+            _ASSERT(false);
         }
-        _ASSERT(false);  //wrong it management
     }
 
-    void MlGameWrapper::setMlVerticesLayer(VerticesId id, size_t newLayer, std::optional<size_t> knownLayer)
+    void MlGameWrapper::setMlVerticesLayer(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices,
+        size_t newLayer, std::optional<size_t> knownLayer)
     {
-        std::unique_ptr<MlVerticesObject> object;
+        std::shared_ptr<MlVerticesObject> object;
         bool checkLayerNum = (knownLayer.has_value()) ? true : false;
-        for (const auto& [layerNum, Layer] : mlVerticesLayers)
+        for (auto& [layerNum, layer_uniquePtr] : mlVerticesLayers)
         {
-            if (checkLayerNum && layerNum != knownLayer.value())
+            _ASSERT(layer_uniquePtr);
+            if (!layer_uniquePtr || (checkLayerNum && layerNum != knownLayer.value()))
                 continue;
 
-            auto it = Layer->find(id);
-            if (it != Layer->end())
+            auto it = std::find_if(layer_uniquePtr->begin(), layer_uniquePtr->end(), VerticesMatcher(vertices));
+            if (it != layer_uniquePtr->end() && *it)
             {
-                object = std::move(it->second);
-                knownLayer = layerNum;
-				Layer->erase(it);
+                object = *it;
+                layer_uniquePtr->erase(it);
             }
         }
 
         if (object)
         {
-            auto unchangedID = addMlVerticesObject(newLayer, std::move(object));
+            [[maybe_unused]] auto correctlyAdd = addMlVerticesObject(newLayer, std::move(object));
         }
         else
         {
@@ -68,102 +103,61 @@ namespace ML_wrapper
         }
     }
 
-    void MlGameWrapper::setMlVerticesPosition(VerticesId id, const FPoint& newPos, std::optional<size_t> knownLayer)
+    void MlGameWrapper::setMlVerticesPosition(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices, const FPoint& newPos, std::optional<size_t> knownLayer)
     {
-        bool checkLayerNum = (knownLayer.has_value()) ? true : false;
-        for (const auto& [layerNum, Layer] : mlVerticesLayers)
+        auto checkedVertices = checkLayerIfMatch(mlVerticesLayers, vertices, knownLayer);
+        if (checkedVertices)
+            checkedVertices->setPosition(newPos);
+        else
         {
-            if (checkLayerNum && layerNum != knownLayer.value())
-                continue;
-            auto it = Layer->find(id);
-            if (it != Layer->end())
-            {
-                it->second->setPosition(newPos);
-                return;
-            }
+            _ASSERT(false);
         }
-        _ASSERT(false); //wrong it or id management
     }
 
-    void MlGameWrapper::moveMlVerticesPosition(VerticesId id, const FPoint& newPos, std::optional<size_t> knownLayer)
+    void MlGameWrapper::moveMlVerticesPosition(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices, const FPoint& newPos, std::optional<size_t> knownLayer)
     {
-        bool checkLayerNum = (knownLayer.has_value()) ? true : false;
-        for (const auto& [layerNum, Layer] : mlVerticesLayers)
+        auto checkedVertices = checkLayerIfMatch(mlVerticesLayers, vertices, knownLayer);
+        if (checkedVertices)
+            checkedVertices->moveAbsolutePosition(newPos);
+        else
         {
-            if (checkLayerNum && layerNum != knownLayer.value())
-                continue;
-            auto it = Layer->find(id);
-            if (it != Layer->end())
-            {
-                it->second->moveAbsolutePosition(newPos);
-                return;
-            }
+            _ASSERT(false);
         }
-        _ASSERT(false); //wrong it or id management
     }
 
-    std::optional<FPoint> MlGameWrapper::getVericesPosition(VerticesId id, std::optional<size_t> knownLayer)
+    std::optional<FPoint> MlGameWrapper::getVericesPosition(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices, std::optional<size_t> knownLayer)
     {
-        bool checkLayerNum = (knownLayer.has_value()) ? true : false;
-        for (const auto& [layerNum, Layer] : mlVerticesLayers)
+        auto checkedVertices = checkLayerIfMatch(mlVerticesLayers, vertices, knownLayer);
+        if (checkedVertices)
+            return checkedVertices->getPosition();
+        else
         {
-            if (checkLayerNum && layerNum != knownLayer.value())
-                continue;
-
-            auto it = Layer->find(id);
-            if (it != Layer->end())
-                return it->second->getPosition();
+            _ASSERT(false);
         }
-        _ASSERT(false); //wrong it or id management
         return std::nullopt;
     }
 
-    void MlGameWrapper::setMlVerticesRotation(VerticesId id, float newRotation, std::optional<size_t> knownLayer)
+    void MlGameWrapper::setMlVerticesRotation(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices, float newRotation, std::optional<size_t> knownLayer)
     {
-        bool checkLayerNum = (knownLayer.has_value()) ? true : false;
-        for (const auto& [layerNum, Layer] : mlVerticesLayers)
+        auto checkedVertices = checkLayerIfMatch(mlVerticesLayers, vertices, knownLayer);
+        if (checkedVertices)
+            checkedVertices->setRotation(newRotation);
+        else
         {
-            if (checkLayerNum && layerNum != knownLayer.value())
-                continue;
-
-            auto it = Layer->find(id);
-            if (it != Layer->end())
-            {
-                it->second->setRotation(newRotation);
-                return;
-			}
+            _ASSERT(false);
         }
-        _ASSERT(false); //wrong it management
     }
 
-    void MlGameWrapper::setSpriteRotation(VerticesId id, float newRotation, std::optional<size_t> knownLayer)
+    std::optional<size_t> MlGameWrapper::getLayerOfMlVerticesObject(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices, std::optional<size_t> knownLayer)
     {
         bool checkLayerNum = (knownLayer.has_value()) ? true : false;
-        for (const auto& [layerNum, Layer] : mlVerticesLayers)
+        for (const auto& [layerNum, layer] : mlVerticesLayers)
         {
             if (checkLayerNum && layerNum != knownLayer.value())
                 continue;
 
-            auto it = Layer->find(id);
-            if (it != Layer->end())
-            {
-                it->second->setRotation(newRotation);
-                return;
-            }
-        }
-        _ASSERT(false); //wrong it management
-    }
-
-    std::optional<size_t> MlGameWrapper::getLayerOfMlVerticesObject(VerticesId objectId, std::optional<size_t> knownLayer)
-    {
-        bool checkLayerNum = (knownLayer.has_value()) ? true : false;
-        for (const auto& [layerNum, Layer] : mlVerticesLayers)
-        {
-            if (checkLayerNum && layerNum != knownLayer.value())
-                continue;
-
-			auto it = Layer->find(objectId);
-            if (it != Layer->end())
+            auto it = std::find_if(layer->begin(), layer->end(), VerticesMatcher(vertices));
+            if (it != layer->end())
                 return layerNum;
 		}
 		return std::nullopt;
@@ -181,10 +175,10 @@ namespace ML_wrapper
 
     std::optional<LAYER*> MlGameWrapper::getMlGuiObjects() const noexcept
     {
-        for (auto& [layerNum, Layer] : mlVerticesLayers)
+        for (auto& [layerNum, layer] : mlVerticesLayers)
         {
             if (layerNum == GraphicItemLayer::GUI_LAYER)
-				return Layer.get();
+				return layer.get();
         }
 		return std::nullopt;
     }
@@ -353,15 +347,15 @@ namespace ML_wrapper
         }
     }
 
-    void MlGameWrapper::drawGuiVertices(VerticesId objectID) const
+    void MlGameWrapper::drawGuiVertices(const std::shared_ptr<MlVerticesObject>& drawableObject) const
     {
 		const auto mlGuiVerticesObjects_opt = getMlGuiObjects();
         if (mlGuiVerticesObjects_opt.has_value() && mlGuiVerticesObjects_opt.value()) //opt_ptr -> raw ptr!
         {
 			const auto* mlGuiVerticesObjects = mlGuiVerticesObjects_opt.value();
-            auto it = mlGuiVerticesObjects->find(objectID);
-            if (it != mlGuiVerticesObjects->end())
-                mainWindow->draw(it->second->getVertices(), it->second->getRenderState());
+            auto it = std::find(mlGuiVerticesObjects->begin(), mlGuiVerticesObjects->end(), drawableObject);
+            if (it != mlGuiVerticesObjects->end() && *it)
+                mainWindow->draw((*it)->getVertices(), (*it)->getRenderState());
         }
         else
         {
@@ -382,7 +376,7 @@ namespace ML_wrapper
         {
             if (layerNum == GraphicItemLayer::UNRENDERED_LAYER || layerNum == GraphicItemLayer::GUI_LAYER)
                 continue;
-            for (const auto& [id, mlVerticesObject] : *layer.get())
+            for (const auto& mlVerticesObject : *layer.get())
                 mainWindow->draw(mlVerticesObject->getVertices(), mlVerticesObject->getRenderState());
         }
     }
@@ -450,33 +444,19 @@ namespace ML_wrapper
 		mainWindow.reset();
     }
 
-    void MlGameWrapper::removeMlVerticesObject(VerticesId objectID)
+    void MlGameWrapper::removeMlVerticesObject(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices, std::optional<size_t> knownLayer)
     {
-        auto layer_opt = getLayerOfMlVerticesObject(objectID);
-        if (layer_opt)
+        for (const auto& [layerNum, layer] : mlVerticesLayers)
         {
-			size_t layer = layer_opt.value();
-            auto layerIt = std::lower_bound(
-                mlVerticesLayers.begin(),
-                mlVerticesLayers.end(),
-                layer,
-                [](const auto& lhs, size_t value)
-                {
-                    return lhs.first < value;
-                });
+            bool checkLayerNum = knownLayer.has_value();
+            _ASSERT(layer);
+            if (!layer || (checkLayerNum && layerNum != knownLayer.value()))
+                continue;
 
-            if (layerIt == mlVerticesLayers.end() || layerIt->first != layer)
-            {
-                _ASSERT(false); // layer not found
-                return;
-            }
-
-            layerIt->second->erase(objectID);
+            auto it = std::find_if(layer->begin(), layer->end(), VerticesMatcher(vertices));
+            if (it != layer->end())
+                layer->erase(it);
         }
-        else
-        {
-            _ASSERT(false); //object not found
-		}
     }
 
     ImageHolder& MlGameWrapper::getImageHolder() noexcept
@@ -484,15 +464,14 @@ namespace ML_wrapper
         return imageHolder;
     }
 
-    VerticesId MlGameWrapper::addMlVerticesObject(size_t layer, std::unique_ptr<MlVerticesObject> newWidget)
+    [[nodiscard]] bool MlGameWrapper::addMlVerticesObject(size_t layer, const std::shared_ptr<MlVerticesObject>& newWidget)
     {
         if (!newWidget)
         {
             _ASSERT(false); //invalid widget
-            return VerticesId();
+            return false;
 		}
 
-        VerticesId id = newWidget->getUniqueId();
         auto it = std::lower_bound(mlVerticesLayers.begin(),mlVerticesLayers.end(),layer,[](const auto& lhs, size_t value)
             {return lhs.first < value;});
 
@@ -503,9 +482,10 @@ namespace ML_wrapper
             it = mlVerticesLayers.insert(it, { layer, std::move(newLayer) });
         }
 
-        // Insert object into the layer map
-        it->second->emplace(id, std::move(newWidget));
-        return id;
+        // Insert object into the layer 
+        if (it->second)
+            it->second->push_back(newWidget);
+        return true;
     }
 
     static std::shared_ptr<ML_wrapper::MlGameWrapper> g_mlGameWrapper;

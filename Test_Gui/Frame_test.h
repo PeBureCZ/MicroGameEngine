@@ -1,7 +1,6 @@
 #pragma once
 
 #include "..\MGE_GUI\include\Frame.h"
-//#include "Widget_test.h"
 
 constexpr IPoint startFrameTestPosition(23, 785);
 constexpr mgeType::Size<int> startFrameTestSize(201, 335);

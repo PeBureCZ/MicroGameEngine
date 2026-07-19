@@ -2,7 +2,7 @@
 
 #include "BasicShapes.h"
 #include "BasicTypes.h"
-#include "MlVerticesObject.h"
+#include "MgeDrawable.h"
 #include "MlGameWrapper.h"
 #include "GraphicDependencies.h"
 #include "Trigger.h"
@@ -15,7 +15,7 @@ Frame::Frame(const IPoint& newPosition, const ISize& newSize)
 {
 	DrawableObject<float> drawable = DrawableObject<float>(mgeShape::Rectangle<float>(newPosition.asFloat(), mgeType::Size<float>((float)newSize.width, (float)newSize.height)), mgeType::Color_RGBA(100, 100, 100, 150));
 	frameObject = drawable;
-	auto newWidgetVertices = std::make_shared<MlVerticesObject>();
+	auto newWidgetVertices = std::make_shared<MgeDrawable>();
 	newWidgetVertices->addObjects({ drawable });
 	auto id = ML_wrapper::getGlobalGameWrapper()->addMlVerticesObject(GraphicItemLayer::GUI_LAYER, newWidgetVertices);
 	setVertices(newWidgetVertices);
@@ -40,15 +40,15 @@ void Frame::setImage(TextureId textureId)
 	frameObject = std::move(image);
 }
 
-void Frame::setVertices(const std::shared_ptr<MlVerticesObject>& newVertices) noexcept
+void Frame::setVertices(const std::shared_ptr<MgeDrawable>& newVertices) noexcept
 {
-	mlVertices = newVertices;
+	drawableItem = newVertices;
 }
 
-std::optional<std::shared_ptr<MlVerticesObject>> Frame::getVertices()
+std::optional<std::shared_ptr<MgeDrawable>> Frame::getVertices()
 {
-	if (mlVertices)
-		return mlVertices;
+	if (drawableItem)
+		return drawableItem;
 	return std::nullopt;
 }
 
@@ -75,8 +75,8 @@ void Frame::setColor(mgeType::Color_RGBA newColor)
 	{
 		auto& drawableObject = std::get<DrawableObject<float>>(frameObject);
 		drawableObject.setColor(newColor);
-		if (mlVertices)
-			ML_wrapper::getGlobalGameWrapper()->setMlVerticesColor(mlVertices->getUniqueId(), std::move(newColor));
+		if (drawableItem)
+			ML_wrapper::getGlobalGameWrapper()->setMlVerticesColor(drawableItem->getUniqueId(), std::move(newColor));
 	}
 	else if (std::holds_alternative<std::shared_ptr<MlImage>>(frameObject))
 	{
@@ -97,8 +97,8 @@ const FRAME_OBJECT& Frame::getFrameObject() const noexcept
 
 size_t Frame::getVerticesId() const noexcept
 {
-	if (mlVertices)
-		return mlVertices->getUniqueId();
+	if (drawableItem)
+		return drawableItem->getUniqueId();
 	return 0;
 }
 
@@ -120,7 +120,9 @@ void Frame::setRelativeRotation(float newRotation)
 	{
 		auto& obj = std::get<DrawableObject<float>>(frameObject);
 		obj.setRotation(newRotation);
-		ML_wrapper::getGlobalGameWrapper()->setMlVerticesRotation(getVerticesId(), newRotation);
+		auto usedVertices_opt = getVertices();
+		if (usedVertices_opt.has_value() && usedVertices_opt.value())
+			ML_wrapper::getGlobalGameWrapper()->setMlVerticesRotation(usedVertices_opt.value(), newRotation);
 	}
 	else if (std::holds_alternative<std::shared_ptr<MlImage>>(frameObject))
 	{
@@ -192,7 +194,10 @@ void Frame::layout() noexcept
 			auto& obj = std::get<DrawableObject<float>>(frameObject);
 			auto difPos = obj.getPosition() + differencePos.asFloat();
 			obj.setAbsoluteDrawablePosition(difPos.asFloat());
-			ML_wrapper::getGlobalGameWrapper()->moveMlVerticesPosition(getVerticesId(), differencePos.asFloat());
+
+			auto usedVertices_opt = getVertices();
+			if (usedVertices_opt.has_value() && usedVertices_opt.value())
+				ML_wrapper::getGlobalGameWrapper()->moveMlVerticesPosition(usedVertices_opt.value(), differencePos.asFloat());
 		}
 		else if (std::holds_alternative<std::shared_ptr<MlImage>>(frameObject))
 		{

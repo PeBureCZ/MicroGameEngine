@@ -7,7 +7,7 @@
 #include "MlGameWrapper.h"
 #include "BasicTypes.h"
 #include "BasicShapes.h"
-#include "MlVerticesObject.h"
+#include "MgeDrawable.h"
 #include "GuiDependencies.h"
 
 using WidgetId = uintptr_t;

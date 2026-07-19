@@ -1,7 +1,7 @@
 #pragma once
 #include "BasicShapes.h"
 #include "BasicTypes.h"
-#include "MlVerticesObject.h"
+#include "MgeDrawable.h"
 
 inline sf::Vector2f rotatePoint(sf::Vector2f p, float rad)
 {

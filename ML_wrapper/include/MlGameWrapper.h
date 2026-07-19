@@ -19,9 +19,9 @@ namespace sf
 	class View;
 }
 
-class MlVerticesObject;
+class MgeDrawable;
 
-using LAYER = std::vector<std::shared_ptr<MlVerticesObject>>;
+using LAYER = std::vector<std::shared_ptr<MgeDrawable>>;
 using VERTICES_LAYERS = std::vector<std::pair<size_t, std::unique_ptr<LAYER>>>; //size_t = layer number, LAYER = map of objects in this layer
 
 namespace ML_wrapper
@@ -37,7 +37,7 @@ namespace ML_wrapper
         void displayActualFrame();
 
         void drawGuiSprite(SPRITE_ID id) const;
-        void drawGuiVertices(const std::shared_ptr<MlVerticesObject>& drawableObject) const;
+        void drawGuiVertices(const std::shared_ptr<MgeDrawable>& drawableObject) const;
         void drawText(const MlText& textToDraw);
 
         void drawVertices() const;
@@ -46,25 +46,25 @@ namespace ML_wrapper
         std::deque<MlEventType>& getMlEvents();
         void clearEvents();
         void resetMainWindow();
-        void removeMlVerticesObject(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices, std::optional<size_t> knownLayer = std::nullopt);
+        void removeMlVerticesObject(std::variant<VerticesId, const std::shared_ptr<MgeDrawable>> vertices, std::optional<size_t> knownLayer = std::nullopt);
 
-        std::optional<size_t> getLayerOfMlVerticesObject(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices, std::optional<size_t> knownLayer = std::nullopt);
+        std::optional<size_t> getLayerOfMlVerticesObject(std::variant<VerticesId, const std::shared_ptr<MgeDrawable>> vertices, std::optional<size_t> knownLayer = std::nullopt);
 
         [[nodiscard]] const DPoint& getCursorWorldPosition() const noexcept;
         [[nodiscard]] const IPoint& getCursorGuiPosition() const noexcept;
         [[nodiscard]] std::optional<MlText> createText(std::string newText, unsigned int charSize_pxls = 30, FPoint position = FPoint()) noexcept;
         [[nodiscard]] ImageHolder& getImageHolder() noexcept;
-        [[nodiscard]] bool addMlVerticesObject(size_t layer, const std::shared_ptr<MlVerticesObject>& newWidget);
+        [[nodiscard]] bool addMlVerticesObject(size_t layer, const std::shared_ptr<MgeDrawable>& newWidget);
 
-        void setMlVerticesColor(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices, mgeType::Color_RGBA newColor, std::optional<size_t> knownLayer = std::nullopt);
-        void setMlVerticesLayer(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices,
+        void setMlVerticesColor(std::variant<VerticesId, const std::shared_ptr<MgeDrawable>> vertices, mgeType::Color_RGBA newColor, std::optional<size_t> knownLayer = std::nullopt);
+        void setMlVerticesLayer(std::variant<VerticesId, const std::shared_ptr<MgeDrawable>> vertices,
             size_t newLayer, std::optional<size_t> knownLayer = std::nullopt);
 
-        void setMlVerticesPosition(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices, const FPoint& newPos, std::optional<size_t> knownLayer = std::nullopt);
-        void moveMlVerticesPosition(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices, const FPoint& newPos, std::optional<size_t> knownLayer = std::nullopt);
-        [[nodiscard]] std::optional<FPoint> getVericesPosition(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices, std::optional<size_t> knownLayer = std::nullopt);
+        void setMlVerticesPosition(std::variant<VerticesId, const std::shared_ptr<MgeDrawable>> vertices, const FPoint& newPos, std::optional<size_t> knownLayer = std::nullopt);
+        void moveMlVerticesPosition(std::variant<VerticesId, const std::shared_ptr<MgeDrawable>> vertices, const FPoint& newPos, std::optional<size_t> knownLayer = std::nullopt);
+        [[nodiscard]] std::optional<FPoint> getVericesPosition(std::variant<VerticesId, const std::shared_ptr<MgeDrawable>> vertices, std::optional<size_t> knownLayer = std::nullopt);
 
-        void setMlVerticesRotation(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices, float newRotation, std::optional<size_t> knownLayer = std::nullopt);
+        void setMlVerticesRotation(std::variant<VerticesId, const std::shared_ptr<MgeDrawable>> vertices, float newRotation, std::optional<size_t> knownLayer = std::nullopt);
 
         [[nodiscard]] std::optional<LAYER*> getMlGuiObjects() const noexcept;
         [[nodiscard]] mgeType::Size<int> getScreenSize() const noexcept;
@@ -76,6 +76,11 @@ namespace ML_wrapper
 
         void setDrawToGuiView() const;
         void setDrawToWorldView() const;
+
+        MlGameWrapper(const MlGameWrapper&) = delete;
+        MlGameWrapper(MlGameWrapper&&) = delete;
+        MlGameWrapper operator=(const MlGameWrapper&) = delete;
+        MlGameWrapper operator=(MlGameWrapper&&) = delete;
 
         ~MlGameWrapper();
 

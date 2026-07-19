@@ -84,15 +84,19 @@ void RollMenu::onCursorEnterCall() noexcept
 void RollMenu::openOrCloseMenu(bool open) noexcept
 {
 	isRolled = open;
-	for (auto& button : getChildren())
+	for (auto& child : getChildren())
 	{
-		if (!button)
+		if (!child)
 		{
 			_ASSERT(false); //wrong ptr management
 			continue;
 		}
-		if (button  != mainButton)
-			button->setIsVisible(open);
+
+		if (auto button = std::dynamic_pointer_cast<Button>(child))
+		{
+			if (button != mainButton)
+				button->setIsVisible(open);
+		}
 	}
 
 	if (rollMenuCollisionFrame)

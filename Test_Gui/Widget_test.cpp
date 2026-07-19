@@ -38,6 +38,8 @@ TEST(Widgets, parentLocation)
 	EXPECT_EQ(widget_parent->getAbsolutePosition(), testLocation);
 	EXPECT_EQ(widget_parent->getRelativePosition(), testLocation);
 
-	EXPECT_EQ(widget_child->getAbsolutePosition(), testLocation * 2);
+	auto newLocation = testLocation * 2;
+	EXPECT_NE(newLocation, testLocation);
+	EXPECT_EQ(widget_child->getAbsolutePosition(), newLocation);
 	EXPECT_EQ(widget_child->getRelativePosition(), testLocation);
 }

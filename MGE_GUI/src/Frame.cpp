@@ -10,7 +10,7 @@
 
 
 
-Frame::Frame(IPoint newPosition, mgeType::Size<int> newSize)
+Frame::Frame(const IPoint& newPosition, const ISize& newSize)
 	: Widget(newPosition, newSize)
 {
 	DrawableObject<float> drawable = DrawableObject<float>(mgeShape::Rectangle<float>(newPosition.asFloat(), mgeType::Size<float>((float)newSize.width, (float)newSize.height)), mgeType::Color_RGBA(100, 100, 100, 150));
@@ -21,7 +21,7 @@ Frame::Frame(IPoint newPosition, mgeType::Size<int> newSize)
 	setVertices(newWidgetVertices);
 }
 
-Frame::Frame(IPoint newPosition, TextureId textureId)
+Frame::Frame(const IPoint& newPosition, TextureId textureId)
 	: Widget(newPosition, mgeType::Size<int>())
 {
 	auto image = std::make_shared<MlImage>(std::move(textureId), GraphicItemLayer::GUI_LAYER, newPosition.asFloat());

@@ -14,6 +14,8 @@ namespace ML_wrapper
 	class MlGameWrapper;
 }
 
+class MgeActor;
+
 namespace tsmType
 {
 	template <typename T>
@@ -52,8 +54,8 @@ std::shared_ptr<Widget> actualBlockWidget;
 
 SCREEN_EVENTS screenEvents; 
 
-	bool sendGuiCollision(const std::vector<std::shared_ptr<Widget>>& guiWidgets, const IPoint& cursorPos);
+	bool sendGuiCollision(const std::vector<std::shared_ptr<MgeActor>>& guiWidgets, const IPoint& cursorPos);
 
-	void tickWidgets(const std::vector<std::shared_ptr<Widget>>& widgets);
+	void tickWidgets(const std::vector<std::shared_ptr<MgeActor>>& widgets);
 };
 

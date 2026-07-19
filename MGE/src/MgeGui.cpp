@@ -39,7 +39,7 @@ void MgeGui::TickScreen(BaseScreen& screen, double delta)
     tickWidgets(screen.getChildren());
 }
 
-void MgeGui::tickWidgets(const std::vector<std::shared_ptr<Widget>>& widgets)
+void MgeGui::tickWidgets(const std::vector<std::shared_ptr<MgeActor>>& widgets)
 {
     auto tickFrame = [&](const std::shared_ptr<Frame> frame)
         {
@@ -68,15 +68,16 @@ void MgeGui::tickWidgets(const std::vector<std::shared_ptr<Widget>>& widgets)
                 sharedMlGameWrapper->drawText(text.second);
         };
 
-    for (const auto& widget : widgets)
+    for (const auto& mgeActor : widgets)
     {
-        if (!widget)
+        if (!mgeActor)
         {
             _ASSERT(false); // pointer should never be null
             continue;
         }
 
-        if (!widget->getIsVisible())
+        auto widget = std::dynamic_pointer_cast<Widget>(mgeActor);
+        if (!widget || !widget->getIsVisible())
             continue;
 
         if (const auto& frame = std::dynamic_pointer_cast<Frame>(widget))
@@ -117,7 +118,7 @@ bool MgeGui::isCursorBlockedByGui() const noexcept
 }
 
 bool MgeGui::sendGuiCollision
-    (const std::vector<std::shared_ptr<Widget>>& guiWidgets, const IPoint& cursorPos)
+    (const std::vector<std::shared_ptr<MgeActor>>& guiWidgets, const IPoint& cursorPos)
 {
     if (guiWidgets.empty())
         return false;
@@ -127,14 +128,15 @@ bool MgeGui::sendGuiCollision
     //need to check collisions in the oposite order (the top view widget is in last vector position)  
     for (int i = static_cast<int>(guiWidgets.size() - 1); i >= 0; --i)
     {
-        const auto& widget = guiWidgets[i];
-        if (!widget)
+        const auto& mgeActor = guiWidgets[i];
+        if (!mgeActor)
         {
             _ASSERT(false); // pointer should never be null
             continue;
         }
 
-        if (!widget->getIsVisible())
+        auto widget = std::dynamic_pointer_cast<Widget>(mgeActor);
+        if (!widget || !widget->getIsVisible())
             continue;
 
         bool collided = false;

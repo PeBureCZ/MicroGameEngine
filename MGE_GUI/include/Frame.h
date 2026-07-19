@@ -24,8 +24,8 @@ using FRAME_OBJECT = std::variant<UNDEFINED_FRAME_OBJECT, DrawableObject<float>,
 class Frame : public Widget
 {
 public:
-	Frame(IPoint newPosition, mgeType::Size<int> newSize);
-	Frame(IPoint newPosition, TextureId textureId);
+	Frame(const IPoint& newPosition, const ISize& newSize);
+	Frame(const IPoint& newPosition, TextureId textureId);
 
 	void setImage(TextureId textureId);
 	void setVertices(const std::shared_ptr<MlVerticesObject>& newVertices) noexcept;

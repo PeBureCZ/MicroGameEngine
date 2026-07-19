@@ -4,7 +4,7 @@
     <Filter Include="include">
       <UniqueIdentifier>{3a1c431d-f206-40c4-b5c3-d5d63bbdb5d0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\src">
+    <Filter Include="src">
       <UniqueIdentifier>{7b0f91cb-73f0-4701-abeb-35cd8821ccb1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -36,22 +36,22 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BaseScreen.cpp">
-      <Filter>include\src</Filter>
+      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\Button.cpp">
-      <Filter>include\src</Filter>
+      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\Frame.cpp">
-      <Filter>include\src</Filter>
+      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\RollMenu.cpp">
-      <Filter>include\src</Filter>
+      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\TextFrame.cpp">
-      <Filter>include\src</Filter>
+      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\Widget.cpp">
-      <Filter>include\src</Filter>
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

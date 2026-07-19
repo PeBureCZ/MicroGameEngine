@@ -1,25 +1,26 @@
 #include "Widget.h"
 
-#include <variant>
-
 #include "MlGameWrapper.h"
 #include "MlVerticesObject.h"
 
-Widget::Widget(IPoint newPosition, mgeType::Size<int> newSize)
-	: relativePosition(newPosition), size(newSize), lastLayoutAbsolutePosition(newPosition)
+static MgeDefaultComponent STATIC_PARENT_SYSTEM;
+
+Widget::Widget(const IPoint& newPosition, const ISize& newSize)
+	: MgeActor(newPosition.asFloat())
 {
+	editMgeDefaultComponent().setRelativePosition(newPosition.asFloat());
+	editMgeDefaultComponent().setSize(newSize.asFloat());
+	lastLayoutAbsolutePosition = newPosition;
 }
 
-IPoint Widget::getRelativePosition() const noexcept
+[[nodiscard]] IPoint Widget::getRelativePosition() const noexcept
 {
-	return relativePosition;
+	return getMgeDefaultComponent().getRelativePosition().asInt();
 }
 
 IPoint Widget::getAbsolutePosition() const noexcept
 {
-	if (auto usedParent = getParent())
-		return usedParent->getAbsolutePosition() + relativePosition;
-	return relativePosition;
+	return getMgeDefaultComponent().getAbsolutePosition().asInt();
 }
 
 void Widget::setIsVisible(bool visible) noexcept
@@ -32,52 +33,47 @@ bool Widget::getIsVisible() const noexcept
 	return isVisible;
 }
 
-void Widget::addChild(std::shared_ptr<Widget> child) noexcept
+void Widget::addChild(const std::shared_ptr<MgeActor>& child) noexcept
 {
-	children.push_back(std::move(child));
+	editMgeDefaultComponent().addChild(child);
 }
 
-bool Widget::removeChildFromWidget(WidgetId childId)
+bool Widget::removeChildFromWidget(std::variant<WidgetId, std::shared_ptr<MgeActor>> child)
 {
-	for (auto it = children.begin(); it != children.end(); ++it)
+	if (std::holds_alternative<std::shared_ptr<MgeActor>>(child))
+		return editMgeDefaultComponent().removeChild(std::get<std::shared_ptr<MgeActor>>(child));
+	else if (std::holds_alternative<WidgetId>(child))
+		return editMgeDefaultComponent().removeChild(std::get<WidgetId>(child));
+	else
 	{
-		if (auto& child = *it)
-		{
-			if (child->getWidgetId() == childId)
-			{
-				child->setParent();
-				children.erase(it);
-				return true;
-			}
-		}
+		_ASSERT(false); //unknown alternative
 	}
-	_ASSERT(false); //try to remove a non-existent child
 	return false;
 }
 
-const std::vector<std::shared_ptr<Widget>>& Widget::getChildren() const noexcept
+[[nodiscard]] const std::vector<std::shared_ptr<MgeActor>>& Widget::getChildren() const noexcept
 {
-	return children;
+	return getMgeDefaultComponent().getChildren();
 }
 
-std::vector<std::shared_ptr<Widget>>& Widget::editChildren() noexcept
+std::vector<std::shared_ptr<MgeActor>>& Widget::editChildren() noexcept
 {
-	return children;
+	return editMgeDefaultComponent().editChildren();
 }
 
-void Widget::setParent(std::shared_ptr<Widget> newParent) noexcept
+void Widget::setParent(const std::shared_ptr<MgeActor>& newParent) noexcept
 {
-	parent = std::move(newParent);
+	editMgeDefaultComponent().setParent(newParent);
 }
 
-const std::shared_ptr<Widget> Widget::getParent() const noexcept
+[[nodiscard]] std::optional<const std::shared_ptr<MgeActor>> Widget::getParent() const noexcept
 {
-	return parent.lock();
+	return getMgeDefaultComponent().getParent();
 }
 
-void Widget::setSize(mgeType::Size<int> newSize)
+void Widget::setSize(const ISize& size) noexcept
 {
-	size = newSize;
+	editMgeDefaultComponent().setSize(size.asFloat());
 	layout();
 }
 
@@ -87,16 +83,23 @@ std::weak_ptr<Widget> Widget::getSelfPtr() const noexcept
 	return selfPtr;
 }
 
-void Widget::setRelativePosition(IPoint newPosition, bool makeLayout)  noexcept
+void Widget::setRelativePosition(const IPoint& newPosition, bool makeLayout) noexcept
 {
-	relativePosition = newPosition;
+	editMgeDefaultComponent().setRelativePosition(newPosition.asFloat());
 	if (makeLayout)
 		layout();
 }
 
-mgeType::Size<int> Widget::getSize() const noexcept
+void Widget::setAbsolutePosition(const IPoint& newPosition, bool makeLayout) noexcept
 {
-	return size;
+	editMgeDefaultComponent().setAbsolutePosition(newPosition.asFloat());
+	if (makeLayout)
+		layout();
+}
+
+[[nodiscard]] ISize Widget::getSize() const noexcept
+{
+	return getMgeDefaultComponent().getSize().asInt();
 }
 
 void Widget::layout() noexcept
@@ -104,7 +107,10 @@ void Widget::layout() noexcept
 	try
 	{
 		for (auto& child : getChildren()) //to call layout in children
-			child->layout();
+		{
+			if (auto widget = std::dynamic_pointer_cast<Widget>(child))
+				widget->layout();
+		}
 	}
 	catch (...)
 	{

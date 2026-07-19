@@ -7,6 +7,15 @@
     <ClCompile Include="src\Trigger.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\MgeObject.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MgeComponents.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MgeActor.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\EventTable.h">
@@ -28,6 +37,15 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\Transform.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MgeObject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MgeComponents.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MgeActor.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

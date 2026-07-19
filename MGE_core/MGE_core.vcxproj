@@ -20,6 +20,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\GlobalFunctions.cpp" />
+    <ClCompile Include="src\MgeActor.cpp" />
+    <ClCompile Include="src\MgeComponents.cpp" />
+    <ClCompile Include="src\MgeObject.cpp" />
     <ClCompile Include="src\Trigger.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -28,6 +31,9 @@
     <ClInclude Include="include\CollisionHandler.h" />
     <ClInclude Include="include\EventTable.h" />
     <ClInclude Include="include\GlobalFunctions.h" />
+    <ClInclude Include="include\MgeActor.h" />
+    <ClInclude Include="include\MgeComponents.h" />
+    <ClInclude Include="include\MgeObject.h" />
     <ClInclude Include="include\Transform.h" />
     <ClInclude Include="include\Trigger.h" />
   </ItemGroup>

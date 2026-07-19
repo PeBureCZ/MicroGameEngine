@@ -15,10 +15,10 @@ constexpr mgeType::Color_RGBA MOUSE_OVER_TEXT_COLOR = mgeType::Color_RGBA(255, 1
 class Button : public Frame
 {
 public:
-	Button(IPoint newPosition, mgeType::Size<int> newSize);
+	Button(const IPoint& newPosition, mgeType::Size<int> newSize);
 	Button
 		(
-			IPoint newPosition,
+			const IPoint& newPosition,
 			TextureId idUnselected,
 			TextureId idSelected = TextureId(),
 			TextureId idClicked = TextureId()

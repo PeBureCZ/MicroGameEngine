@@ -41,6 +41,16 @@ namespace mgeType
 		{
 			return width != other.width || height != other.height;
 		}
+
+		[[nodiscard]] constexpr Size<int> asInt() const noexcept
+		{
+			return Size<int>(static_cast<int>(width), static_cast<int>(height));
+		}
+
+		[[nodiscard]] constexpr Size<float> asFloat() const noexcept
+		{
+			return Size<float>(static_cast<float>(width), static_cast<float>(height));
+		}
 	};
 
 	template<typename T>
@@ -173,11 +183,6 @@ namespace mgeType
 		}
 	};
 
-	using FLine = Line<float>;
-	using DLine = Line<double>;
-	using ILine = Line<int>;
-
-
 	template<typename T>
 	class Curve
 	{
@@ -196,13 +201,21 @@ using FPoint = mgeType::Point<float>;
 using IPoint = mgeType::Point<int>;
 using DPoint = mgeType::Point<double>;
 
+using FSize = mgeType::Size<float>;
+using ISize = mgeType::Size<int>;
+using DSize = mgeType::Size<double>;
+
+using FLine = mgeType::Line<float>;
+using DLine = mgeType::Line<double>;
+using ILine = mgeType::Line<int>;
+
 namespace tsmBasic
 {
 	constexpr double PI = 3.14159265358979323846;
 
 	[[nodiscard]] inline float getDistance(const FPoint& pointA, const FPoint& pointB)
 	{
-		mgeType::FLine line(pointA, pointB);
+		FLine line(pointA, pointB);
 		return line.length();
 	}
 

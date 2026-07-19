@@ -1,7 +1,9 @@
 #pragma once
 #include <memory>
 #include <vector>
+#include <variant>
 
+#include "MgeActor.h"
 #include "MlGameWrapper.h"
 #include "BasicTypes.h"
 #include "BasicShapes.h"
@@ -10,44 +12,43 @@
 
 using WidgetId = uintptr_t;
 
-class Widget
+constexpr size_t PARENT_SYSTEM_SIZE = 1; //determine the size of array to use ONLY parent system component
+
+class Widget : public MgeActor
 {
 public:
 	WidgetId getWidgetId()  const noexcept;
-	Widget(IPoint newPosition, mgeType::Size<int> newSize);
+	Widget(const IPoint& newPosition, const ISize& newSize);
 
-
-	void setRelativePosition(IPoint newPosition, bool makeLayout = true) noexcept;
-	[[nodiscard]] IPoint getRelativePosition() const noexcept;
-	[[nodiscard]] IPoint getAbsolutePosition() const noexcept;
-
-	bool removeChildFromWidget(WidgetId childId);
-	[[nodiscard]] const std::vector<std::shared_ptr<Widget>>& getChildren() const noexcept;
-	[[nodiscard]] std::vector<std::shared_ptr<Widget>>& editChildren() noexcept;
-	[[nodiscard]] const std::shared_ptr<Widget> getParent() const noexcept;
-
-	mgeType::Size<int> getSize() const noexcept;
+	bool removeChildFromWidget(std::variant<WidgetId, std::shared_ptr<MgeActor>> child);
+	[[nodiscard]] const std::vector<std::shared_ptr<MgeActor>>& getChildren() const noexcept;
+	[[nodiscard]] std::vector<std::shared_ptr<MgeActor>>& editChildren() noexcept;
+	[[nodiscard]] std::optional<const std::shared_ptr<MgeActor>> getParent() const noexcept;
 
 	void setIsVisible(bool visible) noexcept;
 	[[nodiscard]] bool getIsVisible() const noexcept;
 
-	void addChild(std::shared_ptr<Widget> child) noexcept;
-	void setParent(std::shared_ptr<Widget> newParent = std::shared_ptr<Widget>()) noexcept;
+	void addChild(const std::shared_ptr<MgeActor>& child) noexcept;
+	void setParent(const std::shared_ptr<MgeActor>& newParent = std::shared_ptr<MgeActor>()) noexcept;
 	void initializeSelf(std::weak_ptr<Widget> self);
+
+	[[nodiscard]] IPoint getRelativePosition() const noexcept;
+	[[nodiscard]] IPoint getAbsolutePosition() const noexcept;
+	void setRelativePosition(const IPoint& newPosition, bool makeLayout = true)  noexcept;
+	void setAbsolutePosition(const IPoint& newPosition, bool makeLayout = true)  noexcept;
+
+	void setSize(const ISize& newSize) noexcept;
+	[[nodiscard]] ISize getSize() const noexcept;
 
 	virtual void layout() noexcept;
 	virtual ~Widget() = default;
 protected:
 	std::weak_ptr<Widget> getSelfPtr() const noexcept;
-	void setSize(mgeType::Size<int> newSize);
 
 	IPoint lastLayoutAbsolutePosition;
 
 private:
 	std::weak_ptr<Widget> selfPtr;
-	std::weak_ptr<Widget> parent;
-	std::vector<std::shared_ptr<Widget>> children;
-	IPoint relativePosition;
 	mgeType::Size<int> size;
 	bool isVisible = true;
 };

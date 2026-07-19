@@ -2,7 +2,7 @@
 
 #include "MlText.h"
 
-Button::Button(IPoint newPosition, mgeType::Size<int> newSize)
+Button::Button(const IPoint& newPosition, mgeType::Size<int> newSize)
 	: Frame(newPosition, newSize)
 	
 {
@@ -12,7 +12,7 @@ Button::Button(IPoint newPosition, mgeType::Size<int> newSize)
 
 Button::Button
 	(
-		IPoint newPosition,
+		const IPoint& newPosition,
 		TextureId idUnselected,
 		TextureId idSelected,
 		TextureId idClicked

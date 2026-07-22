@@ -6,7 +6,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "BasicTypes.h"
-#include "MgeDrawable.h"
+#include "MlVerticesObject.h"
 
 
 template<typename T>
@@ -174,7 +174,7 @@ private:
     void build(mgeType::Color_RGBA color, float desiredSegmentLength);
 
 private:
-    MgeDrawable vertices;
+    MlVerticesObject vertices = MlVerticesObject(GraphicItemLayer::DEFAULT_LAYER);
     size_t segmentsCount = 0;
     float segmentLength = 0.f;
     float thickness = 1.0f;

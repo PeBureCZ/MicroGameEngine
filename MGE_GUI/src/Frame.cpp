@@ -2,7 +2,7 @@
 
 #include "BasicShapes.h"
 #include "BasicTypes.h"
-#include "MgeDrawable.h"
+#include "MlVerticesObject.h"
 #include "MlGameWrapper.h"
 #include "GraphicDependencies.h"
 #include "Trigger.h"
@@ -15,9 +15,9 @@ Frame::Frame(const IPoint& newPosition, const ISize& newSize)
 {
 	DrawableObject<float> drawable = DrawableObject<float>(mgeShape::Rectangle<float>(newPosition.asFloat(), mgeType::Size<float>((float)newSize.width, (float)newSize.height)), mgeType::Color_RGBA(100, 100, 100, 150));
 	frameObject = drawable;
-	auto newWidgetVertices = std::make_shared<MgeDrawable>();
+	auto newWidgetVertices = std::make_shared<MlVerticesObject>(GraphicItemLayer::GUI_LAYER);
 	newWidgetVertices->addObjects({ drawable });
-	auto id = ML_wrapper::getGlobalGameWrapper()->addMlVerticesObject(GraphicItemLayer::GUI_LAYER, newWidgetVertices);
+	
 	setVertices(newWidgetVertices);
 }
 
@@ -40,12 +40,15 @@ void Frame::setImage(TextureId textureId)
 	frameObject = std::move(image);
 }
 
-void Frame::setVertices(const std::shared_ptr<MgeDrawable>& newVertices) noexcept
+void Frame::setVertices(const std::shared_ptr<MlVerticesObject>& newVertices) noexcept
 {
+	if (drawableItem)
+		ML_wrapper::getGlobalGameWrapper()->removeMlVerticesObject(drawableItem, drawableItem->getLayer());
+	auto id = ML_wrapper::getGlobalGameWrapper()->addMlVerticesObject(newVertices);
 	drawableItem = newVertices;
 }
 
-std::optional<std::shared_ptr<MgeDrawable>> Frame::getVertices()
+std::optional<std::shared_ptr<MlVerticesObject>> Frame::getVertices()
 {
 	if (drawableItem)
 		return drawableItem;

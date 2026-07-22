@@ -1,83 +1,99 @@
-#include "MgeDrawable.h"
+#include "MlVerticesObject.h"
 
 #include "ShapeInterpreter.h"
 
-MgeDrawable::MgeDrawable()
+MlVerticesObject::MlVerticesObject(size_t layer)
+    : m_layer(layer)
 {
     // Initialize the rectangle (triangle strip)
-    batch.setPrimitiveType(sf::PrimitiveType::Triangles);
+    m_batch.setPrimitiveType(sf::PrimitiveType::Triangles);
 }
 
-void MgeDrawable::addObjects(std::vector <DrawableObject<float>> content)
+MlVerticesObject::MlVerticesObject(sf::VertexArray batch, sf::RenderStates state, FPoint absolutePositionOffset, float rotation, size_t layer)
+    : m_batch(batch), m_state(state), m_absolutePositionOffset(absolutePositionOffset), m_rotation(rotation), m_layer(layer)
+{
+}
+
+void MlVerticesObject::addObjects(std::vector <DrawableObject<float>> content)
 {
     sf::VertexArray convertedShapes = ShapeInterpreter::convertRectangleToVertices(content);
     for (size_t i = 0; i < convertedShapes.getVertexCount(); ++i)
-        batch.append(convertedShapes[i]);
+        m_batch.append(convertedShapes[i]);
 }
 
-void MgeDrawable::addObjects(sf::VertexArray content)
+void MlVerticesObject::addObjects(sf::VertexArray content)
 {
     for (size_t i = 0; i < content.getVertexCount(); ++i)
-		batch.append(content[i]);
+        m_batch.append(content[i]);
 }
 
-[[nodiscard]] VerticesId MgeDrawable::getUniqueId() const noexcept
+VerticesId MlVerticesObject::getUniqueId() const noexcept
 {
     return reinterpret_cast<VerticesId>(this);
 }
 
-void MgeDrawable::setRotation(float newRotation) noexcept
+void MlVerticesObject::setRotation(float newRotation) noexcept
 {
-    rotation = newRotation;
+    m_rotation = newRotation;
 
-    state.transform = sf::Transform::Identity;
+    m_state.transform = sf::Transform::Identity;
     //move to world position
-    state.transform.translate(sf::Vector2f(absolutePositionOffset.x,absolutePositionOffset.y));
+    m_state.transform.translate(sf::Vector2f(m_absolutePositionOffset.x, m_absolutePositionOffset.y));
     //rotate around origin (0,0)
-    state.transform.rotate(sf::degrees(rotation));
+    m_state.transform.rotate(sf::degrees(m_rotation));
 }
 
-[[nodiscard]] float MgeDrawable::getRotation() const noexcept
+float MlVerticesObject::getRotation() const noexcept
 {
-    return rotation;
+    return m_rotation;
 }
 
-void MgeDrawable::setPosition(const FPoint& newPosition)
+void MlVerticesObject::setPosition(const FPoint& newPosition)
 {
-    moveAbsolutePosition(newPosition - absolutePositionOffset);
+    moveAbsolutePosition(newPosition - m_absolutePositionOffset);
 }
 
-[[nodiscard]] FPoint MgeDrawable::getPosition() const noexcept
+FPoint MlVerticesObject::getPosition() const noexcept
 {
-    return absolutePositionOffset;
+    return m_absolutePositionOffset;
 }
 
-[[nodiscard]] const sf::VertexArray& MgeDrawable::getVertices() const noexcept
+const sf::VertexArray& MlVerticesObject::getVertices() const noexcept
 {
-    return batch;
+    return m_batch;
 }
 
-void MgeDrawable::setColor(mgeType::Color_RGBA newColor)
+void MlVerticesObject::setColor(mgeType::Color_RGBA newColor)
 {
     sf::Color color(newColor.r, newColor.g, newColor.b, newColor.a);
-    for (size_t i = 0; i < batch.getVertexCount(); ++i)
-		batch[i].color = color;
+    for (size_t i = 0; i < m_batch.getVertexCount(); ++i)
+        m_batch[i].color = color;
 }
 
-[[nodiscard]] mgeType::Color_RGBA MgeDrawable::getColor() noexcept
+mgeType::Color_RGBA MlVerticesObject::getColor() noexcept
 {
-    if (batch.getVertexCount() > 0)
-        return mgeType::Color_RGBA(batch[0].color.r, batch[0].color.g, batch[0].color.b, batch[0].color.a);
+    if (m_batch.getVertexCount() > 0)
+        return mgeType::Color_RGBA(m_batch[0].color.r, m_batch[0].color.g, m_batch[0].color.b, m_batch[0].color.a);
     return mgeType::Color_RGBA();
 }
 
-void MgeDrawable::moveAbsolutePosition(const FPoint& newPos)
+void MlVerticesObject::moveAbsolutePosition(const FPoint& newPos)
 {
-    absolutePositionOffset += newPos;
-    state.transform.translate(sf::Vector2f(newPos.x, newPos.y));
+    m_absolutePositionOffset += newPos;
+    m_state.transform.translate(sf::Vector2f(newPos.x, newPos.y));
 }
 
-[[nodiscard]] const sf::RenderStates& MgeDrawable::getRenderState() const noexcept
+const sf::RenderStates& MlVerticesObject::getRenderState() const noexcept
 {
-    return state;
+    return m_state;
+}
+
+std::shared_ptr<MlVerticesObject> MlVerticesObject::createCopyWithNewLayer(size_t newLayer) const noexcept
+{
+    return std::make_shared<MlVerticesObject>(m_batch, m_state, m_absolutePositionOffset, m_rotation, newLayer);
+}
+
+size_t MlVerticesObject::getLayer() const noexcept
+{
+    return m_layer;
 }

@@ -157,7 +157,7 @@
     <ClInclude Include="include\MlGameWrapper.h" />
     <ClInclude Include="include\MlImage.h" />
     <ClInclude Include="include\MlText.h" />
-    <ClInclude Include="include\MgeDrawable.h" />
+    <ClInclude Include="include\MlVerticesObject.h" />
     <ClInclude Include="include\ShapeInterpreter.h" />
   </ItemGroup>
   <ItemGroup>

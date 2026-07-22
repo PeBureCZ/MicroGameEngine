@@ -61,6 +61,9 @@ public:
 	[[nodiscard]] const FSize& getSize() const noexcept;
 	void setSize(const FSize& size) noexcept;
 
+	[[nodiscard]] float getRotation() const noexcept;
+	void setRotation(float rotation);
+
 private:
 	BasicTransform m_transform;
 };

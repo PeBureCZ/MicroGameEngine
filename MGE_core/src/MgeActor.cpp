@@ -1,5 +1,7 @@
 #include "MgeActor.h"
 
+static MgeDefaultComponent ERROR_STATE_COMPONENT;
+
 void MgeDefaultComponent::addChild(const std::shared_ptr<MgeActor>& child) noexcept
 {
 	m_children.push_back(child);
@@ -96,6 +98,33 @@ void MgeDefaultComponent::setAbsolutePosition(const FPoint& position) noexcept
 	MgeTransform::setPosition(position);
 }
 
+[[nodiscard]] float MgeDefaultComponent::getAbsoluteRotation() const noexcept
+{
+	if (!parent.expired())
+		return { getRotation() + parent.lock()->getAbsoluteRotation() };
+	else
+		return getRotation();
+}
+
+[[nodiscard]] float MgeDefaultComponent::getRelativeRotation() const noexcept
+{
+	return getRotation();
+}
+
+void MgeDefaultComponent::setAbsoluteRotation(float rotation) noexcept
+{
+	float actualAbsoluteRotation = (parent.expired())
+		? getRotation()
+		: getRotation() + parent.lock()->getAbsoluteRotation();
+
+	setRotation(rotation - actualAbsoluteRotation);
+}
+
+void MgeDefaultComponent::setRelativeRotation(float rotation) noexcept
+{
+	setRotation(rotation);
+}
+
 //##############		MgeBasicActor		##############
 
 const std::vector<std::shared_ptr<MgeBasicComponent>>& MgeBasicActor::getComponents() const noexcept
@@ -118,36 +147,109 @@ std::optional<std::shared_ptr<MgeBasicComponent>> MgeBasicActor::editComponent(C
 	return std::nullopt;
 }
 
+void MgeBasicActor::addComponent(std::shared_ptr<MgeBasicComponent> newComponent)
+{
+	m_components.push_back(newComponent);
+}
+
 //##############		MgeActor			##############
 
 void MgeActor::setRelativePosition(const FPoint& newPosition) noexcept
 {
-	defaultActorData.setRelativePosition(newPosition);
+	editMgeDefaultComponent().setRelativePosition(newPosition);
 }
 
 void MgeActor::setAbsolutePosition(const FPoint& newPosition) noexcept
 {
-	defaultActorData.setAbsolutePosition(newPosition);
+	editMgeDefaultComponent().setAbsolutePosition(newPosition);
+}
+
+void MgeActor::setParent(const std::shared_ptr<MgeActor>& newParent) noexcept
+{
+	editMgeDefaultComponent().setParent(newParent);
+}
+
+[[nodiscard]] std::optional<const std::shared_ptr<MgeActor>> MgeActor::getParent() const noexcept
+{
+	return getMgeDefaultComponent().getParent();
+}
+
+[[nodiscard]] const std::vector<std::shared_ptr<MgeActor>>& MgeActor::getChildren() const noexcept
+{
+	return getMgeDefaultComponent().getChildren();
+}
+
+std::vector<std::shared_ptr<MgeActor>>& MgeActor::editChildren() noexcept
+{
+	return editMgeDefaultComponent().editChildren();
+}
+
+void MgeActor::addChild(const std::shared_ptr<MgeActor>& child) noexcept
+{
+	editMgeDefaultComponent().addChild(child);
+}
+
+[[nodiscard]] bool MgeActor::removeChild(std::shared_ptr<MgeActor>& child)
+{
+	return editMgeDefaultComponent().removeChild(child);
+}
+
+[[nodiscard]] bool MgeActor::removeChild(MgeObjectId childId)
+{
+	return editMgeDefaultComponent().removeChild(childId);
 }
 
 [[nodiscard]] const FPoint& MgeActor::getRelativePosition() const noexcept
 {
-	return defaultActorData.getRelativePosition();
+	return getMgeDefaultComponent().getRelativePosition();
 }
 
 [[nodiscard]] FPoint MgeActor::getAbsolutePosition() const noexcept
 {
-	return defaultActorData.getAbsolutePosition();
+	return getMgeDefaultComponent().getAbsolutePosition();
+}
+
+void MgeActor::setRelativeRotation(float rotation)
+{
+	return editMgeDefaultComponent().setRotation(rotation);
+}
+
+[[nodiscard]] float MgeActor::getRelativeRotation() const noexcept
+{
+	return getMgeDefaultComponent().getRotation();
+}
+
+[[nodiscard]] float MgeActor::getAbsoluteRotation() const noexcept
+{
+	return getMgeDefaultComponent().getAbsoluteRotation();
+}
+
+void MgeActor::setAbsoluteRotation(float rotation)
+{
+	editMgeDefaultComponent().setAbsoluteRotation(rotation);
 }
 
 MgeDefaultComponent& MgeActor::editMgeDefaultComponent() noexcept
 {
-	return defaultActorData;
+	if (defaultActorData)
+		return *defaultActorData.get();
+	_ASSERT(false);
+	createMgeDefaultComponent();
+	return ERROR_STATE_COMPONENT;
 }
 
 const MgeDefaultComponent& MgeActor::getMgeDefaultComponent() const noexcept
 {
-	return defaultActorData;
+	if (defaultActorData)
+		return *defaultActorData;
+	_ASSERT(false);
+	return ERROR_STATE_COMPONENT;
+}
+
+void MgeActor::createMgeDefaultComponent()
+{
+	defaultActorData = std::make_shared<MgeDefaultComponent>();
+	addComponent(defaultActorData);
 }
 
 

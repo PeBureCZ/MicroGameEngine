@@ -103,16 +103,15 @@ void MlImage::setRotation(float newRotation) const
 	ML_wrapper::getGlobalGameWrapper()->getImageHolder().setSpriteRotation(imageId, newRotation, layer);
 }
 
-[[nodiscard]] float MlImage::getRotation() const
+float MlImage::getRotation() const
 {
 	return ML_wrapper::getGlobalGameWrapper()->getImageHolder().getSpriteRotation(imageId, layer);
 }
 
-[[nodiscard]] FPoint MlImage::getAbsolutePosition() const noexcept
+FPoint MlImage::getAbsolutePosition() const noexcept
 {
 	return absolutePosition;
 }
-
 
 size_t MlImage::getLayer() const noexcept
 {
@@ -131,8 +130,7 @@ void  MlImage::setImgAbsolutePosition(FPoint newPosition)
 	ML_wrapper::getGlobalGameWrapper()->getImageHolder().setImageAbsolutePosition(getSpriteID(), layer, newPosition);
 }
 
-
-[[nodiscard]] uPtr_MlImage MlImage::loadTexture(std::string path, size_t layer)
+uPtr_MlImage MlImage::loadTexture(std::string path, size_t layer)
 {
 	return std::make_unique<MlImage>(TextureId(path), layer);
 }

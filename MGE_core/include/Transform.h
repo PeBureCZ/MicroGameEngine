@@ -26,9 +26,19 @@ public:
 		m_size = size;
 	}
 
+	[[nodiscard]] float getRotation() const noexcept
+	{
+		return m_rotation;
+	}
+
+	void setRotation(float rotation)
+	{
+		m_rotation = rotation;
+	}
+
 protected:
 	FPoint m_position;
-	float rotation = 0.f;
+	float m_rotation = 0.f;
 	FSize m_size;
 };
 

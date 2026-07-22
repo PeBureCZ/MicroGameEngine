@@ -1,7 +1,7 @@
 #include "Widget.h"
 
 #include "MlGameWrapper.h"
-#include "MgeDrawable.h"
+#include "MlVerticesObject.h"
 
 static MgeDefaultComponent STATIC_PARENT_SYSTEM;
 
@@ -33,11 +33,6 @@ bool Widget::getIsVisible() const noexcept
 	return isVisible;
 }
 
-void Widget::addChild(const std::shared_ptr<MgeActor>& child) noexcept
-{
-	editMgeDefaultComponent().addChild(child);
-}
-
 bool Widget::removeChildFromWidget(std::variant<WidgetId, std::shared_ptr<MgeActor>> child)
 {
 	if (std::holds_alternative<std::shared_ptr<MgeActor>>(child))
@@ -49,26 +44,6 @@ bool Widget::removeChildFromWidget(std::variant<WidgetId, std::shared_ptr<MgeAct
 		_ASSERT(false); //unknown alternative
 	}
 	return false;
-}
-
-[[nodiscard]] const std::vector<std::shared_ptr<MgeActor>>& Widget::getChildren() const noexcept
-{
-	return getMgeDefaultComponent().getChildren();
-}
-
-std::vector<std::shared_ptr<MgeActor>>& Widget::editChildren() noexcept
-{
-	return editMgeDefaultComponent().editChildren();
-}
-
-void Widget::setParent(const std::shared_ptr<MgeActor>& newParent) noexcept
-{
-	editMgeDefaultComponent().setParent(newParent);
-}
-
-[[nodiscard]] std::optional<const std::shared_ptr<MgeActor>> Widget::getParent() const noexcept
-{
-	return getMgeDefaultComponent().getParent();
 }
 
 void Widget::setSize(const ISize& size) noexcept

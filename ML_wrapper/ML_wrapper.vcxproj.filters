@@ -23,7 +23,7 @@
     <ClInclude Include="include\MlText.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\MgeDrawable.h">
+    <ClInclude Include="include\MlVerticesObject.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\ShapeInterpreter.h">

@@ -28,8 +28,8 @@ public:
 	Frame(const IPoint& newPosition, TextureId textureId);
 
 	void setImage(TextureId textureId);
-	void setVertices(const std::shared_ptr<MgeDrawable>& newVertices) noexcept;
-	[[nodiscard]] std::optional< std::shared_ptr<MgeDrawable>> getVertices();
+	void setVertices(const std::shared_ptr<MlVerticesObject>& newVertices) noexcept;
+	[[nodiscard]] std::optional< std::shared_ptr<MlVerticesObject>> getVertices();
 	[[nodiscard]] std::vector<Trigger<int>>& editCollision() noexcept;
 	[[nodiscard]] const std::vector<Trigger<int>>& getCollision() const noexcept;
 	void addCollision(Trigger<int> addedCollision);
@@ -65,7 +65,7 @@ protected:
 
 private:
 	std::vector<Trigger<int>> collisions;
-	std::shared_ptr<MgeDrawable> drawableItem;
+	std::shared_ptr<MlVerticesObject> drawableItem;
 	FRAME_OBJECT frameObject = false;
 
 	std::function<void()> onCursorEnter = nullptr;

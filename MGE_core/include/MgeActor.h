@@ -36,9 +36,13 @@ public:
 
 	[[nodiscard]] FPoint getAbsolutePosition() const noexcept;
 	[[nodiscard]] const FPoint& getRelativePosition() const noexcept;
-
 	void setAbsolutePosition(const FPoint& position) noexcept;
 	void setRelativePosition(const FPoint& position) noexcept;
+
+	[[nodiscard]] float getAbsoluteRotation() const noexcept;
+	[[nodiscard]] float getRelativeRotation() const noexcept;
+	void setAbsoluteRotation(float rotation) noexcept;
+	void setRelativeRotation(float rotation) noexcept;
 
 private:
 
@@ -55,6 +59,8 @@ public:
 	std::vector<std::shared_ptr<MgeBasicComponent>>& editComponents() noexcept;
 	std::optional<std::shared_ptr<MgeBasicComponent>> editComponent(ComponentType type) noexcept;
 
+	void addComponent(std::shared_ptr<MgeBasicComponent> newComponent);
+
 private:
 	std::vector<std::shared_ptr<MgeBasicComponent>> m_components;
 };
@@ -64,20 +70,36 @@ class MgeActor : public MgeBasicActor
 public:
 	MgeActor(FPoint pos, std::shared_ptr<MgeActor> parent = std::shared_ptr<MgeActor>())
 	{
-		defaultActorData.setRelativePosition(pos);
-		defaultActorData.setParent(parent);
+		createMgeDefaultComponent();
+
+		setRelativePosition(pos);
+		setParent(parent);
 	}
 
 	void setRelativePosition(const FPoint& newPosition) noexcept;
 	void setAbsolutePosition(const FPoint& newPosition) noexcept;
-
 	[[nodiscard]] const FPoint& getRelativePosition() const noexcept;
 	[[nodiscard]] FPoint getAbsolutePosition() const noexcept;
+
+	void setAbsoluteRotation(float rotation);
+	void setRelativeRotation(float rotation);
+	[[nodiscard]] float getRelativeRotation() const noexcept;
+	[[nodiscard]] float getAbsoluteRotation() const noexcept;
+
+	void setParent(const std::shared_ptr<MgeActor>& newParent = std::shared_ptr<MgeActor>()) noexcept;
+	[[nodiscard]] std::optional<const std::shared_ptr<MgeActor>> getParent() const noexcept;
+	[[nodiscard]] const std::vector<std::shared_ptr<MgeActor>>& getChildren() const noexcept;
+	[[nodiscard]] std::vector<std::shared_ptr<MgeActor>>& editChildren() noexcept;
+	void addChild(const std::shared_ptr<MgeActor>& child) noexcept;
+	[[nodiscard]] bool removeChild(std::shared_ptr<MgeActor>& child);
+	[[nodiscard]] bool removeChild(MgeObjectId childId);
 
 	MgeDefaultComponent& editMgeDefaultComponent() noexcept;
 	const MgeDefaultComponent& getMgeDefaultComponent() const noexcept;
 
 private:
-	MgeDefaultComponent defaultActorData;
+	void createMgeDefaultComponent();
+
+	std::shared_ptr<MgeDefaultComponent> defaultActorData;
 };
 

@@ -36,3 +36,13 @@ void MgeTransform::setSize(const FSize& size) noexcept
 {
 	m_transform.setSize(size);
 }
+
+[[nodiscard]] float MgeTransform::getRotation() const noexcept
+{
+	return m_transform.getRotation();
+}
+
+void MgeTransform::setRotation(float rotation)
+{
+	m_transform.setRotation(rotation);
+}

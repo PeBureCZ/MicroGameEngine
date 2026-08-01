@@ -167,7 +167,7 @@ namespace ML_wrapper
 		return std::nullopt;
     }
 
-    const DPoint& MlGameWrapper::getCursorWorldPosition() const noexcept
+    const FPoint& MlGameWrapper::getCursorWorldPosition() const noexcept
     {
         return cursorWorldPosition;
     }
@@ -230,10 +230,10 @@ namespace ML_wrapper
         sf::Vector2i mousePixel = sf::Mouse::getPosition(*mainWindow);
         sf::Vector2f mouseWorld = mainWindow->mapPixelToCoords(mousePixel, worldView);
         sf::Vector2f mouseGui = mainWindow->mapPixelToCoords(mousePixel, guiView);
-        cursorWorldPosition = DPoint
+        cursorWorldPosition = FPoint
         (
-            static_cast<double>(std::lround(mouseWorld.x)),
-            static_cast<double>(std::lround(mouseWorld.y))
+            static_cast<float>(std::lround(mouseWorld.x)),
+            static_cast<float>(std::lround(mouseWorld.y))
 		);
         cursorGuiPosition = IPoint
             (
@@ -521,5 +521,41 @@ namespace ML_wrapper
     }
 
 } //ML_wrapper namespace end
+
+
+
+bool ml::removeVertices(const std::shared_ptr<MlVerticesObject>& vertices)
+{
+    _ASSERT(vertices);
+    if (vertices)
+        return ML_wrapper::getGlobalGameWrapper()->removeMlVerticesObject(vertices, vertices->getLayer());
+    return false;
+}
+
+bool ml::addVertices(const std::shared_ptr<MlVerticesObject>& vertices)
+{
+    _ASSERT(vertices);
+    if (vertices)
+        return ML_wrapper::getGlobalGameWrapper()->addMlVerticesObject(vertices);
+    return false;
+}
+
+void ml::setVerticesColor(const std::shared_ptr<MlVerticesObject> vertices, const mgeType::Color_RGBA& newColor)
+{
+    ML_wrapper::getGlobalGameWrapper()->setMlVerticesColor(vertices, newColor);
+}
+
+void ml::setVerticesPosition(const std::shared_ptr<MlVerticesObject> vertices, const FPoint& newPos)
+{
+    _ASSERT(vertices);
+    if (vertices)
+        ML_wrapper::getGlobalGameWrapper()->setMlVerticesPosition(vertices, newPos, vertices->getLayer());
+}
+
+FPoint ml::getCursorPosition() noexcept
+{
+    return ML_wrapper::getGlobalGameWrapper()->getCursorWorldPosition();
+}
+
 
 

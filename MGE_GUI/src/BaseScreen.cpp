@@ -54,7 +54,7 @@ void BaseScreen::wheelScrollEventCall(WheelScroll scroll)
 
 FPoint BaseScreen::getRelativeFromCursor()
 {
-	return getGameWrapper()->getCursorWorldPosition().asFloat();
+	return getGameWrapper()->getCursorWorldPosition();
 }
 
 void BaseScreen::addEvent(ScreenEvent event)

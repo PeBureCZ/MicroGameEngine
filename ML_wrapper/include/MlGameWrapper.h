@@ -50,7 +50,7 @@ namespace ML_wrapper
 
         std::optional<size_t> getLayerOfMlVerticesObject(std::variant<VerticesId, const std::shared_ptr<MlVerticesObject>> vertices, std::optional<size_t> knownLayer = std::nullopt);
 
-        [[nodiscard]] const DPoint& getCursorWorldPosition() const noexcept;
+        [[nodiscard]] const FPoint& getCursorWorldPosition() const noexcept;
         [[nodiscard]] const IPoint& getCursorGuiPosition() const noexcept;
         [[nodiscard]] std::optional<MlText> createText(std::string newText, unsigned int charSize_pxls = 30, FPoint position = FPoint()) noexcept;
         [[nodiscard]] ImageHolder& getImageHolder() noexcept;
@@ -95,7 +95,7 @@ namespace ML_wrapper
 
         std::shared_ptr<sf::Font> defaultFont;
 
-        DPoint cursorWorldPosition;
+        FPoint cursorWorldPosition;
         IPoint cursorGuiPosition;
 
         // Scale factor management - ensure correct scaling of ML elements on different resolutions / view sizes
@@ -107,5 +107,13 @@ namespace ML_wrapper
     std::shared_ptr<ML_wrapper::MlGameWrapper> getGlobalGameWrapper();
 }
 
+namespace ml
+{
+    [[nodiscard]] bool removeVertices(const std::shared_ptr<MlVerticesObject>& vertices);
+    [[nodiscard]] bool  addVertices(const std::shared_ptr<MlVerticesObject>& vertices);
+    void setVerticesColor(const std::shared_ptr<MlVerticesObject> vertices, const mgeType::Color_RGBA& newColor);
+    void setVerticesPosition(const std::shared_ptr<MlVerticesObject> vertices, const FPoint& newPos);
+    [[nodiscard]] FPoint getCursorPosition() noexcept;
+}
 
                                                                       

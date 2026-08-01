@@ -27,17 +27,7 @@ public:
     void moveAbsolutePosition(const FPoint& newPos);
 
     [[nodiscard]] size_t getLayer() const noexcept;
-
-#ifdef _DEBUG
-    void setLayer(size_t newLayer)
-    {
-        m_layer = newLayer;
-    }
-#endif
-
-
     [[nodiscard]] const sf::RenderStates& getRenderState() const noexcept;
-
     [[nodiscard]] std::shared_ptr<MlVerticesObject> createCopyWithNewLayer(size_t newLayer) const noexcept;
 
 private:

@@ -37,12 +37,12 @@ void Button::setMouseOverButtonColor(const mgeType::Color_RGBA& newColor)
 		setColor(mouseOverColor);
 }
 
-void Button::setOnLMBClick(Callback clickFunction) noexcept
+void Button::setOnLMBClick(Callback_deprecated clickFunction) noexcept
 {
 	onLMBClick  = std::move(clickFunction);
 }
 
-void Button::setOnRMBClick(Callback clickFunction) noexcept
+void Button::setOnRMBClick(Callback_deprecated clickFunction) noexcept
 {
 	onRMBClick = std::move(clickFunction);
 }

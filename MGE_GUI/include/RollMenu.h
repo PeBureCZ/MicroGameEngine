@@ -11,7 +11,7 @@ class RollMenu : public Frame
 public: 
 	RollMenu(IPoint newPosition, mgeType::Size<int> newSize = mgeType::Size<int>(100,60), std::string text = "");
 
-	std::shared_ptr<Button> addRollButton(std::string butText, Callback onLMBClickFunc = nullptr, Callback onRMBClickFunc = nullptr);
+	std::shared_ptr<Button> addRollButton(std::string butText, Callback_deprecated onLMBClickFunc = nullptr, Callback_deprecated onRMBClickFunc = nullptr);
 	std::shared_ptr<Button> getMainButton();
 
 	void setAutoOpen(bool newAutoOpen) noexcept;

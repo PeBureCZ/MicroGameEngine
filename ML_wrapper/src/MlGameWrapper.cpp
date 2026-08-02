@@ -339,7 +339,7 @@ namespace ML_wrapper
     {
 		auto guiSprites_opt = imageHolder.getGuiSprites();
         if (guiSprites_opt.has_value() && guiSprites_opt.value()) //opt_ptr -> raw ptr!
-         {
+        {
 			const auto* guiSprites = guiSprites_opt.value();
             auto it = guiSprites->find(id);
             if (it != guiSprites->end())
@@ -408,7 +408,7 @@ namespace ML_wrapper
     {
 		defaultFont = std::make_shared<sf::Font>();
 
-		const std::string fontPath = tsmCore::getExecutablePath() + "\\Fonts\\NotoSerifGeorgian-Regular.ttf";
+		const std::string fontPath = mgeCore::getExecutablePath() + "\\Fonts\\NotoSerifGeorgian-Regular.ttf";
 
         if (!defaultFont->openFromFile(fontPath))
             {_ASSERT(false); } //font loading failed

@@ -13,7 +13,7 @@
 #include "GuiDependencies.h"
 
 class Button;
-using Callback = std::function<void()>;
+using Callback_deprecated = std::function<void()>;
 
 template<typename T>
 class Trigger;
@@ -45,7 +45,7 @@ public:
 	void setOrigin(IPoint newOrigin);
 
 	//to define function which will be call when mouse is over the widget
-	void setOnCursorOver(Callback cursorEnterFunction, Callback cursorLeaveFunction = nullptr);
+	void setOnCursorOver(Callback_deprecated cursorEnterFunction, Callback_deprecated cursorLeaveFunction = nullptr);
 
 	//function is called automatically from GUI
 	void setUnderMouseCursor(bool isUnderMouse);

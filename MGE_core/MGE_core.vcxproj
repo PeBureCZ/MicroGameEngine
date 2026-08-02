@@ -29,6 +29,7 @@
     <ClInclude Include="include\BasicShapes.h" />
     <ClInclude Include="include\BasicTypes.h" />
     <ClInclude Include="include\CollisionHandler.h" />
+    <ClInclude Include="include\EventSystem.h" />
     <ClInclude Include="include\EventTable.h" />
     <ClInclude Include="include\GlobalFunctions.h" />
     <ClInclude Include="include\MgeActor.h" />

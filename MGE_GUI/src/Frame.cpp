@@ -170,7 +170,7 @@ void Frame::setOrigin(IPoint newOrigin)
 		_ASSERT(false); //unhandled
 }
 
-void Frame::setOnCursorOver(Callback cursorEnterFunction, Callback cursorLeaveFunction)
+void Frame::setOnCursorOver(Callback_deprecated cursorEnterFunction, Callback_deprecated cursorLeaveFunction)
 {
 	onCursorEnter = std::move(cursorEnterFunction);
 	onCursorLeave = std::move(cursorLeaveFunction);

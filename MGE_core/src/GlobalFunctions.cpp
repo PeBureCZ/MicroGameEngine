@@ -1,10 +1,11 @@
-
 #include "GlobalFunctions.h"
+
+#include <deque>
 
 static bool mainThreadRun = false;
 static std::thread::id mainThreadId;
 
-namespace tsmCore
+namespace mgeCore
 {
     [[nodiscard]] std::string getExecutablePath(bool includeExeName)
     {

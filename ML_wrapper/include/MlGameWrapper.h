@@ -114,6 +114,6 @@ namespace ml
     void setVerticesColor(const std::shared_ptr<MlVerticesObject> vertices, const mgeType::Color_RGBA& newColor);
     void setVerticesPosition(const std::shared_ptr<MlVerticesObject> vertices, const FPoint& newPos);
     [[nodiscard]] FPoint getCursorPosition() noexcept;
-}
+} //namespace ml end
 
                                                                       

@@ -28,8 +28,8 @@ public:
 	void setDefaultButtonColor(const mgeType::Color_RGBA& newColor = DEFAULT_FRAME_COLOR);
 	void setMouseOverButtonColor(const mgeType::Color_RGBA& newColor = MOUSE_OVER_FRAME_COLOR);
 
-	void setOnLMBClick(Callback clickFunction) noexcept;
-	void setOnRMBClick(Callback clickFunction) noexcept;
+	void setOnLMBClick(Callback_deprecated clickFunction) noexcept;
+	void setOnRMBClick(Callback_deprecated clickFunction) noexcept;
 
 	void onLmbClickCall() noexcept;
 	void onRmbClickCall() noexcept;

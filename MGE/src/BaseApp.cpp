@@ -4,6 +4,8 @@
 #include "ScreenEvent.h"
 #include "EventTable.h"
 #include "BaseScreen.h"
+#include "GlobalFunctions.h"
+#include "EventSystem.h"
 
 BaseApp::BaseApp()
 {
@@ -104,10 +106,21 @@ bool BaseApp::isRunning() const
 
 void BaseApp::runApp()
 {
+    mgeCore::setThisThreadAsMain();
+    _ASSERT(mgeCore::mainThreadIsSet());
     std::chrono::duration<double> delta_sec(0.0);
+
     while (isRunning())
     {
         auto tick_start = std::chrono::high_resolution_clock::now();
+        if (!getEventSystem().isEmpty())
+        {
+            auto event = getEventSystem().pullEvent();
+			_ASSERT(event);
+            if (event)
+                getEventSystem().publishEvent(*event);
+        }
+
         tickApplication(delta_sec.count());
         auto tick_end = std::chrono::high_resolution_clock::now();
         delta_sec = tick_end - tick_start;

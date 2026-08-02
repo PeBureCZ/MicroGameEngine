@@ -6,7 +6,7 @@ RollMenu::RollMenu(IPoint newPosition, mgeType::Size<int> newSize, std::string t
 	mainButtonText = text;
 }
 
-std::shared_ptr<Button> RollMenu::addRollButton(std::string butText, Callback onLMBClickFunc, Callback onRMBClickFunc)
+std::shared_ptr<Button> RollMenu::addRollButton(std::string butText, Callback_deprecated onLMBClickFunc, Callback_deprecated onRMBClickFunc)
 {
 	getMainButton(); //generate main but if not exist
 

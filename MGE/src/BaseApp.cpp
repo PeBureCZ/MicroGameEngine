@@ -116,9 +116,7 @@ void BaseApp::runApp()
         if (!getEventSystem().isEmpty())
         {
             auto event = getEventSystem().pullEvent();
-			_ASSERT(event);
-            if (event)
-                getEventSystem().publishEvent(*event);
+            getEventSystem().publishEvent(event);
         }
 
         tickApplication(delta_sec.count());

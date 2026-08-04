@@ -8,36 +8,72 @@
 #include <unordered_map>
 #include <mutex>
 #include <functional>
+#include <any>
 
 #include "GlobalFunctions.h"
 
-constexpr uint64_t SECTION_WIDTH = 10000;
 
-enum EventSystemType : uint64_t
+enum MgeEventType : uint64_t
 {
-    unknown = 0,
-    gui_Section = SECTION_WIDTH,
-    lastReserved = (SECTION_WIDTH * 2) - 1
+    MgeEventType_None = 0,
+
+	//GUI events?
+
+    //lastReserved = 20000
+
+	//user-defined events?
 };
 
-class BaseEvent
+//struct TemplatedEvent
+//{
+//    static constexpr uint64_t Type = 12345;
+//    std::string data = "test";
+//};
+
+class EventDataHandler
 {
 public:
-
-    [[nodiscard]] virtual uint64_t getType() const = 0;
-    [[nodiscard]] uint64_t getSection() const
+    template<typename T>
+    EventDataHandler(T data)
+        : m_type(T::Type),
+        m_data(std::move(data))
     {
-        return static_cast<uint64_t>(getType()) / SECTION_WIDTH;
     }
 
-    virtual ~BaseEvent() = default;
+    EventDataHandler()
+    {
+		m_type = 0;
+        m_data = 0;
+    }
+
+    uint64_t getType() const
+    { 
+        return m_type;
+    }
+
+    EventDataHandler(EventDataHandler&&) = default;
+    EventDataHandler& operator=(EventDataHandler&&) = default;
+    EventDataHandler(const EventDataHandler&) = delete;
+    EventDataHandler& operator=(const EventDataHandler&) = delete;
+
+    template<typename T>
+    [[nodiscard]] const T& get() const noexcept
+    {
+        _ASSERT(m_type == T::Type);
+        const auto* ptr = std::any_cast<T>(&m_data);
+        _ASSERT(ptr);
+        return *ptr;
+    }
+
+private:
+    uint64_t m_type;
+    std::any m_data;
 };
 
-using Callback = std::function<void(const BaseEvent&)>;
+using Callback = std::function<void(const EventDataHandler&)>;
 
 struct LifetimeToken
 {
-    uint64_t type = EventSystemType::unknown;
     std::weak_ptr<void> m_observerLifetime;
 
     [[nodiscard]] bool IsAlive() const
@@ -63,12 +99,6 @@ public:
     Callback m_EventSystemCallback;
 };
 
-template<typename T>
-LifetimeToken MakeObserverToken(uint64_t type, const ObserverLifetime& lifetime)
-{
-    return { type, lifetime.alive };
-}
-
 class UdmEventSystem
 {
 public:
@@ -77,27 +107,23 @@ public:
         workerThread = std::thread([this] {eventSystemGarbageCollector(); });
     }
 
-    [[nodiscard]] std::unique_ptr<BaseEvent> pullEvent()
+    [[nodiscard]] EventDataHandler pullEvent()
     {
         std::lock_guard<std::mutex> lock(eventSystemMutex);
         if (eventQueue.empty())
-            return nullptr;
-        std::unique_ptr<BaseEvent> event = std::move(eventQueue.front());
+            return {};
+        EventDataHandler event = std::move(eventQueue.front());
         eventQueue.pop_front();
         emptyEventQue.store(eventQueue.empty());
         return event;
     }
-
-    void pushEvent(std::unique_ptr<BaseEvent> event)
+    
+    template<typename T>
+    void pushEvent(T&& event)
     {
-        _ASSERT(event);
-        if (!event)
-            return;
-
-        std::lock_guard<std::mutex> lock(eventSystemMutex);
-        eventQueue.push_back(std::move(event));
-        emptyEventQue.store(eventQueue.empty());
-
+        std::lock_guard lock(eventSystemMutex);
+        eventQueue.emplace_back(std::forward<T>(event));
+        emptyEventQue.store(false);
 		cv.notify_one();
     }
 
@@ -112,14 +138,17 @@ public:
 		return emptyEventQue.load();
     }
 
+    template<typename Event>
     void addEventSystemCallback(const LifetimeToken& token, Callback cb)
     {
         //WARNING: could be run in child thread!!
         std::lock_guard lock(subscriptionMutex);
-        subscriptions[token.type].push_back(std::make_shared<Subscription>(token, std::move(cb)));
+
+		uint64_t eventType = Event::Type;
+        subscriptions[eventType].push_back(std::make_shared<Subscription>(token, std::move(cb)));
     }
 
-    std::vector<std::shared_ptr<Subscription>> getCopyOfEventSystemCallbacks(const BaseEvent& e)
+    std::vector<std::shared_ptr<Subscription>> getCopyOfEventSystemCallbacks(const EventDataHandler& e)
     {
         MAIN_THREAD_GUARD;
         if (!mgeCore::isMainThread()) // Cannot copy EventSystemCallbacks from a worker thread because the GUI element could be destroyed during the EventSystemCallback.
@@ -132,7 +161,7 @@ public:
         return {};
     }
 
-    void publishEvent(const BaseEvent& e)
+    void publishEvent(const EventDataHandler& e)
     {
         MAIN_THREAD_GUARD;
         if (!mgeCore::isMainThread()) // Cannot use EventSystemCallbacks from a worker thread because the GUI element could be destroyed during the EventSystemCallback.
@@ -211,7 +240,7 @@ private:
 	std::atomic<bool> emptyEventQue{ true };
     std::thread workerThread;
     std::mutex eventSystemMutex;
-    std::deque<std::unique_ptr<BaseEvent>> eventQueue;
+    std::deque<EventDataHandler> eventQueue;
     std::mutex subscriptionMutex;
     std::unordered_map<uint64_t, std::vector<std::shared_ptr<Subscription>>> subscriptions;
     std::atomic<bool> running{ true };
@@ -258,18 +287,18 @@ public:
     ObserverTokens() = default;
 
     template<typename Event, typename F>
-    void addToken(uint64_t type, F&& f)
+    void addToken(F&& f)
     {
         Callback cb =
-            [func = std::forward<F>(f)](const BaseEvent& e)
+            [func = std::forward<F>(f)](const EventDataHandler& e)
             {
-                func(static_cast<const Event&>(e));
+                func(e.get<Event>());
             };
 
         auto lifetime = std::make_shared<ObserverLifetime>();
-        LifetimeToken observer{ type, lifetime->alive };
+        LifetimeToken observer{ lifetime->alive };
 
-        getEventSystem().addEventSystemCallback(observer, std::move(cb));
+        getEventSystem().addEventSystemCallback<Event>(observer, std::move(cb));
         m_lifetimes.push_back(std::move(lifetime));
     }
 

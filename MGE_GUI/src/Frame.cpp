@@ -48,7 +48,7 @@ void Frame::setVertices(const std::shared_ptr<MlVerticesObject>& newVertices) no
 	drawableItem = newVertices;
 }
 
-std::optional<std::shared_ptr<MlVerticesObject>> Frame::getVertices()
+std::optional<std::shared_ptr<MlVerticesObject>> Frame::getVertices() const noexcept
 {
 	if (drawableItem)
 		return drawableItem;

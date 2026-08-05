@@ -29,7 +29,7 @@ public:
 
 	void setImage(TextureId textureId);
 	void setVertices(const std::shared_ptr<MlVerticesObject>& newVertices) noexcept;
-	[[nodiscard]] std::optional< std::shared_ptr<MlVerticesObject>> getVertices();
+	[[nodiscard]] std::optional< std::shared_ptr<MlVerticesObject>> getVertices() const noexcept;
 	[[nodiscard]] std::vector<Trigger<int>>& editCollision() noexcept;
 	[[nodiscard]] const std::vector<Trigger<int>>& getCollision() const noexcept;
 	void addCollision(Trigger<int> addedCollision);

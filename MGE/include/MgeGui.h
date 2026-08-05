@@ -48,14 +48,15 @@ public:
 	[[nodiscard]] bool isCursorBlockedByGui() const noexcept;
 
 private:
-std::shared_ptr<ML_wrapper::MlGameWrapper> sharedMlGameWrapper;
-std::vector<std::shared_ptr<Widget>> guiWidgets;
-std::shared_ptr<Widget> actualBlockWidget;
+	std::shared_ptr<ML_wrapper::MlGameWrapper> sharedMlGameWrapper;
+	std::vector<std::shared_ptr<Widget>> guiWidgets;
+	std::shared_ptr<Widget> actualBlockWidget;
 
-SCREEN_EVENTS screenEvents; 
+	SCREEN_EVENTS screenEvents; 
 
-	bool sendGuiCollision(const std::vector<std::shared_ptr<MgeActor>>& guiWidgets, const IPoint& cursorPos);
-
+	void tickScreenChildren(const BaseScreen& screen);
 	void tickWidgets(const std::vector<std::shared_ptr<MgeActor>>& widgets);
+	void drawFrameObjects(const Frame& frame);
+	[[nodiscard]] bool checkWidgetBlocking(const Frame& frame) const noexcept;
 };
 

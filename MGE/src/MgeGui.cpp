@@ -26,46 +26,23 @@ void MgeGui::TickScreen(BaseScreen& screen, double delta)
     }
 
     screen.tickEvent(delta);
-
     sharedMlGameWrapper->setDrawToGuiView();
-
-    auto& cursorPos = sharedMlGameWrapper->getCursorGuiPosition();
-
-    //widget collisions
-    auto blockedCollision = sendGuiCollision(screen.getChildren(), cursorPos);
-    if (actualBlockWidget && !blockedCollision)
-        actualBlockWidget = nullptr;
-
-    tickWidgets(screen.getChildren());
+    tickScreenChildren(screen);
 }
 
 void MgeGui::tickWidgets(const std::vector<std::shared_ptr<MgeActor>>& widgets)
 {
-    auto tickFrame = [&](const std::shared_ptr<Frame> frame)
+    auto tickFrame = [&](const std::shared_ptr<Frame>& frame)
         {
             if (!frame)
             {
                 _ASSERT(false); // pointer should never be null
                 return;
             }
-            const auto& frameObject = frame->getFrameObject();
 
-            if (std::holds_alternative<std::shared_ptr<MlImage>>(frameObject))
-            {
-                auto& image = std::get<std::shared_ptr<MlImage>>(frameObject);
-                sharedMlGameWrapper->drawGuiSprite(image->getSpriteID());
-            }
-            else if (std::holds_alternative<DrawableObject<float>>(frameObject))
-            {
-                auto vertices_opt = frame->getVertices();
-                if (vertices_opt.has_value() && vertices_opt.value())
-                    sharedMlGameWrapper->drawGuiVertices(vertices_opt.value());
-            }
-            else
-            {} // nothing to draw
-
-            for (const auto& text : frame->getTextsFromFrame())
-                sharedMlGameWrapper->drawText(text.second);
+            drawFrameObjects(*frame);
+			if (checkWidgetBlocking(*frame))
+				actualBlockWidget = frame; //could be replaced by another widget above this one if multiple widgets are under cursor, but this is expected behavior
         };
 
     for (const auto& mgeActor : widgets)
@@ -117,67 +94,58 @@ bool MgeGui::isCursorBlockedByGui() const noexcept
     return (actualBlockWidget.use_count() != 0);
 }
 
-bool MgeGui::sendGuiCollision
-    (const std::vector<std::shared_ptr<MgeActor>>& guiWidgets, const IPoint& cursorPos)
+void MgeGui::tickScreenChildren(const BaseScreen& screen)
 {
-    if (guiWidgets.empty())
-        return false;
+    const std::shared_ptr<Widget> lastBlockWidget = actualBlockWidget;
+	actualBlockWidget.reset(); //will be set again if any widget is under cursor
+    tickWidgets(screen.getChildren());
 
-    bool blocked = false;
+    if (lastBlockWidget != actualBlockWidget && lastBlockWidget)
+	{ //if lastBlockWidget is not null and is different from actualBlockWidget, it means cursor left the last widget
+        if (const auto& releasedFrame = std::dynamic_pointer_cast<Frame>(lastBlockWidget))
+            releasedFrame->setUnderMouseCursor(false);
+    }
 
-    //need to check collisions in the oposite order (the top view widget is in last vector position)  
-    for (int i = static_cast<int>(guiWidgets.size() - 1); i >= 0; --i)
+    if (actualBlockWidget)
+	{ //if actualBlockWidget is not null, it means cursor is over the widget
+        if (const auto& frame = std::dynamic_pointer_cast<Frame>(actualBlockWidget))
+            frame->setUnderMouseCursor(true);
+    }
+}
+
+void MgeGui::drawFrameObjects(const Frame& frame)
+{
+    const auto& frameObject = frame.getFrameObject();
+
+    if (std::holds_alternative<std::shared_ptr<MlImage>>(frameObject))
     {
-        const auto& mgeActor = guiWidgets[i];
-        if (!mgeActor)
+        auto& image = std::get<std::shared_ptr<MlImage>>(frameObject);
+        sharedMlGameWrapper->drawGuiSprite(image->getSpriteID());
+    }
+    else if (std::holds_alternative<DrawableObject<float>>(frameObject))
+    {
+        auto vertices_opt = frame.getVertices();
+        if (vertices_opt.has_value() && vertices_opt.value())
+            sharedMlGameWrapper->drawGuiVertices(vertices_opt.value());
+    }
+    else
+    {
+    } // nothing to draw
+
+    for (const auto& text : frame.getTextsFromFrame())
+        sharedMlGameWrapper->drawText(text.second);
+}
+
+bool MgeGui::checkWidgetBlocking(const Frame& frame) const noexcept
+{
+    if (frame.getIsVisible())
+    {
+        auto& cursorPos = sharedMlGameWrapper->getCursorGuiPosition();
+        for (const auto& col : frame.getCollision())
         {
-            _ASSERT(false); // pointer should never be null
-            continue;
-        }
-
-        auto widget = std::dynamic_pointer_cast<Widget>(mgeActor);
-        if (!widget || !widget->getIsVisible())
-            continue;
-
-        bool collided = false;
-        if (const auto& frame = std::dynamic_pointer_cast<Frame>(widget))
-        { //ALL FRAME DERIVED COLLISION
-            for (const auto& col : frame->getCollision())
-            {
-                bool enabledCol = col.getEnabled();
-                collided = enabledCol && col.isPointInside(cursorPos);
-                if (collided)
-                {
-                    bool isBlockingCol = col.getBlocking();
-                    if (!frame->isUnderCursor())
-                    {
-                        frame->setUnderMouseCursor(true);
-                        if (widget != actualBlockWidget && isBlockingCol)
-                        {
-                            if (const auto& releasedFrame = std::dynamic_pointer_cast<Frame>(actualBlockWidget))
-                                releasedFrame->setUnderMouseCursor(false);
-                            actualBlockWidget = widget;
-                        }
-                    }
-                    if (isBlockingCol)
-                        return true;
-                }
-                
-            }
-            if (!collided && frame->isUnderCursor())
-                frame->setUnderMouseCursor(false);
-        }
-
-        if (widget->getChildren().size() > 0)
-        {
-            blocked = sendGuiCollision(widget->getChildren(), cursorPos);
-            if (blocked)
+            if (col.getEnabled() && col.getBlocking() && col.isPointInside(cursorPos))
                 return true;
         }
     }
-
-    return blocked;
+    return false;
 }
-
-
-

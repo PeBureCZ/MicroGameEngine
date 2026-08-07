@@ -16,12 +16,10 @@
 enum MgeEventType : uint64_t
 {
     MgeEventType_None = 0,
+    //add here...
 
-	//GUI events?
-
-    //lastReserved = 20000
-
-	//user-defined events?
+    lastMgeReserved = 20000
+	//user-defined events below...
 };
 
 //struct TemplatedEvent

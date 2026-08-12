@@ -22,9 +22,11 @@ enum MgeEventType : uint64_t
 	//user-defined events below...
 };
 
+#define MGE_EVENT_TYPE static constexpr uint64_t mgeEventType
+
 //struct TemplatedEvent
 //{
-//    static constexpr uint64_t Type = 12345;
+//    MGE_EVENT_TYPE = MgeEventType::lastMgeReserved + 1; // Example event type
 //    std::string data = "test";
 //};
 
@@ -33,7 +35,7 @@ class EventDataHandler
 public:
     template<typename T>
     EventDataHandler(T data)
-        : m_type(T::Type),
+        : m_type(T::mgeEventType),
         m_data(std::move(data))
     {
     }
@@ -57,7 +59,7 @@ public:
     template<typename T>
     [[nodiscard]] const T& get() const noexcept
     {
-        _ASSERT(m_type == T::Type);
+        _ASSERT(m_type == T::mgeEventType);
         const auto* ptr = std::any_cast<T>(&m_data);
         _ASSERT(ptr);
         return *ptr;
@@ -74,7 +76,7 @@ struct LifetimeToken
 {
     std::weak_ptr<void> m_observerLifetime;
 
-    [[nodiscard]] bool IsAlive() const
+    [[nodiscard]] bool isAlive() const
     {
         return !m_observerLifetime.expired();
     }
@@ -142,7 +144,7 @@ public:
         //WARNING: could be run in child thread!!
         std::lock_guard lock(subscriptionMutex);
 
-		uint64_t eventType = Event::Type;
+		uint64_t eventType = Event::mgeEventType;
         subscriptions[eventType].push_back(std::make_shared<Subscription>(token, std::move(cb)));
     }
 
@@ -168,7 +170,7 @@ public:
         auto EventSystemCallbacks = getCopyOfEventSystemCallbacks(e);
         for (auto& sub : EventSystemCallbacks)
         {
-            if (sub->m_token.IsAlive())
+            if (sub->m_token.isAlive())
             {
                 try
                 {

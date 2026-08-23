@@ -4,16 +4,16 @@ BaseScreen::BaseScreen(SCREEN_EVENTS eventDeque)
 	: Widget(IPoint(), mgeType::Size<int>())
 {
 	_ASSERT(eventDeque);
-	mlGameWrapper = ML_wrapper::getGlobalGameWrapper();
+	mlWrapper = ML_wrapper::getGlobalMlWrapper();
 	screenEvents = eventDeque;
 }
 
-std::shared_ptr<ML_wrapper::MlGameWrapper> BaseScreen::getGameWrapper()
+std::shared_ptr<ML_wrapper::MlWrapper> BaseScreen::getMlWrapper()
 {
-	if (auto gameWrapper = mlGameWrapper.lock())
+	if (auto gameWrapper = mlWrapper.lock())
 		return gameWrapper;
 	_ASSERT(false);
-	return std::make_shared<ML_wrapper::MlGameWrapper>();
+	return std::make_shared<ML_wrapper::MlWrapper>();
 }
 
 void BaseScreen::lmbPressEvent(IPoint pos)
@@ -54,7 +54,7 @@ void BaseScreen::wheelScrollEventCall(WheelScroll scroll)
 
 FPoint BaseScreen::getRelativeFromCursor()
 {
-	return getGameWrapper()->getCursorWorldPosition();
+	return getMlWrapper()->getCursorWorldPosition();
 }
 
 void BaseScreen::addEvent(ScreenEvent event)

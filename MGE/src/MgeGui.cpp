@@ -5,46 +5,33 @@
 #include "RollMenu.h"
 #include "BaseScreen.h"
 
-#include "MlGameWrapper.h"
+#include "MlWrapper.h"
 #include "BasicTypes.h"
-#include "MlImage.h"
-#include "MlText.h"
+#include "MgeImage.h"
+#include "MgeText.h"
 #include "BaseApp.h"
 
 MgeGui::MgeGui()
 {
     screenEvents = std::make_shared<std::deque<ScreenEvent>>();
-    sharedMlGameWrapper = ML_wrapper::getGlobalGameWrapper();
+    sharedMlWrapper = ML_wrapper::getGlobalMlWrapper();
 }
 
 void MgeGui::TickScreen(BaseScreen& screen, double delta)
 {
-    if (!sharedMlGameWrapper)
+    if (!sharedMlWrapper)
     {
         _ASSERT(false); //wrong ptr management
         return;
     }
 
     screen.tickEvent(delta);
-    sharedMlGameWrapper->setDrawToGuiView();
+    sharedMlWrapper->setDrawToGuiView();
     tickScreenChildren(screen);
 }
 
 void MgeGui::tickWidgets(const std::vector<std::shared_ptr<MgeActor>>& widgets)
 {
-    auto tickFrame = [&](const std::shared_ptr<Frame>& frame)
-        {
-            if (!frame)
-            {
-                _ASSERT(false); // pointer should never be null
-                return;
-            }
-
-            drawFrameObjects(*frame);
-			if (checkWidgetBlocking(*frame))
-				actualBlockWidget = frame; //could be replaced by another widget above this one if multiple widgets are under cursor, but this is expected behavior
-        };
-
     for (const auto& mgeActor : widgets)
     {
         if (!mgeActor)
@@ -58,7 +45,10 @@ void MgeGui::tickWidgets(const std::vector<std::shared_ptr<MgeActor>>& widgets)
             continue;
 
         if (const auto& frame = std::dynamic_pointer_cast<Frame>(widget))
-            tickFrame(frame);
+        {
+            if (checkWidgetBlocking(*frame))
+                actualBlockWidget = frame; //could be replaced by another widget above this one if multiple widgets are under cursor, but this is expected behavior
+        }
 
         tickWidgets(widget->getChildren());
     }
@@ -113,34 +103,11 @@ void MgeGui::tickScreenChildren(const BaseScreen& screen)
     }
 }
 
-void MgeGui::drawFrameObjects(const Frame& frame)
-{
-    const auto& frameObject = frame.getFrameObject();
-
-    if (std::holds_alternative<std::shared_ptr<MlImage>>(frameObject))
-    {
-        auto& image = std::get<std::shared_ptr<MlImage>>(frameObject);
-        sharedMlGameWrapper->drawGuiSprite(image->getSpriteID());
-    }
-    else if (std::holds_alternative<DrawableObject<float>>(frameObject))
-    {
-        auto vertices_opt = frame.getVertices();
-        if (vertices_opt.has_value() && vertices_opt.value())
-            sharedMlGameWrapper->drawGuiVertices(vertices_opt.value());
-    }
-    else
-    {
-    } // nothing to draw
-
-    for (const auto& text : frame.getTextsFromFrame())
-        sharedMlGameWrapper->drawText(text.second);
-}
-
 bool MgeGui::checkWidgetBlocking(const Frame& frame) const noexcept
 {
     if (frame.getIsVisible())
     {
-        auto& cursorPos = sharedMlGameWrapper->getCursorGuiPosition();
+        auto& cursorPos = sharedMlWrapper->getCursorGuiPosition();
         for (const auto& col : frame.getCollision())
         {
             if (col.getEnabled() && col.getBlocking() && col.isPointInside(cursorPos))

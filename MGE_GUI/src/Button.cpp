@@ -1,6 +1,6 @@
 #include "Button.h"
 
-#include "MlText.h"
+#include "MgeText.h"
 
 Button::Button(const IPoint& newPosition, mgeType::Size<int> newSize)
 	: Frame(newPosition, newSize)
@@ -35,6 +35,11 @@ void Button::setMouseOverButtonColor(const mgeType::Color_RGBA& newColor)
 	mouseOverColor = newColor;
 	if (isUnderCursor()) 
 		setColor(mouseOverColor);
+}
+
+void Button::setIsVisible(bool visible) noexcept
+{
+	Frame::setIsVisible(visible);
 }
 
 void Button::setOnLMBClick(Callback_deprecated clickFunction) noexcept
@@ -82,15 +87,8 @@ void Button::onCursorEnterCall() noexcept
 {
 	try
 	{
-		if (std::holds_alternative<DrawableObject<float>>(getFrameObject()))
-			setColor(mouseOverColor);
-		if (std::holds_alternative<std::shared_ptr<MlImage>>(getFrameObject())
-			&& selectedTexture.path != UNDEFINED_TEXTURE_PATH)
-		{
-			setImage(selectedTexture);
-		}
-		else if (std::holds_alternative<std::shared_ptr<MlImage>>(getFrameObject()))
-			setColor(mouseOverColor);
+		setColor(mouseOverColor);
+
 		if (frameTexts.size() > 0)
 		{
 			for (auto& text : frameTexts)
@@ -108,17 +106,8 @@ void Button::onCursorLeaveCall() noexcept
 {
 	try
 	{
-		if (std::holds_alternative<DrawableObject<float>>(getFrameObject()))
-			setColor(defaultColor);
-
-		if (std::holds_alternative<std::shared_ptr<MlImage>>(getFrameObject())
-			&& selectedTexture.path != UNDEFINED_TEXTURE_PATH
-			&& unselectedTexture.path != UNDEFINED_TEXTURE_PATH)
-		{
-			setImage(unselectedTexture);
-		}
-		else if (std::holds_alternative<std::shared_ptr<MlImage>>(getFrameObject()))
-			setColor(defaultColor);
+		setColor(defaultColor);
+			
 		if (frameTexts.size() > 0)
 		{
 			for (auto& text : frameTexts)

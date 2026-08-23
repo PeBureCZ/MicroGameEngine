@@ -5,25 +5,22 @@
     <ClInclude Include="include\GraphicDependencies.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\ImageHolder.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\MlCurve.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\MlEvent.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\MlGameWrapper.h">
+    <ClInclude Include="include\MlWrapper.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\MlImage.h">
+    <ClInclude Include="include\MgeImage.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\MlText.h">
+    <ClInclude Include="include\MgeText.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\MlVerticesObject.h">
+    <ClInclude Include="include\MgeDrawable.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\ShapeInterpreter.h">
@@ -39,25 +36,19 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\ImageHolder.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MlCurve.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\MlEvent.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\MlGameWrapper.cpp">
+    <ClCompile Include="src\MlWrapper.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\MlImage.cpp">
+    <ClCompile Include="src\MgeImage.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\MlText.cpp">
+    <ClCompile Include="src\MgeText.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\MlVerticesObject.cpp">
+    <ClCompile Include="src\MgeDrawable.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\ShapeInterpreter.cpp">

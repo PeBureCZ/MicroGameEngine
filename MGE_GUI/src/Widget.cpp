@@ -1,7 +1,7 @@
 #include "Widget.h"
 
-#include "MlGameWrapper.h"
-#include "MlVerticesObject.h"
+#include "MlWrapper.h"
+#include "MgeDrawable.h"
 
 static MgeDefaultComponent STATIC_PARENT_SYSTEM;
 

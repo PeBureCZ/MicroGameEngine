@@ -11,7 +11,7 @@
 
 namespace ML_wrapper
 {
-	class MlGameWrapper;
+	class MlWrapper;
 }
 
 class MgeActor;
@@ -48,7 +48,7 @@ public:
 	[[nodiscard]] bool isCursorBlockedByGui() const noexcept;
 
 private:
-	std::shared_ptr<ML_wrapper::MlGameWrapper> sharedMlGameWrapper;
+	std::shared_ptr<ML_wrapper::MlWrapper> sharedMlWrapper;
 	std::vector<std::shared_ptr<Widget>> guiWidgets;
 	std::shared_ptr<Widget> actualBlockWidget;
 
@@ -56,7 +56,6 @@ private:
 
 	void tickScreenChildren(const BaseScreen& screen);
 	void tickWidgets(const std::vector<std::shared_ptr<MgeActor>>& widgets);
-	void drawFrameObjects(const Frame& frame);
 	[[nodiscard]] bool checkWidgetBlocking(const Frame& frame) const noexcept;
 };
 

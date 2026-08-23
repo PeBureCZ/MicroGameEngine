@@ -2,57 +2,41 @@
 
 #include "BasicShapes.h"
 #include "BasicTypes.h"
-#include "MlVerticesObject.h"
-#include "MlGameWrapper.h"
+#include "MgeDrawable.h"
+#include "MlWrapper.h"
 #include "GraphicDependencies.h"
 #include "Trigger.h"
-#include "MlText.h"
-
+#include "MgeText.h"
 
 
 Frame::Frame(const IPoint& newPosition, const ISize& newSize)
 	: Widget(newPosition, newSize)
 {
-	DrawableObject<float> drawable = DrawableObject<float>(mgeShape::Rectangle<float>(newPosition.asFloat(), mgeType::Size<float>((float)newSize.width, (float)newSize.height)), mgeType::Color_RGBA(100, 100, 100, 150));
-	frameObject = drawable;
-	auto newWidgetVertices = std::make_shared<MlVerticesObject>(GraphicItemLayer::GUI_LAYER);
-	newWidgetVertices->addObjects({ drawable });
-	
-	setVertices(newWidgetVertices);
+	const DrawableObject<float> drawable(mgeShape::Rectangle<float>(FPoint(0,0), mgeType::Size<float>((float)newSize.width, (float)newSize.height)), mgeType::Color_RGBA(100, 100, 100, 150));
+	MgeDrawable newWidgetVertices(drawable, newPosition.asFloat(), 0.f, GraphicItemLayer::GUI_LAYER);
+	frameObject = std::move(newWidgetVertices);
 }
 
 Frame::Frame(const IPoint& newPosition, TextureId textureId)
 	: Widget(newPosition, mgeType::Size<int>())
 {
-	auto image = std::make_shared<MlImage>(std::move(textureId), GraphicItemLayer::GUI_LAYER, newPosition.asFloat());
-	ML_wrapper::getGlobalGameWrapper()->getImageHolder().appendGuiImage(*image, newPosition.asFloat());
-	setSize(mgeType::Size<int>(ML_wrapper::getGlobalGameWrapper()->getImageHolder().getTextureSize(image->getTextureID())));
-	frameObject = std::move(image);
+	auto newImage = MgeImage(std::move(textureId), GraphicItemLayer::GUI_LAYER, newPosition.asFloat());;
+	setSize(newImage.getSize());
+	frameObject = std::move(newImage);
 }
 
 void Frame::setImage(TextureId textureId)
 {
-	auto image = std::make_shared<MlImage>(std::move(textureId), GraphicItemLayer::GUI_LAYER, getAbsolutePosition().asFloat());
-	ML_wrapper::getGlobalGameWrapper()->getImageHolder().appendGuiImage(*image, getAbsolutePosition().asFloat());
-	setSize(mgeType::Size<int>(ML_wrapper::getGlobalGameWrapper()->getImageHolder().getTextureSize(image->getTextureID())));
+	auto image = MgeImage(std::move(textureId), GraphicItemLayer::GUI_LAYER, getAbsolutePosition().asFloat());
+	setSize(image.getSize());
+	frameObject = std::move(image);
 	editCollision().clear();
 	editCollision().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition(), getSize())));
-	frameObject = std::move(image);
 }
 
-void Frame::setVertices(const std::shared_ptr<MlVerticesObject>& newVertices) noexcept
+void Frame::setVertices(MgeDrawable&& newVertices) noexcept
 {
-	if (drawableItem)
-		ML_wrapper::getGlobalGameWrapper()->removeMlVerticesObject(drawableItem, drawableItem->getLayer());
-	auto id = ML_wrapper::getGlobalGameWrapper()->addMlVerticesObject(newVertices);
-	drawableItem = newVertices;
-}
-
-std::optional<std::shared_ptr<MlVerticesObject>> Frame::getVertices() const noexcept
-{
-	if (drawableItem)
-		return drawableItem;
-	return std::nullopt;
+	frameObject = std::move(newVertices);
 }
 
 std::vector<Trigger<int>>& Frame::editCollision() noexcept
@@ -72,25 +56,25 @@ void Frame::addCollision(Trigger<int> addedCollision)
 	collisions.push_back(std::move(addedCollision));
 }
 
-void Frame::setColor(mgeType::Color_RGBA newColor)
+void Frame::setColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 {
-	if (std::holds_alternative<DrawableObject<float>>(frameObject))
+	setColor(mgeType::Color_RGBA(r,g,b,a));
+}
+
+void Frame::setColor(const mgeType::Color_RGBA& newColor)
+{
+	if (std::holds_alternative<MgeDrawable>(frameObject))
 	{
-		auto& drawableObject = std::get<DrawableObject<float>>(frameObject);
+		auto& drawableObject = std::get<MgeDrawable>(frameObject);
 		drawableObject.setColor(newColor);
-		if (drawableItem)
-			ML_wrapper::getGlobalGameWrapper()->setMlVerticesColor(drawableItem->getUniqueId(), std::move(newColor));
 	}
-	else if (std::holds_alternative<std::shared_ptr<MlImage>>(frameObject))
+	else if (std::holds_alternative<MgeImage>(frameObject))
 	{
-		auto& img = std::get<std::shared_ptr<MlImage>>(frameObject);
-		img->setColor(newColor);
+		auto& img = std::get<MgeImage>(frameObject);
+		img.setColor(newColor);
 	}
 	else
-	{
-		_ASSERT(false); //unhandled
-	}
-
+		{ _ASSERT(false); } //unhandled
 }
 
 const FRAME_OBJECT& Frame::getFrameObject() const noexcept
@@ -98,42 +82,71 @@ const FRAME_OBJECT& Frame::getFrameObject() const noexcept
 	return frameObject;
 }
 
-size_t Frame::getVerticesId() const noexcept
+void Frame::addTextToFrame(const std::string& butText, unsigned int characterSize_pxls, GuiAlign align, const mgeType::Color_RGBA& col)
 {
-	if (drawableItem)
-		return drawableItem->getUniqueId();
-	return 0;
-}
-
-void Frame::addTextToFrame(MlText newText, GuiAlign align)
-{
+	MgeText newText(butText, characterSize_pxls);
+	newText.setIsVisible(getIsVisible());
+	newText.setColor(col);
 	newText.setAbsolutePosition(getAlignedPosition(align, newText.getTextSize()));
-	frameTexts.push_back(std::make_pair(align, std::move(newText)));
+	frameTexts.push_back(std::move(std::make_pair(align, std::move(newText))));
 }
 
-const std::deque<std::pair<GuiAlign, MlText>>& Frame::getTextsFromFrame() const noexcept
+const std::deque<std::pair<GuiAlign, MgeText>>& Frame::getTextsFromFrame() const noexcept
 {
 	return frameTexts;
+}
+
+void Frame::setIsVisible(bool visible) noexcept
+{
+	Widget::setIsVisible(visible);
+
+	for (auto& text : frameTexts)
+		text.second.setIsVisible(visible);
+
+	if (std::holds_alternative<MgeDrawable>(frameObject))
+	{
+		auto& obj = std::get<MgeDrawable>(frameObject);
+		obj.setIsVisible(visible);
+
+	}
+	else if (std::holds_alternative<MgeImage>(frameObject))
+	{
+		auto& img = std::get<MgeImage>(frameObject);
+		img.setVisible(visible);
+	}
+
+#ifdef _DEBUG
+	else if (std::holds_alternative<UNDEFINED_FRAME_OBJECT>(frameObject))
+	{
+	} //nothing to draw
+	else
+		_ASSERT(false); //unhandled
+#endif // _DEBUG
+
+	for (auto& child : editChildren())
+	{
+		if (auto widget = std::dynamic_pointer_cast<Widget>(child))
+			widget->setIsVisible(visible);
+	}
 }
 
 void Frame::setRelativeRotation(float newRotation)
 {
 	auto difRotation = newRotation - getRelativeRotation();
-	if (std::holds_alternative<DrawableObject<float>>(frameObject))
+	if (std::holds_alternative<MgeDrawable>(frameObject))
 	{
-		auto& obj = std::get<DrawableObject<float>>(frameObject);
+		auto& obj = std::get<MgeDrawable>(frameObject);
 		obj.setRotation(newRotation);
-		auto usedVertices_opt = getVertices();
-		if (usedVertices_opt.has_value() && usedVertices_opt.value())
-			ML_wrapper::getGlobalGameWrapper()->setMlVerticesRotation(usedVertices_opt.value(), newRotation);
 	}
-	else if (std::holds_alternative<std::shared_ptr<MlImage>>(frameObject))
+	else if (std::holds_alternative<MgeImage>(frameObject))
 	{
-		if (auto& obj = std::get<std::shared_ptr<MlImage>>(frameObject))
-			obj->setRotation(newRotation);
+		auto& obj = std::get<MgeImage>(frameObject);
+		obj.setRotation(newRotation);
 	}
-	else if (std::holds_alternative<std::shared_ptr<MlImage>>(frameObject))
-	{} //nothing to do
+	else
+	{ 
+		_ASSERT(false); //unhandled variant
+	} 
 
 	for (auto& col : collisions)
 		col.setRotation(col.getRotation() + difRotation);
@@ -141,30 +154,33 @@ void Frame::setRelativeRotation(float newRotation)
 
 float Frame::getRelativeRotation()
 {
-	if (std::holds_alternative<DrawableObject<float>>(frameObject))
+	if (std::holds_alternative<MgeDrawable>(frameObject))
 	{
-		auto& obj = std::get<DrawableObject<float>>(frameObject);
+		auto& obj = std::get<MgeDrawable>(frameObject);
 		return obj.getRotation();
 	}
-	else if (std::holds_alternative<std::shared_ptr<MlImage>>(frameObject))
+	else if (std::holds_alternative<MgeImage>(frameObject))
 	{
-		if (auto& obj = std::get<std::shared_ptr<MlImage>>(frameObject))
-			return obj->getRotation();
+		auto& obj = std::get<MgeImage>(frameObject);
+		return obj.getRotation();
 	}
-	else if (std::holds_alternative<std::shared_ptr<MlImage>>(frameObject))
+	else
 	{
-	} //nothing to do
+		_ASSERT(false); //unhandled variant
+	}
 	return {0.f};
 }
 
 void Frame::setOrigin(IPoint newOrigin)
 {
-	if (std::holds_alternative<DrawableObject<float>>(frameObject))
-		_ASSERT(false); //not yet
-	else if (std::holds_alternative<std::shared_ptr<MlImage>>(frameObject))
+	if (std::holds_alternative<MgeDrawable>(frameObject))
 	{
-		if (auto& img = std::get<std::shared_ptr<MlImage>>(frameObject))
-			img->setOrigin(newOrigin.asFloat());
+		_ASSERT(false); //not yet
+	}
+	else if (std::holds_alternative<MgeImage>(frameObject))
+	{
+		auto& img = std::get<MgeImage>(frameObject);
+		img.setOrigin(newOrigin.asFloat());
 	}
 	else
 		_ASSERT(false); //unhandled
@@ -192,21 +208,16 @@ void Frame::layout() noexcept
 		for (auto& text : frameTexts)
 			text.second.setAbsolutePosition(text.second.getAbsolutePosition() + differencePos);
 
-		if (std::holds_alternative<DrawableObject<float>>(frameObject))
+		if (std::holds_alternative<MgeDrawable>(frameObject))
 		{
-			auto& obj = std::get<DrawableObject<float>>(frameObject);
+			auto& obj = std::get<MgeDrawable>(frameObject);
 			auto difPos = obj.getPosition() + differencePos.asFloat();
-			obj.setAbsoluteDrawablePosition(difPos.asFloat());
-
-			auto usedVertices_opt = getVertices();
-			if (usedVertices_opt.has_value() && usedVertices_opt.value())
-				ML_wrapper::getGlobalGameWrapper()->moveMlVerticesPosition(usedVertices_opt.value(), differencePos.asFloat());
+			obj.setPosition(difPos);
 		}
-		else if (std::holds_alternative<std::shared_ptr<MlImage>>(frameObject))
+		else if (std::holds_alternative<MgeImage>(frameObject))
 		{
-			auto& img = std::get<std::shared_ptr<MlImage>>(frameObject);
-			if (img)
-				img->setImgAbsolutePosition(getAbsolutePosition().asFloat());
+			auto& img = std::get<MgeImage>(frameObject);
+			img.setImgAbsolutePosition(getAbsolutePosition().asFloat());
 		}
 
 #ifdef _DEBUG

@@ -116,15 +116,20 @@ template<typename T>
 class DrawableObject
 {
 public:
+
+	DrawableObject()
+		: m_shape(mgeShape::Rectangle<T>())
+	{}
+
 	DrawableObject(SHAPE_VARIANT<T> shape, mgeType::Color_RGBA usedColor = mgeType::Color_RGBA())
-		: shape(shape), color(usedColor) // default white color
+		: m_shape(shape), color(usedColor) // default white color
 	{
 
 	}
 
-	SHAPE_VARIANT<T>& getShape()
+	const SHAPE_VARIANT<T>& getShape() const
 	{
-		return shape;
+		return m_shape;
 	}
 
 	mgeType::Color_RGBA getColor() const
@@ -143,15 +148,15 @@ public:
 
 	mgeType::Point<T> getPosition()
 	{
-		if (std::holds_alternative<mgeShape::Rectangle<T>>(shape))
+		if (std::holds_alternative<mgeShape::Rectangle<T>>(m_shape))
 		{
-			auto& obj = std::get<mgeShape::Rectangle<T>>(shape);
+			auto& obj = std::get<mgeShape::Rectangle<T>>(m_shape);
 			return obj.getPosition();
 		}
 
-		else if (std::holds_alternative<mgeShape::Circle<T>>(shape))
+		else if (std::holds_alternative<mgeShape::Circle<T>>(m_shape))
 		{
-			auto& obj = std::get<mgeShape::Circle<T>>(shape);
+			auto& obj = std::get<mgeShape::Circle<T>>(m_shape);
 			return obj.getPosition();
 		}
 		return mgeType::Point<T>();
@@ -159,14 +164,14 @@ public:
 
 	void setAbsoluteDrawablePosition(mgeType::Point<T> newPosition)
 	{
-		if (std::holds_alternative<mgeShape::Rectangle<T>>(shape))
+		if (std::holds_alternative<mgeShape::Rectangle<T>>(m_shape))
 		{
-			auto& obj = std::get<mgeShape::Rectangle<T>>(shape);
+			auto& obj = std::get<mgeShape::Rectangle<T>>(m_shape);
 			obj.setShapeAbsolutePosition(std::move(newPosition));
 		}
-		else if (std::holds_alternative<mgeShape::Circle<T>>(shape))
+		else if (std::holds_alternative<mgeShape::Circle<T>>(m_shape))
 		{
-			auto& obj = std::get<mgeShape::Circle<T>>(shape);
+			auto& obj = std::get<mgeShape::Circle<T>>(m_shape);
 			obj.setShapeAbsolutePosition(std::move(newPosition));
 		}
 		else
@@ -177,14 +182,14 @@ public:
 
 	T getRotation() const
 	{
-		if (std::holds_alternative<mgeShape::Rectangle<T>>(shape))
+		if (std::holds_alternative<mgeShape::Rectangle<T>>(m_shape))
 		{
-			auto& obj = std::get<mgeShape::Rectangle<T>>(shape);
+			auto& obj = std::get<mgeShape::Rectangle<T>>(m_shape);
 			return obj.getRotation();
 		}
-		else if (std::holds_alternative<mgeShape::Circle<T>>(shape))
+		else if (std::holds_alternative<mgeShape::Circle<T>>(m_shape))
 		{
-			auto& obj = std::get<mgeShape::Circle<T>>(shape);
+			auto& obj = std::get<mgeShape::Circle<T>>(m_shape);
 			return obj.getRotation();
 		}
 		return 0;
@@ -192,14 +197,14 @@ public:
 
 	void setRotation(float newRotation)
 	{
-		if (std::holds_alternative<mgeShape::Rectangle<T>>(shape))
+		if (std::holds_alternative<mgeShape::Rectangle<T>>(m_shape))
 		{
-			auto& obj = std::get<mgeShape::Rectangle<T>>(shape);
+			auto& obj = std::get<mgeShape::Rectangle<T>>(m_shape);
 			obj.setRotation(newRotation);
 		}
-		else if (std::holds_alternative<mgeShape::Circle<T>>(shape))
+		else if (std::holds_alternative<mgeShape::Circle<T>>(m_shape))
 		{
-			auto& obj = std::get<mgeShape::Circle<T>>(shape);
+			auto& obj = std::get<mgeShape::Circle<T>>(m_shape);
 			obj.setRotation(newRotation);
 		}
 		else
@@ -212,6 +217,6 @@ public:
 
 protected:
 	mgeType::Color_RGBA color;
-	SHAPE_VARIANT<T> shape;
+	SHAPE_VARIANT<T> m_shape;
 
 };

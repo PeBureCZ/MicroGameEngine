@@ -15,7 +15,7 @@
 
 namespace ML_wrapper
 {
-	class MlGameWrapper;
+	class MlWrapper;
 }
 
 class BaseScreen;
@@ -31,7 +31,7 @@ public:
 	void runApp();
 	void terminateApplication() noexcept;
 
-	std::shared_ptr< ML_wrapper::MlGameWrapper> getMlGameWrapper();
+	std::shared_ptr< ML_wrapper::MlWrapper> getMlWrapper();
 
 	virtual ~BaseApp();
 
@@ -48,7 +48,7 @@ protected:
 
 private:
 	bool gameIsRunning = false;
-	std::shared_ptr<ML_wrapper::MlGameWrapper> sharedMlGameWrapper;
+	std::shared_ptr<ML_wrapper::MlWrapper> sharedMlWrapper;
 	std::shared_ptr<BaseScreen> actualScreen;
 
 	void processMlEvents();

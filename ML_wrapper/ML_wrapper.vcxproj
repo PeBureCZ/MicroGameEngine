@@ -151,13 +151,12 @@
   <ItemGroup>
     <ClInclude Include="GraphicDependencies.h" />
     <ClInclude Include="include\GraphicDependencies.h" />
-    <ClInclude Include="include\ImageHolder.h" />
     <ClInclude Include="include\MlCurve.h" />
     <ClInclude Include="include\MlEvent.h" />
-    <ClInclude Include="include\MlGameWrapper.h" />
-    <ClInclude Include="include\MlImage.h" />
-    <ClInclude Include="include\MlText.h" />
-    <ClInclude Include="include\MlVerticesObject.h" />
+    <ClInclude Include="include\MlWrapper.h" />
+    <ClInclude Include="include\MgeImage.h" />
+    <ClInclude Include="include\MgeText.h" />
+    <ClInclude Include="include\MgeDrawable.h" />
     <ClInclude Include="include\ShapeInterpreter.h" />
   </ItemGroup>
   <ItemGroup>
@@ -166,13 +165,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\ImageHolder.cpp" />
-    <ClCompile Include="src\MlCurve.cpp" />
     <ClCompile Include="src\MlEvent.cpp" />
-    <ClCompile Include="src\MlGameWrapper.cpp" />
-    <ClCompile Include="src\MlImage.cpp" />
-    <ClCompile Include="src\MlText.cpp" />
-    <ClCompile Include="src\MlVerticesObject.cpp" />
+    <ClCompile Include="src\MlWrapper.cpp" />
+    <ClCompile Include="src\MgeImage.cpp" />
+    <ClCompile Include="src\MgeText.cpp" />
+    <ClCompile Include="src\MgeDrawable.cpp" />
     <ClCompile Include="src\ShapeInterpreter.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

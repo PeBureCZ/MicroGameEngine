@@ -9,7 +9,7 @@
 
 namespace ML_wrapper
 {
-	class MlGameWrapper;
+	class MlWrapper;
 }
 
 class BaseScreen : public Widget
@@ -30,10 +30,10 @@ public:
 	FPoint getRelativeFromCursor();
 
 protected:
-	std::weak_ptr<ML_wrapper::MlGameWrapper> mlGameWrapper;
+	std::weak_ptr<ML_wrapper::MlWrapper> mlWrapper;
 
 	SCREEN_EVENTS screenEvents;
-	std::shared_ptr<ML_wrapper::MlGameWrapper> getGameWrapper();
+	std::shared_ptr<ML_wrapper::MlWrapper> getMlWrapper();
 
 	void addEvent(ScreenEvent event);
 

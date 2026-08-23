@@ -6,7 +6,7 @@ RollMenu::RollMenu(IPoint newPosition, mgeType::Size<int> newSize, std::string t
 	mainButtonText = text;
 }
 
-std::shared_ptr<Button> RollMenu::addRollButton(std::string butText, Callback_deprecated onLMBClickFunc, Callback_deprecated onRMBClickFunc)
+std::shared_ptr<Button> RollMenu::addRollButton(const std::string& butText, Callback_deprecated onLMBClickFunc, Callback_deprecated onRMBClickFunc)
 {
 	getMainButton(); //generate main but if not exist
 
@@ -15,10 +15,7 @@ std::shared_ptr<Button> RollMenu::addRollButton(std::string butText, Callback_de
 	newButton->setIsVisible(false);
 	newButton->setOnLMBClick(onLMBClickFunc);
 	newButton->setOnRMBClick(onRMBClickFunc);
-	
-	auto newText = ML_wrapper::getGlobalGameWrapper()->createText(butText, 14);
-	if (newText.has_value())
-		newButton->addTextToFrame(newText.value());
+	newButton->addTextToFrame(butText, 14);
 
 	guiAdd::addWidgetToGui(getSelfPtr(), std::dynamic_pointer_cast<Widget>(newButton));
 	rollButtons.push_back(newButton); //due to custom collision management, we need to keep track of buttons in the menu
@@ -36,9 +33,7 @@ std::shared_ptr<Button> RollMenu::getMainButton()
 		mainButton->setButtonTextColors(DEFAULT_TEXT_COLOR, MOUSE_OVER_TEXT_COLOR);
 		mainButton->setOnLMBClick([this]() { onRollMenuLMBClick(); });
 		mainButton->setOnCursorOver([this]() {onCursorEnterCall(); }); //used for auto opening - if it is set
-		auto newText = ML_wrapper::getGlobalGameWrapper()->createText(mainButtonText, 14);
-		if (newText.has_value())
-			mainButton->addTextToFrame(newText.value());
+		mainButton->addTextToFrame(mainButtonText, 14);
 		guiAdd::addWidgetToGui(getSelfPtr(), std::dynamic_pointer_cast<Widget>(mainButton));
 	}
 	return mainButton;
@@ -64,6 +59,22 @@ void RollMenu::layout() noexcept
 	catch (...)
 	{
 		_ASSERT(false);
+	}
+}
+
+void RollMenu::setIsVisible(bool visible) noexcept
+{
+	Widget::setIsVisible(visible);
+	_ASSERT(mainButton && rollMenuCollisionFrame);
+	if (mainButton)
+		mainButton->setIsVisible(visible);
+	if (rollMenuCollisionFrame)
+		rollMenuCollisionFrame->setIsVisible(visible);
+	for (auto& button : rollButtons)
+	{
+		_ASSERT(button.lock());
+		if (auto but = button.lock())
+			but->setIsVisible(visible);
 	}
 }
 
@@ -139,14 +150,13 @@ void RollMenu::generateNewRollMenuCollision()
 	if (!rollMenuCollisionFrame)
 	{ //invisible frame for non-blocking collision up to buttons
 		rollMenuCollisionFrame = std::make_shared<Frame>(IPoint(), mgeType::Size<int>());
-		rollMenuCollisionFrame->setColor(mgeType::Color_RGBA(0,0,0,0)); 
+		rollMenuCollisionFrame->setColor(DEFAULT_FRAME_COLOR);
 		rollMenuCollisionFrame->setOnCursorOver
 			(
 				[this]() noexcept { onCursorEnterCall(); },
 				[this]() noexcept { onCursorLeaveCall(); }
 			);
 		guiAdd::addWidgetToGui(getSelfPtr(), std::dynamic_pointer_cast<Widget>(rollMenuCollisionFrame));
-	
 	}
 	else
 		rollMenuCollisionFrame->editCollision().clear();

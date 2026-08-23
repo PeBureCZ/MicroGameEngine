@@ -4,10 +4,10 @@
 #include <variant>
 
 #include "MgeActor.h"
-#include "MlGameWrapper.h"
+#include "MlWrapper.h"
 #include "BasicTypes.h"
 #include "BasicShapes.h"
-#include "MlVerticesObject.h"
+#include "MgeDrawable.h"
 #include "GuiDependencies.h"
 
 using WidgetId = uintptr_t;
@@ -20,7 +20,7 @@ public:
 
 	bool removeChildFromWidget(std::variant<WidgetId, std::shared_ptr<MgeActor>> child);
 
-	void setIsVisible(bool visible) noexcept;
+	virtual void setIsVisible(bool visible) noexcept;
 	[[nodiscard]] bool getIsVisible() const noexcept;
 
 	void initializeSelf(std::weak_ptr<Widget> self);

@@ -1,6 +1,6 @@
 #include "TextFrame.h"
 
-#include "MlGameWrapper.h"
+#include "MlWrapper.h"
 
 #include "GuiDependencies.h"
 
@@ -12,14 +12,10 @@ TextFrame::TextFrame(IPoint newPosition, mgeType::Size<int> newSize)
 
 void TextFrame::addTextLine(std::string text, unsigned int textPxlsSize, mgeType::Color_RGBA color, bool bold) noexcept
 {
-	auto newText = ML_wrapper::getGlobalGameWrapper()->createText(std::move(text), textPxlsSize, bold);
-	if (newText.has_value())
-	{
-		auto& usedText = newText.value();
-		usedText.setColor(std::move(color));
-		frameTexts.push_back(std::make_pair(GuiAlign::TopLeft, std::move(usedText)));
-		redrawTextFrame();
-	}
+	MgeText newText(std::move(text), textPxlsSize, bold);
+	newText.setColor(std::move(color));
+	frameTexts.emplace_back(std::make_pair(GuiAlign::TopLeft, std::move(newText)));
+	redrawTextFrame();
 }
 
 void TextFrame::setPadding(int leftBorder_pxls, int topBorder_pxls, int betweenTextLine_pxls)

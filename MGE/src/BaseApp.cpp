@@ -1,6 +1,6 @@
 #include "BaseApp.h"
 
-#include "MlGameWrapper.h"
+#include "MlWrapper.h"
 #include "ScreenEvent.h"
 #include "EventTable.h"
 #include "BaseScreen.h"
@@ -9,7 +9,7 @@
 
 BaseApp::BaseApp()
 {
-    getMlGameWrapper(); //run game
+    getMlWrapper(); //run game
     gameIsRunning = true;
 }
 
@@ -27,20 +27,19 @@ void BaseApp::tickApplication(double deltaTime)
 {
     onAppTick(deltaTime);
 
-    if (!sharedMlGameWrapper)
+    if (!sharedMlWrapper)
     {
         _ASSERT(false);
         return;
     }
 
-    sharedMlGameWrapper->clear(); //clear main window to begin new frame drawing
+    sharedMlWrapper->clear(); //clear main window to begin new frame drawing
 
 	//DRAWING - APPLICATION LAYER
-    sharedMlGameWrapper->drawVertices();
-    sharedMlGameWrapper->drawSprites();
+    sharedMlWrapper->drawContent();
 
     //DRAWING - GUI
-    sharedMlGameWrapper->pollMlEvents();
+    sharedMlWrapper->pollMlEvents();
 
     if (actualScreen)
         gui.TickScreen(*actualScreen, deltaTime);
@@ -52,20 +51,20 @@ void BaseApp::tickApplication(double deltaTime)
     if (screenEvents && screenEvents->size() > 0)
         callScreenEvents(screenEvents);
 
-	sharedMlGameWrapper->displayActualFrame(); //draw everything to main window and display it
+	sharedMlWrapper->displayActualFrame(); //draw everything to main window and display it
 
     afterAppTick();
 }
 
 void BaseApp::processMlEvents()
 {
-    auto& events = sharedMlGameWrapper->getMlEvents();
+    auto& events = sharedMlWrapper->getMlEvents();
     for (const auto& eventFromMl : events)
     {
         if (std::holds_alternative<MouseClick>(eventFromMl))
         {
             MouseClick click = std::get<MouseClick>(eventFromMl);
-            auto& cursorPos = sharedMlGameWrapper->getCursorGuiPosition();
+            auto& cursorPos = sharedMlWrapper->getCursorGuiPosition();
             if (click.getType() == MlEventTypeEnum::MouseLeftClick)
             {
                 gui.sendLmbEventToGui(cursorPos, click.pressed); //main gui event processing (buttons etc.)
@@ -96,7 +95,7 @@ void BaseApp::processMlEvents()
             gameIsRunning = false;
         }
     }
-    sharedMlGameWrapper->clearEvents();
+    sharedMlWrapper->clearEvents();
 }
 
 bool BaseApp::isRunning() const
@@ -130,11 +129,11 @@ void BaseApp::terminateApplication() noexcept
 	gameIsRunning = false;
 }
 
-std::shared_ptr< ML_wrapper::MlGameWrapper> BaseApp::getMlGameWrapper()
+std::shared_ptr< ML_wrapper::MlWrapper> BaseApp::getMlWrapper()
 {
-    if (!sharedMlGameWrapper)
-        sharedMlGameWrapper = ML_wrapper::getGlobalGameWrapper();
-    return sharedMlGameWrapper;
+    if (!sharedMlWrapper)
+        sharedMlWrapper = ML_wrapper::getGlobalMlWrapper();
+    return sharedMlWrapper;
 }
 
 BaseApp::~BaseApp()
@@ -150,5 +149,6 @@ void BaseApp::callScreenEvents(SCREEN_EVENTS& events)
 
 void BaseApp::setActualScreen(std::shared_ptr<BaseScreen> newScreen)
 {
+    _ASSERT(newScreen);
 	actualScreen = newScreen;
 }

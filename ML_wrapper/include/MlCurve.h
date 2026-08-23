@@ -6,7 +6,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "BasicTypes.h"
-#include "MlVerticesObject.h"
+#include "MgeDrawable.h"
 
 
 template<typename T>
@@ -89,6 +89,12 @@ public:
     MlCurve(T P0, T P1, T P2, T P3, float thick = 1.f,
         mgeType::Color_RGBA color = mgeType::Color_RGBA(), float desiredSegmentLength = 20.f);
 
+    MlCurve(MlCurve&&) = default;
+    MlCurve& operator=(MlCurve&&) = default;
+    MlCurve(MlCurve&) = default;
+    MlCurve& operator=(MlCurve&) = default;
+    ~MlCurve() = default;
+
     [[nodiscard]] float getLength() const
     {
         return totalLength;
@@ -96,7 +102,7 @@ public:
 
     const sf::VertexArray& getVertices() const noexcept
     {
-        return vertices.getVertices();
+        return content;
     }
 
     mgeType::Point<float> getPositionAt(float distance) const
@@ -174,7 +180,7 @@ private:
     void build(mgeType::Color_RGBA color, float desiredSegmentLength);
 
 private:
-    MlVerticesObject vertices = MlVerticesObject(GraphicItemLayer::DEFAULT_LAYER);
+    sf::VertexArray content;
     size_t segmentsCount = 0;
     float segmentLength = 0.f;
     float thickness = 1.0f;
@@ -232,7 +238,7 @@ void MlCurve<T>::build(mgeType::Color_RGBA color, float desiredSegmentLength)
     }
     segmentLength = totalLength / segmentsCount;
 
-    sf::VertexArray va(sf::PrimitiveType::Triangles);
+    content.setPrimitiveType(sf::PrimitiveType::Triangles);
     sf::Color sfColor(color.r, color.g, color.b, color.a);
 
     // Compute positions along the curve
@@ -302,15 +308,13 @@ void MlCurve<T>::build(mgeType::Color_RGBA color, float desiredSegmentLength)
     for (int i = 0; i < segmentsCount; ++i)
     {
         // Triangle 1
-        va.append(sf::Vertex(left[i], sfColor));
-        va.append(sf::Vertex(right[i], sfColor));
-        va.append(sf::Vertex(right[i + 1], sfColor));
+        content.append(sf::Vertex(left[i], sfColor));
+        content.append(sf::Vertex(right[i], sfColor));
+        content.append(sf::Vertex(right[i + 1], sfColor));
 
         // Triangle 2
-        va.append(sf::Vertex(left[i], sfColor));
-        va.append(sf::Vertex(right[i + 1], sfColor));
-        va.append(sf::Vertex(left[i + 1], sfColor));
+        content.append(sf::Vertex(left[i], sfColor));
+        content.append(sf::Vertex(right[i + 1], sfColor));
+        content.append(sf::Vertex(left[i + 1], sfColor));
     }
-
-    vertices.addObjects(std::move(va));
 }

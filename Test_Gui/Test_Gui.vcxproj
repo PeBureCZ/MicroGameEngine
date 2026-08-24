@@ -67,6 +67,13 @@
       <AdditionalDependencies>MGE_core.lib;MGE_GUI.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-main-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)build\x64\Debug;$(SolutionDir)..\SFML_3.0.2\lib;$(SolutionDir)..\SFML_3.0.2\bin</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "$(SolutionDir)..\SFML_3.0.2\bin\sfml-graphics-d-3.dll" "$(OutDir)"
+
+copy /Y "$(SolutionDir)..\SFML_3.0.2\bin\sfml-window-d-3.dll" "$(OutDir)"
+
+copy /Y "$(SolutionDir)..\SFML_3.0.2\bin\sfml-system-d-3.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -102,6 +109,13 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "$(SolutionDir)..\SFML_3.0.2\bin\sfml-graphics-d-3.dll" "$(OutDir)"
+
+copy /Y "$(SolutionDir)..\SFML_3.0.2\bin\sfml-window-d-3.dll" "$(OutDir)"
+
+copy /Y "$(SolutionDir)..\SFML_3.0.2\bin\sfml-system-d-3.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Widget_test.h" />

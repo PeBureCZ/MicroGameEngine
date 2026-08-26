@@ -14,7 +14,8 @@ namespace mgeCore
 	[[nodiscard]] bool isMainThread();
     [[nodiscard]] std::string toUTF8(const std::wstring& wstr);
 	[[nodiscard]] std::wstring fromUTF8(const std::string& str);
-	void callOnMainThread(std::function<void()> func);
+	void setDefaultZPosition(int64_t newDefaultValue);
+	[[nodiscard]] int64_t getDefaultZPosition();
 }
 
 

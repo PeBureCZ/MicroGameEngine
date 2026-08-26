@@ -31,14 +31,18 @@ MgeText::MgeText(std::string newText, unsigned int characterSize_pxls, FPoint po
 		firstTimeOpen = false;
 	}
 
-	m_text = std::make_shared<sf::Text>(font, std::move(newText), characterSize_pxls);
-	m_layer = layer;
+
+	auto newMgeText = std::make_shared<MgeLayerObject>(MgeLayerObject{ mgeCore::getDefaultZPosition(), layer, sf::Text{font, std::move(newText), characterSize_pxls} });
+	m_text = newMgeText;
+	auto& sfText = std::get<sf::Text>(newMgeText->data);
+
 	if (bold)
-		m_text->setStyle(sf::Text::Bold);
-	m_text->setPosition(sf::Vector2f(position.x, position.y));
-	m_text->setFillColor(sf::Color::White);
-	normalizeSize(*m_text); //move origin to font top without "ascender"
-	ML_wrapper::getGlobalMlWrapper()->appendText(*this);
+		sfText.setStyle(sf::Text::Bold);
+
+	sfText.setPosition(sf::Vector2f(position.x, position.y));
+	sfText.setFillColor(sf::Color::White);
+	normalizeSize(sfText); //move origin to font top without "ascender"
+	ML_wrapper::getGlobalMlWrapper()->addMgeLayerObject(std::move(newMgeText));
 }
 
 bool MgeText::operator==(const MgeText& other) const
@@ -53,82 +57,147 @@ bool MgeText::operator==(MgeText& other) const
 
 void MgeText::setAbsolutePosition(IPoint newPosition)
 {
-	_ASSERT(m_text);
-	if (m_text)
-		m_text->setPosition(sf::Vector2f((float)newPosition.x, (float)newPosition.y));
+	_ASSERT(!m_text.expired());
+	if (auto text = m_text.lock())
+	{
+		if (std::holds_alternative<sf::Text>(text->data))
+		{
+			auto& sfText = std::get<sf::Text>(text->data);
+			sfText.setPosition(sf::Vector2f((float)newPosition.x, (float)newPosition.y));
+		}
+		else
+		{
+			_ASSERT(false); //wrong type
+		}
+	}
 }
 
 void MgeText::setIsVisible(bool visible) noexcept
 {
 	m_isVisible = visible;
-	if (m_text)
+	_ASSERT(!m_text.expired());
+	if (auto text = m_text.lock())
 	{
-		auto currentCollor = m_text->getFillColor();
-		currentCollor.a = (visible) ? m_alpha : 0;
-		m_text->setFillColor(currentCollor);
+		if (std::holds_alternative<sf::Text>(text->data))
+		{
+			auto& sfText = std::get<sf::Text>(text->data);
+			auto currentCollor = sfText.getFillColor();
+			currentCollor.a = (visible) ? m_alpha : 0;
+			sfText.setFillColor(currentCollor);
+		}
+		else
+		{
+			_ASSERT(false); //wrong type
+		}
 	}
 }
 
 void MgeText::setColor(mgeType::Color_RGBA newColor)
 {
-	_ASSERT(m_text);
-	if (m_text)
+	_ASSERT(!m_text.expired());
+	if (auto text = m_text.lock())
 	{
-		m_alpha = newColor.a;
-		m_text->setFillColor(sf::Color(newColor.r, newColor.g, newColor.b, m_isVisible ? newColor.a : 0));
+		if (std::holds_alternative<sf::Text>(text->data))
+		{
+			auto& sfText = std::get<sf::Text>(text->data);
+			m_alpha = newColor.a;
+			sfText.setFillColor(sf::Color(newColor.r, newColor.g, newColor.b, m_isVisible ? newColor.a : 0));
+		}
+		else
+		{
+			_ASSERT(false); //wrong type
+		}
 	}
 }
 
 void MgeText::setBold(bool setBold)
 {
-	if (m_text)
-		m_text->setStyle((setBold) ? sf::Text::Bold : sf::Text::Regular);
-	else
-		_ASSERT(false);
+	_ASSERT(!m_text.expired());
+	if (auto text = m_text.lock())
+	{
+		if (std::holds_alternative<sf::Text>(text->data))
+		{
+			auto& sfText = std::get<sf::Text>(text->data);
+			sfText.setStyle((setBold) ? sf::Text::Bold : sf::Text::Regular);
+		}
+		else
+		{
+			_ASSERT(false); //wrong type
+		}
+	}
 }
 
 IPoint MgeText::getAbsolutePosition()
 {
-	if (m_text)
+	_ASSERT(!m_text.expired());
+	if (auto text = m_text.lock())
 	{
-		auto pos = m_text->getPosition();
-		return IPoint((int)pos.x, (int)pos.y);
+		if (std::holds_alternative<sf::Text>(text->data))
+		{
+			auto& sfText = std::get<sf::Text>(text->data);
+			auto pos = sfText.getPosition();
+			return IPoint((int)pos.x, (int)pos.y);
+		}
 	}
+	_ASSERT(false); //wrong type
 	return IPoint();
 }
 
 mgeType::Size<int> MgeText::getTextSize() const
 {
-	if (m_text)
+	if (auto text = m_text.lock())
 	{
-		auto charSize = m_text->getCharacterSize();
-		auto bounds = m_text->getLocalBounds();
-		return mgeType::Size<int>(static_cast<int>(bounds.size.x), static_cast<int>(charSize));
+		if (std::holds_alternative<sf::Text>(text->data))
+		{
+			auto& sfText = std::get<sf::Text>(text->data);
+			auto charSize = sfText.getCharacterSize();
+			auto bounds = sfText.getLocalBounds();
+			return mgeType::Size<int>(static_cast<int>(bounds.size.x), static_cast<int>(charSize));
+		}
 	}
-	else
-	{ //text not created
-		_ASSERT(false);
-		return mgeType::Size<int>(0, 0);
-	} 
+	_ASSERT(false);
+	return mgeType::Size<int>(0, 0);
 }
 
-std::shared_ptr<sf::Text> MgeText::getTextObject() const noexcept
+std::shared_ptr<MgeLayerObject> MgeText::getTextObject() const noexcept
 {
-	_ASSERT(m_text);
-	return m_text;
+	return m_text.lock();
 }
 
 [[nodiscard]] size_t MgeText::getLayer() const noexcept
 {
-	return m_layer;
+	_ASSERT(!m_text.expired());
+	if (auto text = m_text.lock())
+		return text->m_layer;
+	else
+		return 0;
 }
+
+void MgeText::setZPosition(const int64_t newZPosition) noexcept
+{
+	_ASSERT(!m_text.expired());
+	if (auto text = m_text.lock())
+	{
+		text->zPosition = newZPosition;
+		ML_wrapper::getGlobalMlWrapper()->sortLayerByZIndex_delayed(getLayer());
+	}
+}
+
+int64_t MgeText::getZPosition() const noexcept
+{
+	_ASSERT(!m_text.expired());
+	if (auto text = m_text.lock())
+		return text->zPosition;
+	else
+		return 0;
+;}
 
 MgeText::~MgeText()
 {
-	if (m_text)
+	if (auto text = m_text.lock())
 	{
-		ML_wrapper::getGlobalMlWrapper()->removeText(*this);
-		_ASSERT(m_text.use_count() == 1); //correct = text live in MgeText only, not in any layer or another object
+		ML_wrapper::getGlobalMlWrapper()->removeMgeLayerObject(text);
+		m_text.reset();
+		_ASSERT(text.use_count() == 1); //correct = last instance is local
 	}
-	m_text.reset();
 }

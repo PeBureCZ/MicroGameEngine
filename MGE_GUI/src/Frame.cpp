@@ -12,7 +12,7 @@
 Frame::Frame(const IPoint& newPosition, const ISize& newSize)
 	: Widget(newPosition, newSize)
 {
-	const DrawableObject<float> drawable(mgeShape::Rectangle<float>(FPoint(0,0), mgeType::Size<float>((float)newSize.width, (float)newSize.height)), mgeType::Color_RGBA(100, 100, 100, 150));
+	const MgeVertices<float> drawable(mgeShape::Rectangle<float>(FPoint(0,0), mgeType::Size<float>((float)newSize.width, (float)newSize.height)), mgeType::Color_RGBA(100, 100, 100, 150));
 	MgeDrawable newWidgetVertices(drawable, newPosition.asFloat(), 0.f, GraphicItemLayer::GUI_LAYER);
 	frameObject = std::move(newWidgetVertices);
 }

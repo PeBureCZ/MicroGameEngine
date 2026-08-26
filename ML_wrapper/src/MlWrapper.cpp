@@ -1,6 +1,7 @@
 ﻿#include "MlWrapper.h"
 
 #include <windows.h>
+#include <algorithm>
 
 #include "GlobalFunctions.h"
 #include "MlEvent.h"
@@ -30,6 +31,26 @@ namespace ML_wrapper
     const IPoint& MlWrapper::getCursorGuiPosition() const noexcept
     {
         return cursorGuiPosition;
+    }
+
+
+    void MlWrapper::addMgeLayerObject(const std::shared_ptr<MgeLayerObject> newObject)
+    {
+        MAIN_THREAD_GUARD;
+        _ASSERT(newObject);
+        if (!newObject)
+            return;
+
+        createLayerIfNeeded(newObject->m_layer);
+        auto it_layer = std::find_if(layers.begin(), layers.end(), [this, newObject](auto& layer)
+            { return layer.m_layerNumber == newObject->m_layer; });
+
+
+        _ASSERT(it_layer != layers.end());
+        if (it_layer == layers.end())
+            return;
+
+        it_layer->m_layerObjects.push_back(newObject);
     }
 
     mgeType::Size<int> MlWrapper::getScreenSize() const noexcept
@@ -180,46 +201,47 @@ namespace ML_wrapper
         mainWindow->display();
     }
 
-    void MlWrapper::drawContent() const
+    void MlWrapper::drawContent()
     {
         setDrawToWorldView();
-        for (const auto& [layerNum, layer] : layers)
+        for (auto& layer : layers)
         {
-            if (layerNum == GraphicItemLayer::UNRENDERED_LAYER)
+            if (layer.m_layerNumber == GraphicItemLayer::UNRENDERED_LAYER)
                 continue;
 
-            if (layerNum == GraphicItemLayer::GUI_LAYER)
+            doSortLayerIfNeeded(layer);
+
+            if (layer.m_layerNumber == GraphicItemLayer::GUI_LAYER)
                 setDrawToGuiView();
 
-            for (const auto& objectInLayer : *layer.get())
+            for (auto& objectInLayer : layer.m_layerObjects)
             {
-                if (std::holds_alternative<MGE_VERTICES>(objectInLayer))
+                _ASSERT(objectInLayer);
+                if (objectInLayer)
                 {
-					const auto& verticesObject = std::get<MGE_VERTICES>(objectInLayer);
-                    _ASSERT(verticesObject);
-                    if (verticesObject)
-                        mainWindow->draw(verticesObject->m_batch, verticesObject->m_state);
+                    if (std::holds_alternative<MlVerticesObject>(objectInLayer->data))
+                    {
+                        auto& vertices = std::get<MlVerticesObject>(objectInLayer->data);
+                        mainWindow->draw(vertices.m_batch, vertices.m_state);
+                    }
+                    else if (std::holds_alternative<sf::Sprite>(objectInLayer->data))
+                    {
+                        auto& sprite = std::get<sf::Sprite>(objectInLayer->data);
+                        mainWindow->draw(sprite);
+                    }
+                    else if (std::holds_alternative<sf::Text>(objectInLayer->data))
+                    {
+                        auto& text = std::get<sf::Text>(objectInLayer->data);
+                        mainWindow->draw(text);
+                    }
+                    else
+                        _ASSERT(false); //unknown type
+                        
                 }
-                else if (std::holds_alternative<MGE_IMAGE>(objectInLayer))
-                {
-                    const auto& imageObject = std::get<MGE_IMAGE>(objectInLayer);
-                    _ASSERT(imageObject);
-                    if (imageObject)
-                        mainWindow->draw(*imageObject);
-				}
-                else if (std::holds_alternative<MGE_TEXT>(objectInLayer))
-                {
-                    const auto& textObject = std::get<MGE_TEXT>(objectInLayer);
-                    _ASSERT(textObject);
-                    if (textObject)
-                        mainWindow->draw(*textObject);
-				}
-                else 
-                    _ASSERT(false); //unknown object type
             }
 
 			//back to world view for next layer
-            if (layerNum == GraphicItemLayer::GUI_LAYER)
+            if (layer.m_layerNumber == GraphicItemLayer::GUI_LAYER)
                 setDrawToWorldView();
         }
     }
@@ -255,42 +277,17 @@ namespace ML_wrapper
     MlWrapper::~MlWrapper()
     {
 #ifdef _DEBUG
-        for (const auto& [layerId, layer] : layers)
+        for (const auto& layer : layers)
         {
-            _ASSERT(layer);
-            if (!layer)
-                continue;
-            for (const auto& drawableItem : *layer.get())
+            for (auto& objectInLayer : layer.m_layerObjects)
             {
-                //if more than one object exists, it mean´s there is an issue with drawable item management
-                if (std::holds_alternative<MGE_VERTICES>(drawableItem))
-                {
-                    const auto& verticesObject = std::get<MGE_VERTICES>(drawableItem);
-                    _ASSERT(verticesObject);
-                    if (verticesObject)
-                        { _ASSERT(verticesObject.use_count() == 1); }
-                }
-                else if (std::holds_alternative<MGE_IMAGE>(drawableItem))
-                {
-                    const auto& imageObject = std::get<MGE_IMAGE>(drawableItem);
-                    _ASSERT(imageObject);
-                    if (imageObject)
-                        { _ASSERT(imageObject.use_count() == 1); }
-                }
-                else if (std::holds_alternative<MGE_TEXT>(drawableItem))
-                {
-                    const auto& textObject = std::get<MGE_TEXT>(drawableItem);
-                    _ASSERT(textObject);
-                    if (textObject)
-                        { _ASSERT(textObject.use_count() == 1); }
-                }
-                else
-                {
-					_ASSERT(false); //unknown object type
-                }
+                _ASSERT(objectInLayer);
+                if (objectInLayer)
+                    _ASSERT(objectInLayer.use_count() == 1); //correct behavior = remove last instance
             }
         }
 #endif
+        layers.clear();
     }
 
     void MlWrapper::resetMainWindow()
@@ -298,56 +295,41 @@ namespace ML_wrapper
 		mainWindow.reset();
     }
 
-    bool MlWrapper::removeMlVerticesObject(const MGE_VERTICES& vertices, std::optional<size_t> knownLayer)
+    void MlWrapper::removeMgeLayerObject(const std::shared_ptr<MgeLayerObject> removedObject)
     {
-        for (const auto& [layerNum, layer] : layers)
+        _ASSERT(removedObject);
+        if (!removedObject)
+            return;
+
+        MAIN_THREAD_GUARD;
+
+        auto it_layer = std::find_if(layers.begin(), layers.end(), [this, removedObject] (auto& layer)
+            { return layer.m_layerNumber == removedObject->m_layer; });
+
+        if (it_layer != layers.end())
         {
-            bool checkLayerNum = knownLayer.has_value();
-            _ASSERT(layer);
-            if (!layer || (checkLayerNum && layerNum != knownLayer.value()))
-                continue;
-
-            auto it = std::find_if(layer->begin(), layer->end(), [&vertices](const LAYERED_OBJECT& obj)
-                {return std::holds_alternative<MGE_VERTICES>(obj) && std::get<MGE_VERTICES>(obj) == vertices;});
-
-            if (it != layer->end())
+            auto it_obj = std::find(it_layer->m_layerObjects.begin(), it_layer->m_layerObjects.end(), removedObject);
+            _ASSERT(it_obj != it_layer->m_layerObjects.end());
+            if (it_obj != it_layer->m_layerObjects.end())
             {
-                layer->erase(it);
-                return true;
+                it_layer->m_layerObjects.erase(it_obj);
+                if (it_layer->m_layerObjects.size() == 0)
+                    layers.erase(it_layer);
             }
         }
-        _ASSERT(false);
-        return false;
+        else
+            _ASSERT(false);
     }
 
-    void MlWrapper::addMlVerticesObject(const MGE_VERTICES& newWidget, size_t layer)
+    void MlWrapper::changeLayerOfMgeObject(std::shared_ptr<MgeLayerObject> mgeObject, size_t newLayer)
     {
-        if (!newWidget)
-        {
-            _ASSERT(false); //invalid widget
-            return;
-		}
-
-        auto layer_it = std::lower_bound(layers.begin(),layers.end(), layer, [](const auto& lhs, size_t value)
-            {return lhs.first < value;});
-
-        if (!createLayerIfNeeded(layer_it, layer))
+        _ASSERT(mgeObject);
+        if (!mgeObject)
             return;
 
-        // Insert object into the layer 
-        if (layer_it->second)
-            layer_it->second->push_back(newWidget);
-        return;
-    }
-
-    static std::shared_ptr<ML_wrapper::MlWrapper> g_mlWrapper;
-    std::shared_ptr<ML_wrapper::MlWrapper> getGlobalMlWrapper()
-    {
-        if (!g_mlWrapper)
-        {
-            g_mlWrapper = std::make_shared<ML_wrapper::MlWrapper>();
-        }
-	    return g_mlWrapper;
+        removeMgeLayerObject(mgeObject);
+        mgeObject->m_layer = newLayer;
+        addMgeLayerObject(mgeObject);
     }
 
     void MlWrapper::removeTexture(TextureId textureId)
@@ -365,19 +347,37 @@ namespace ML_wrapper
             _ASSERT(false); // texture id does not exist
     }
 
-    bool MlWrapper::createLayerIfNeeded(MGE_LAYERS::iterator& layer_it, size_t layer)
+    void MlWrapper::createLayerIfNeeded(size_t layer)
     {
-        if (layer_it == layers.end() || layer_it->first != layer)
-        {
-            BASE_LAYER newBaseLayer = std::make_unique<LAYERED_OBJECTS>();
-            layer_it = layers.insert(layer_it, LAYER{ layer, std::move(newBaseLayer) });
-            if (layer_it == layers.end())
+        auto it_layer = std::find_if(layers.begin(), layers.end(), [layer](auto& layerElement)
             {
-                _ASSERT(false);
-                return false;
-            }
-        }
-        return true;
+                return layerElement.m_layerNumber == layer;
+            });
+
+        if (it_layer != layers.end())
+            return;
+
+        MgeLayer newLayer;
+        newLayer.m_layerNumber = layer;
+        layers.push_back(std::move(newLayer));
+
+        std::sort(layers.begin(), layers.end(), [] (MgeLayer& elA, MgeLayer& elB)
+            { return elA.m_layerNumber < elB.m_layerNumber; });
+    }
+
+    void MlWrapper::doSortLayerIfNeeded(MgeLayer& layer)
+    {
+        MAIN_THREAD_GUARD;
+        std::lock_guard<std::mutex> lock(delayedSortMutex);
+        auto it = std::find(delayedSort.begin(), delayedSort.end(), layer.m_layerNumber);
+        if (it != delayedSort.end())
+            std::sort(layer.m_layerObjects.begin(), layer.m_layerObjects.end(),
+                [](auto& a, const auto& b)
+                    { 
+                        if (a && b)
+                            return a->zPosition < b->zPosition; 
+                        return false;
+                    });
     }
 
     const sf::Texture& MlWrapper::appendTexture(const MgeImage& image)
@@ -408,12 +408,6 @@ namespace ML_wrapper
         return empty;
     }
 
-    void MlWrapper::changeSpriteLayer(MGE_IMAGE& image, size_t newLayer, size_t oldLayer)
-    {
-        removeSprite(image, oldLayer);
-        appendSprite(image, newLayer);
-    }
-
     [[nodiscard]] mgeType::Size<int> MlWrapper::getTextureSize(TextureId id)
     {
         for (const auto& texture : textures)
@@ -431,123 +425,24 @@ namespace ML_wrapper
         return mgeType::Size<int>();
     }
 
-    void MlWrapper::removeText(const MgeText& txt)
+    void MlWrapper::sortLayerByZIndex_delayed(size_t layer)
     {
-        auto layer = txt.getLayer();
-        auto it = std::find_if(layers.begin(), layers.end(), [layer](const auto& pair) { return pair.first == layer; });
-        if (it != layers.end())
-        {
-            auto& objects = it->second;
-            if (objects)
-            {
-                auto txtObj = txt.getTextObject();
-                auto text_it = std::find_if(objects->begin(), objects->end(),
-                    [&txtObj](const LAYERED_OBJECT& lobj) { return std::holds_alternative<MGE_TEXT>(lobj) && std::get<MGE_TEXT>(lobj) == txtObj;  });
-
-                if (text_it != objects->end())
-                    objects->erase(text_it);
-                else
-                    _ASSERT(false); //image not found in the specified layer
-            }
-            else
-                _ASSERT(false); //layer exists but has no objects
-        }
-        else
-            _ASSERT(false); //layer not found
+        std::lock_guard<std::mutex> lock(delayedSortMutex);
+        auto it = std::find(delayedSort.begin(), delayedSort.end(), layer);
+        if (it == delayedSort.end())
+            delayedSort.push_back(layer);
+        //else -> contained
+        _ASSERT(delayedSort.size() <= 100); //need optimise?
     }
 
-    void MlWrapper::appendText(const MgeText& txt)
+    static std::shared_ptr<ML_wrapper::MlWrapper> g_mlWrapper;
+    std::shared_ptr<ML_wrapper::MlWrapper> getGlobalMlWrapper()
     {
-        _ASSERT(txt.getTextObject());
-        size_t layer = txt.getLayer();
-        auto layer_it = std::lower_bound(layers.begin(), layers.end(), layer, [](const auto& lhs, size_t value)
-            {return lhs.first < value; });
-
-        if (!createLayerIfNeeded(layer_it, layer))
-            return;
-
-        // Insert object into the layer 
-        if (layer_it->second)
-            layer_it->second->push_back(txt.getTextObject());
+        if (!g_mlWrapper)
+            g_mlWrapper = std::make_shared<ML_wrapper::MlWrapper>();
+        return g_mlWrapper;
     }
 
-    void MlWrapper::appendImage(const MgeImage& image)
-    {
-        auto textureId = image.getTextureID();
-        auto texture_it = textures.find(textureId);
-
-        if (texture_it != textures.end())
-            texture_it->second.first++; //increase counter
-        else
-        {
-            sf::Texture texture;
-            if (!texture.loadFromFile(textureId.path))
-            {
-                _ASSERT(false); //file not found
-            }
-            else
-                textures.insert({ textureId, std::make_pair(1, texture) });
-        }
-
-        appendSprite(image.getSprite(), image.getLayer());
-    }
-
-    void MlWrapper::appendSprite(const MGE_IMAGE& image, size_t layer)
-    {
-        auto layer_it = std::lower_bound(layers.begin(), layers.end(), layer, [](const auto& lhs, size_t value)
-            {return lhs.first < value; });
-
-        if (!createLayerIfNeeded(layer_it, layer))
-            return;
-
-        // Insert object into the layer 
-        if (layer_it->second)
-            layer_it->second->push_back(image);
-    }
-
-    void MlWrapper::removeImage(MgeImage& image)
-    {
-        auto textureId = image.getTextureID();
-        _ASSERT(textureId.getPath() != UNDEFINED_TEXTURE_PATH);
-        auto texture_it = textures.find(textureId);
-
-        if (texture_it != textures.end())
-        {
-            auto sprite = image.getSprite();
-            if (sprite)
-            {
-				removeSprite(sprite, image.getLayer());
-                removeTexture(std::move(textureId));
-            }
-            else
-                { _ASSERT(false); } //sprite not found
-        }
-        else
-            { _ASSERT(false); } // texture id does not exist
-    } 
-
-    void MlWrapper::removeSprite(MGE_IMAGE& img, size_t layer)
-    {
-		auto it = std::find_if(layers.begin(), layers.end(), [layer](const auto& pair) { return pair.first == layer; });
-        if (it != layers.end())
-        {
-            auto& sprites = it->second;
-            if (sprites)
-            {
-                auto spriteIt = std::find_if(sprites->begin(), sprites->end(), 
-                    [&img](const LAYERED_OBJECT& lobj) { return std::holds_alternative<MGE_IMAGE>(lobj) && std::get<MGE_IMAGE>(lobj) == img;  });
-
-                if (spriteIt != sprites->end())
-                    sprites->erase(spriteIt);
-                else
-                    { _ASSERT(false); } //sprite not found in the specified layer
-            }
-            else
-                { _ASSERT(false); } //layer exists but has no sprites
-        }
-        else
-            { _ASSERT(false); } //layer not found
-    }
 } //ML_wrapper namespace end
 
 FPoint ml::getCursorPosition() noexcept

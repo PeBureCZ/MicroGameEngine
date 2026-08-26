@@ -15,6 +15,8 @@ namespace sf
 	class Text;
 }
 
+struct MgeLayerObject;
+
 class MgeText
 {
 public:
@@ -43,14 +45,17 @@ public:
 	void setBold(bool setBold);
 
 	[[nodiscard]] mgeType::Size<int> getTextSize() const;
-	[[nodiscard]] std::shared_ptr<sf::Text> getTextObject() const noexcept;
+	[[nodiscard]] std::shared_ptr<MgeLayerObject> getTextObject() const noexcept;
 	[[nodiscard]] size_t getLayer() const noexcept;
+	void setZPosition(int64_t newZPosition) noexcept;
+	[[nodiscard]] int64_t getZPosition() const noexcept;
+
+	[[nodiscard]] 
 
 	~MgeText();
 
 private:
-	size_t m_layer = 0;
-	std::shared_ptr<sf::Text> m_text;
+	std::weak_ptr<MgeLayerObject> m_text;
 	std::uint8_t m_alpha = 255;
 	bool m_isVisible = true;
 };

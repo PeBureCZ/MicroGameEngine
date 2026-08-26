@@ -10,6 +10,8 @@
 
 using SPRITE_ID = uintptr_t;
 
+struct MgeLayerObject;
+
 class MgeImage
 {
 public:
@@ -31,17 +33,21 @@ public:
 	[[nodiscard]] float getRotation() const;
 	void setOrigin(const FPoint& newOrigin) const;
 	[[nodiscard]] FPoint getAbsolutePosition() const noexcept;
-	size_t getLayer() const noexcept;
+	[[nodiscard]] size_t getLayer() const noexcept;
 	void setLayer(size_t newLayer);
 
 	static [[nodiscard]] MgeImage loadTexture(std::string path, size_t layer = GraphicItemLayer::DEFAULT_LAYER);
 	static [[nodiscard]] MgeImage loadTexture(const TextureId& textureId, size_t layer = GraphicItemLayer::DEFAULT_LAYER);
 
+	void setZPosition(int64_t newZPosition) noexcept;
+	[[nodiscard]] int64_t getZPosition() const noexcept;
+
 	~MgeImage();
 
-	SPRITE_ID getSpriteID() const noexcept;
-	TextureId getTextureID() const noexcept;
-	const std::shared_ptr<sf::Sprite> getSprite() const noexcept;
+	[[nodiscard]] SPRITE_ID getSpriteID() const noexcept;
+	[[nodiscard]] TextureId getTextureID() const noexcept;
+	[[nodiscard]] const std::shared_ptr<MgeLayerObject> getSprite() const noexcept;
+
 protected:
 
 private:
@@ -49,8 +55,7 @@ private:
 	SPRITE_ID imageId = (SPRITE_ID)0;
 	TextureId usedTexture = {};
 	FPoint absolutePosition;
-	size_t layer = GraphicItemLayer::DEFAULT_LAYER;
-	std::shared_ptr<sf::Sprite> sprite;
+	std::weak_ptr<MgeLayerObject>  m_sprite;
 	std::uint8_t m_alpha = 255;
 	bool m_isVisible = true;
 };

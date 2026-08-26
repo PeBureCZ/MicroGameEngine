@@ -105,7 +105,8 @@ bool BaseApp::isRunning() const
 
 void BaseApp::runApp()
 {
-    mgeCore::setThisThreadAsMain();
+    if (!mgeCore::mainThreadIsSet())
+        mgeCore::setThisThreadAsMain();
     _ASSERT(mgeCore::mainThreadIsSet());
     std::chrono::duration<double> delta_sec(0.0);
 

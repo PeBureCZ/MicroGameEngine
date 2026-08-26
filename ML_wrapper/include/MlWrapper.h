@@ -6,11 +6,11 @@
 #include <variant>
 #include <optional>
 #include <vector>
-
-#include "SFML/Graphics.hpp"
+#include <mutex>
 
 #include "BasicTypes.h"
 #include "GraphicDependencies.h"
+#include "layerDefinition.h"
 
 namespace sf
 {
@@ -25,18 +25,6 @@ struct MlVerticesObject;
 class MgeImage;
 class MgeText;
 
-using MGE_VERTICES = std::shared_ptr<MlVerticesObject>;
-using MGE_IMAGE = std::shared_ptr<sf::Sprite>;
-using MGE_TEXT = std::shared_ptr<sf::Text>;
-
-using LAYERED_OBJECT = std::variant<MGE_VERTICES, MGE_IMAGE, MGE_TEXT>;
-using LAYERED_OBJECTS = std::vector<LAYERED_OBJECT>;
-using BASE_LAYER = std::unique_ptr<LAYERED_OBJECTS>;
-using LAYER_NUMBER = size_t;
-
-using LAYER = std::pair<LAYER_NUMBER, BASE_LAYER>;
-using MGE_LAYERS = std::vector<LAYER>;
-
 namespace ML_wrapper
 {
     class MlWrapper 
@@ -49,16 +37,20 @@ namespace ML_wrapper
         void clear();
         void displayActualFrame();
 
-        void drawContent() const;
+        void drawContent();
 
         std::deque<MlEventType>& getMlEvents();
         void clearEvents();
         void resetMainWindow();
-        bool removeMlVerticesObject(const MGE_VERTICES& vertices, std::optional<size_t> knownLayer = std::nullopt);
+
+        void removeMgeLayerObject(const std::shared_ptr<MgeLayerObject> removedObject);
+        void changeLayerOfMgeObject(std::shared_ptr<MgeLayerObject> mgeObject, size_t newLayer);
+
+        //bool removeMlVerticesObject(const MGE_VERT& vertices, std::optional<size_t> knownLayer = std::nullopt);
 
         [[nodiscard]] const FPoint& getCursorWorldPosition() const noexcept;
         [[nodiscard]] const IPoint& getCursorGuiPosition() const noexcept;
-        void addMlVerticesObject(const MGE_VERTICES& newWidget, size_t layer);
+        void addMgeLayerObject(const std::shared_ptr<MgeLayerObject> newObject);
 
         [[nodiscard]] mgeType::Size<int> getScreenSize() const noexcept;
 		void moveScreenOffset(FPoint offset) noexcept;
@@ -75,12 +67,8 @@ namespace ML_wrapper
         MlWrapper operator=(const MlWrapper&) = delete;
         MlWrapper operator=(MlWrapper&&) = delete;
 
-        void removeText(const MgeText& txt);
-        void appendText(const MgeText& txt);
+        void sortLayerByZIndex_delayed(size_t layer);
 
-        void appendImage(const MgeImage& image);
-        void removeImage(MgeImage& image);
-        void changeSpriteLayer(MGE_IMAGE& image, size_t newLayer, size_t oldLayer);
         const sf::Texture& appendTexture(const MgeImage& image);
         [[nodiscard]] mgeType::Size<int> getTextureSize(TextureId id);
 
@@ -88,14 +76,17 @@ namespace ML_wrapper
 
     private:
 
-        void removeSprite(MGE_IMAGE& img, size_t layer);
-        void appendSprite(const MGE_IMAGE& image, size_t layer);
-
+        //void removeSprite(const MgeImage& image);
+        //void appendSprite(const MGE_TXT& image, size_t layer, int64_t zPosition);
         void removeTexture(TextureId textureId);
 
-        [[nodiscard]] bool createLayerIfNeeded(MGE_LAYERS::iterator& layer_it, size_t layer);
+        void createLayerIfNeeded(size_t layer);
 
         std::deque<MlEventType> events;
+
+        std::mutex delayedSortMutex;
+        std::vector<size_t> delayedSort; //used to store "do sort" during next app tick
+        void doSortLayerIfNeeded(MgeLayer& layer);
 
 		MGE_LAYERS layers;
 

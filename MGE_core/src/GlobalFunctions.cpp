@@ -1,9 +1,12 @@
 #include "GlobalFunctions.h"
 
 #include <deque>
+#include <atomic>
 
 static bool mainThreadRun = false;
 static std::thread::id mainThreadId;
+constexpr int64_t DEFAULT_Z_POSITION = 1024;
+static std::atomic<int64_t> defaultZPosition = DEFAULT_Z_POSITION;
 
 namespace mgeCore
 {
@@ -118,5 +121,15 @@ namespace mgeCore
             return {};
 
         return result;
+    }
+
+    void setDefaultZPosition(int64_t newDefaultValue)
+    {
+        defaultZPosition.store(newDefaultValue);
+    }
+
+    int64_t getDefaultZPosition()
+    {
+        return defaultZPosition.load();
     }
 }

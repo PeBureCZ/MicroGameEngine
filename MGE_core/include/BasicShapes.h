@@ -113,15 +113,15 @@ template<typename T>
 using SHAPE_VARIANT = std::variant<mgeShape::Rectangle<T>,mgeShape::Circle<T>>;
 
 template<typename T>
-class DrawableObject
+class MgeVertices
 {
 public:
 
-	DrawableObject()
+	MgeVertices()
 		: m_shape(mgeShape::Rectangle<T>())
 	{}
 
-	DrawableObject(SHAPE_VARIANT<T> shape, mgeType::Color_RGBA usedColor = mgeType::Color_RGBA())
+	MgeVertices(SHAPE_VARIANT<T> shape, mgeType::Color_RGBA usedColor = mgeType::Color_RGBA())
 		: m_shape(shape), color(usedColor) // default white color
 	{
 
@@ -213,7 +213,7 @@ public:
 		}
 	}
 
-	virtual ~DrawableObject() = default;
+	virtual ~MgeVertices() = default;
 
 protected:
 	mgeType::Color_RGBA color;

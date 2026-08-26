@@ -17,7 +17,7 @@ class ShapeInterpreter
 {
 public:
 
-    static void convertRectangleToVertices(const DrawableObject<float>& object, sf::VertexArray& batch)
+    static void convertRectangleToVertices(const MgeVertices<float>& object, sf::VertexArray& batch)
     {
         auto addRect = [&](sf::Vector2f pos, sf::Vector2f size, float rotationDeg, sf::Color color)
             {
@@ -73,7 +73,7 @@ public:
             _ASSERT(false); // Unsupported shape type
     }
 
-    static sf::VertexArray convertRectanglesToVertices(std::vector<DrawableObject<float>>& shapesToConvert)
+    static sf::VertexArray convertRectanglesToVertices(std::vector<MgeVertices<float>>& shapesToConvert)
     {
         sf::VertexArray batch;
         for (auto& object : shapesToConvert)

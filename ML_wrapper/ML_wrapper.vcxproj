@@ -149,8 +149,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="GraphicDependencies.h" />
     <ClInclude Include="include\GraphicDependencies.h" />
+    <ClInclude Include="include\layerDefinition.h" />
     <ClInclude Include="include\MlCurve.h" />
     <ClInclude Include="include\MlEvent.h" />
     <ClInclude Include="include\MlWrapper.h" />

@@ -1,57 +1,59 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="include\GraphicDependencies.h">
+    <ClInclude Include="..\include\ML_wrapper\GraphicDependencies.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\MlCurve.h">
+    <ClInclude Include="..\include\ML_wrapper\layerDefinition.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\MlEvent.h">
+    <ClInclude Include="..\include\ML_wrapper\MgeDrawable.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\MlWrapper.h">
+    <ClInclude Include="..\include\ML_wrapper\MgeImage.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\MgeImage.h">
+    <ClInclude Include="..\include\ML_wrapper\MgeText.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\MgeText.h">
+    <ClInclude Include="..\include\ML_wrapper\MlCurve.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\MgeDrawable.h">
+    <ClInclude Include="..\include\ML_wrapper\MlEvent.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\ShapeInterpreter.h">
+    <ClInclude Include="..\include\ML_wrapper\MlWrapper.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\layerDefinition.h" />
+    <ClInclude Include="..\include\ML_wrapper\ShapeInterpreter.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
-      <UniqueIdentifier>{8c251b66-25ad-4d4e-89f2-ce412053397e}</UniqueIdentifier>
+      <UniqueIdentifier>{6efe24ec-48b5-4d81-8840-351b3ea30e24}</UniqueIdentifier>
     </Filter>
     <Filter Include="src">
-      <UniqueIdentifier>{568fd7de-472e-451a-bfa6-e89bc28297d9}</UniqueIdentifier>
+      <UniqueIdentifier>{f2751af9-312f-4c44-bc82-7a5224d4684b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\MlEvent.cpp">
+    <ClCompile Include="..\src\ML_wrapper\MgeDrawable.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\MlWrapper.cpp">
+    <ClCompile Include="..\src\ML_wrapper\MgeImage.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\MgeImage.cpp">
+    <ClCompile Include="..\src\ML_wrapper\MgeText.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\MgeText.cpp">
+    <ClCompile Include="..\src\ML_wrapper\MlEvent.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\MgeDrawable.cpp">
+    <ClCompile Include="..\src\ML_wrapper\MlWrapper.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\ShapeInterpreter.cpp">
+    <ClCompile Include="..\src\ML_wrapper\ShapeInterpreter.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

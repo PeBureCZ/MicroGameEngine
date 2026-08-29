@@ -58,14 +58,14 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>$(SolutionDir)ML_wrapper\include;$(SolutionDir)..\SFML_3.0.2\include\;$(SolutionDir)MGE_core\include\;$(SolutionDir)MGE_GUI\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include\ML_wrapper;$(SolutionDir)include\MGE_core;$(SolutionDir)\include\MGE_GUI;$(SolutionDir)..\SFML_3.0.2\include\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>MGE_core.lib;MGE_GUI.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-main-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)build\x64\Debug;$(SolutionDir)..\SFML_3.0.2\lib;$(SolutionDir)..\SFML_3.0.2\bin</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib\x64\Debug;$(SolutionDir)..\SFML_3.0.2\lib;$(SolutionDir)..\SFML_3.0.2\bin</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(SolutionDir)..\SFML_3.0.2\bin\sfml-graphics-d-3.dll" "$(OutDir)"
@@ -101,13 +101,14 @@ copy /Y "$(SolutionDir)..\SFML_3.0.2\bin\sfml-system-d-3.dll" "$(OutDir)"</Comma
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\TrainSidingManager\build\x64\Release\ML_wrapper.lib</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\TrainSidingManager\build\x64\Release\ML_wrapper.lib;$(SolutionDir)include\ML_wrapper;$(SolutionDir)include\MGE_core;$(SolutionDir)\include\MGE_GUI;$(SolutionDir)..\SFML_3.0.2\include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib\x64\Release;$(SolutionDir)..\SFML_3.0.2\lib;$(SolutionDir)..\SFML_3.0.2\bin</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(SolutionDir)..\SFML_3.0.2\bin\sfml-graphics-d-3.dll" "$(OutDir)"
@@ -118,12 +119,12 @@ copy /Y "$(SolutionDir)..\SFML_3.0.2\bin\sfml-system-d-3.dll" "$(OutDir)"</Comma
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Widget_test.h" />
-    <ClInclude Include="Frame_test.h" />
+    <ClInclude Include="MgeWidget_test.h" />
+    <ClInclude Include="MgeFrame_test.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Frame_test.cpp" />
-    <ClCompile Include="Widget_test.cpp" />
+    <ClCompile Include="MgeFrame_test.cpp" />
+    <ClCompile Include="MgeWidget_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MGE_GUI\MGE_GUI.vcxproj">

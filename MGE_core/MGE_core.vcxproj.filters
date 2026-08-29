@@ -1,63 +1,63 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="src\Trigger.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MgeObject.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MgeComponents.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MgeActor.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GlobalFunctions.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="include\EventTable.h">
+    <ClInclude Include="..\include\MGE_core\BasicShapes.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\Trigger.h">
+    <ClInclude Include="..\include\MGE_core\BasicTypes.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\BasicShapes.h">
+    <ClInclude Include="..\include\MGE_core\CollisionHandler.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\BasicTypes.h">
+    <ClInclude Include="..\include\MGE_core\EventSystem.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\CollisionHandler.h">
+    <ClInclude Include="..\include\MGE_core\GlobalFunctions.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\Transform.h">
+    <ClInclude Include="..\include\MGE_core\MgeActor.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\MgeObject.h">
+    <ClInclude Include="..\include\MGE_core\MgeComponents.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\MgeComponents.h">
+    <ClInclude Include="..\include\MGE_core\MgeObject.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\MgeActor.h">
+    <ClInclude Include="..\include\MGE_core\Transform.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\GlobalFunctions.h">
+    <ClInclude Include="..\include\MGE_core\Trigger.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\EventSystem.h">
+    <ClInclude Include="..\include\MGE_core\GlobalEvents.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
-      <UniqueIdentifier>{993cf914-690b-48fa-91e4-4bcd9e33efe6}</UniqueIdentifier>
+      <UniqueIdentifier>{1e7c66df-75e2-45eb-803e-21b9b6ca9e7d}</UniqueIdentifier>
     </Filter>
     <Filter Include="src">
-      <UniqueIdentifier>{f9d5fe10-846b-4bb2-8267-2d1cdb471164}</UniqueIdentifier>
+      <UniqueIdentifier>{24ac3401-c05a-4997-935b-daf190bdcb81}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\MGE_core\GlobalFunctions.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MGE_core\MgeActor.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MGE_core\MgeComponents.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MGE_core\MgeObject.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MGE_core\Trigger.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

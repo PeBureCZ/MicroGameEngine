@@ -18,6 +18,15 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\MGE\BaseApp.h" />
+    <ClInclude Include="..\include\MGE\MgeGui.h" />
+    <ClInclude Include="..\include\MGE\version.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\MGE\BaseApp.cpp" />
+    <ClCompile Include="..\src\MGE\MgeGui.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -71,10 +80,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)build\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)lib\$(Platform)\$(Configuration)\</OutDir>
+    <SourcePath>$(VC_SourcePath);$(SolutionDir)src\MGE</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)build\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)lib\$(Platform)\$(Configuration)\</OutDir>
+    <SourcePath>$(VC_SourcePath);$(SolutionDir)src\MGE</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -109,7 +120,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)MGE_core\include;$(SolutionDir)ML_wrapper\include;$(SolutionDir)..\SFML_3.0.2\include\;$(ProjectDir)include\;$(SolutionDir)MGE_GUI\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include\MGE_core;$(SolutionDir)include\MGE_GUI;$(SolutionDir)include\ML_wrapper;$(SolutionDir)include\MGE;$(SolutionDir)..\SFML_3.0.2\include\</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -125,22 +136,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)MGE_core\include;$(SolutionDir)ML_wrapper\include;$(SolutionDir)..\SFML_3.0.2\include\;$(ProjectDir)include\;$(SolutionDir)MGE_GUI\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include\MGE_core;$(SolutionDir)include\MGE_GUI;$(SolutionDir)include\ML_wrapper;$(SolutionDir)include\MGE;$(SolutionDir)..\SFML_3.0.2\include\</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="include\BaseApp.h" />
-    <ClInclude Include="include\MgeGui.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\BaseApp.cpp" />
-    <ClCompile Include="src\MgeGui.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

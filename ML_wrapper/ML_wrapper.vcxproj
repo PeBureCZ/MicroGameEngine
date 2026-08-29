@@ -72,13 +72,15 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath); </IncludePath>
-    <OutDir>$(SolutionDir)build\$(Platform)\$(Configuration)\</OutDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)lib\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <SourcePath>$(VC_SourcePath);$(SolutionDir)src\ML_wrapper</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath); </IncludePath>
-    <OutDir>$(SolutionDir)build\$(Platform)\$(Configuration)\</OutDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)lib\$(Platform)\$(Configuration)\</OutDir>
+    <SourcePath>$(VC_SourcePath);$(SolutionDir)src\ML_wrapper</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -113,7 +115,7 @@
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\SFML_3.0.2\include\;$(SolutionDir)SFML_3.0.2\lib;$(SolutionDir)MGE_core\include\;$(ProjectDir)include\;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\SFML_3.0.2\include\;$(SolutionDir)SFML_3.0.2\lib;$(SolutionDir)include\MGE_core;$(SolutionDir)include\ML_wrapper</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -126,7 +128,7 @@
     <Lib>
       <AdditionalDependencies>
       </AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)build\x64\Debug\MGE_core.lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib\x64\Debug\MGE_core.lib</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -138,7 +140,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)SFML_3.0.2\include\;$(SolutionDir)..\SFML_3.0.2\lib;$(SolutionDir)MGE_core\include\;$(ProjectDir)include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\SFML_3.0.2\include\;$(SolutionDir)SFML_3.0.2\lib;$(SolutionDir)include\MGE_core;$(SolutionDir)include\ML_wrapper</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -147,17 +149,20 @@
       <AdditionalLibraryDirectories>$(SolutionDir)..\SFML_3.0.2\lib\</AdditionalLibraryDirectories>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies); sfml-graphics.lib; sfml-window.lib ; sfml-system.lib;sfml-graphics.lib</AdditionalDependencies>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib\x64\Release\MGE_core.lib</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\GraphicDependencies.h" />
-    <ClInclude Include="include\layerDefinition.h" />
-    <ClInclude Include="include\MlCurve.h" />
-    <ClInclude Include="include\MlEvent.h" />
-    <ClInclude Include="include\MlWrapper.h" />
-    <ClInclude Include="include\MgeImage.h" />
-    <ClInclude Include="include\MgeText.h" />
-    <ClInclude Include="include\MgeDrawable.h" />
-    <ClInclude Include="include\ShapeInterpreter.h" />
+    <ClInclude Include="..\include\ML_wrapper\GraphicDependencies.h" />
+    <ClInclude Include="..\include\ML_wrapper\layerDefinition.h" />
+    <ClInclude Include="..\include\ML_wrapper\MgeDrawable.h" />
+    <ClInclude Include="..\include\ML_wrapper\MgeImage.h" />
+    <ClInclude Include="..\include\ML_wrapper\MgeText.h" />
+    <ClInclude Include="..\include\ML_wrapper\MlCurve.h" />
+    <ClInclude Include="..\include\ML_wrapper\MlEvent.h" />
+    <ClInclude Include="..\include\ML_wrapper\MlWrapper.h" />
+    <ClInclude Include="..\include\ML_wrapper\ShapeInterpreter.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MGE_core\MGE_core.vcxproj">
@@ -165,12 +170,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\MlEvent.cpp" />
-    <ClCompile Include="src\MlWrapper.cpp" />
-    <ClCompile Include="src\MgeImage.cpp" />
-    <ClCompile Include="src\MgeText.cpp" />
-    <ClCompile Include="src\MgeDrawable.cpp" />
-    <ClCompile Include="src\ShapeInterpreter.cpp" />
+    <ClCompile Include="..\src\ML_wrapper\MgeDrawable.cpp" />
+    <ClCompile Include="..\src\ML_wrapper\MgeImage.cpp" />
+    <ClCompile Include="..\src\ML_wrapper\MgeText.cpp" />
+    <ClCompile Include="..\src\ML_wrapper\MlEvent.cpp" />
+    <ClCompile Include="..\src\ML_wrapper\MlWrapper.cpp" />
+    <ClCompile Include="..\src\ML_wrapper\ShapeInterpreter.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

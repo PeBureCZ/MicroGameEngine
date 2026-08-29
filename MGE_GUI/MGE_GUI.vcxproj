@@ -72,10 +72,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)build\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)lib\$(Platform)\$(Configuration)\</OutDir>
+    <SourcePath>$(VC_SourcePath);$(SolutionDir)src\MGE_GUI</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)build\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)lib\$(Platform)\$(Configuration)\</OutDir>
+    <SourcePath>$(VC_SourcePath);$(SolutionDir)src\MGE_GUI</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -109,7 +111,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)MGE_core\include;$(SolutionDir)ML_wrapper\include;$(SolutionDir)..\SFML_3.0.2\include\;$(ProjectDir)include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include\MGE_core;$(SolutionDir)include\ML_wrapper;$(SolutionDir)..\SFML_3.0.2\include\;$(SolutionDir)include\MGE_GUI</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -119,7 +121,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)build\x64\Debug\MGE_core.lib;$(SolutionDir)build\x64\Debug\MGE_wrapper.lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib\x64\Debug\MGE_core.lib;$(SolutionDir)lib\x64\Debug\MGE_wrapper.lib</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -132,12 +134,15 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)MGE_core\include;$(SolutionDir)ML_wrapper\include;$(SolutionDir)..\SFML_3.0.2\include\;$(ProjectDir)include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include\MGE_core;$(SolutionDir)include\ML_wrapper;$(SolutionDir)..\SFML_3.0.2\include\;$(SolutionDir)include\MGE_GUI</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib\x64\Release\MGE_core.lib;$(SolutionDir)lib\x64\Release\MGE_wrapper.lib</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ProjectReference Include="..\ML_wrapper\ML_wrapper.vcxproj">
@@ -148,22 +153,23 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\BaseScreen.h" />
-    <ClInclude Include="include\Button.h" />
-    <ClInclude Include="include\Frame.h" />
-    <ClInclude Include="include\GuiDependencies.h" />
-    <ClInclude Include="include\RollMenu.h" />
-    <ClInclude Include="include\ScreenEvent.h" />
-    <ClInclude Include="include\TextFrame.h" />
-    <ClInclude Include="include\Widget.h" />
+    <ClInclude Include="..\include\MGE_GUI\Add.h" />
+    <ClInclude Include="..\include\MGE_GUI\MgeScreen.h" />
+    <ClInclude Include="..\include\MGE_GUI\MgeButton.h" />
+    <ClInclude Include="..\include\MGE_GUI\MgeFrame.h" />
+    <ClInclude Include="..\include\MGE_GUI\GuiDependencies.h" />
+    <ClInclude Include="..\include\MGE_GUI\MgeRollMenu.h" />
+    <ClInclude Include="..\include\MGE_GUI\MgeTextFrame.h" />
+    <ClInclude Include="..\include\MGE_GUI\MgeWidget.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\BaseScreen.cpp" />
-    <ClCompile Include="src\Button.cpp" />
-    <ClCompile Include="src\Frame.cpp" />
-    <ClCompile Include="src\RollMenu.cpp" />
-    <ClCompile Include="src\TextFrame.cpp" />
-    <ClCompile Include="src\Widget.cpp" />
+    <ClCompile Include="..\src\MGE_GUI\Add.cpp" />
+    <ClCompile Include="..\src\MGE_GUI\MgeScreen.cpp" />
+    <ClCompile Include="..\src\MGE_GUI\MgeButton.cpp" />
+    <ClCompile Include="..\src\MGE_GUI\MgeFrame.cpp" />
+    <ClCompile Include="..\src\MGE_GUI\MgeRollMenu.cpp" />
+    <ClCompile Include="..\src\MGE_GUI\MgeTextFrame.cpp" />
+    <ClCompile Include="..\src\MGE_GUI\MgeWidget.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

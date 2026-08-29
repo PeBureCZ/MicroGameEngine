@@ -19,24 +19,24 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\GlobalFunctions.cpp" />
-    <ClCompile Include="src\MgeActor.cpp" />
-    <ClCompile Include="src\MgeComponents.cpp" />
-    <ClCompile Include="src\MgeObject.cpp" />
-    <ClCompile Include="src\Trigger.cpp" />
+    <ClInclude Include="..\include\MGE_core\BasicShapes.h" />
+    <ClInclude Include="..\include\MGE_core\BasicTypes.h" />
+    <ClInclude Include="..\include\MGE_core\CollisionHandler.h" />
+    <ClInclude Include="..\include\MGE_core\EventSystem.h" />
+    <ClInclude Include="..\include\MGE_core\GlobalEvents.h" />
+    <ClInclude Include="..\include\MGE_core\GlobalFunctions.h" />
+    <ClInclude Include="..\include\MGE_core\MgeActor.h" />
+    <ClInclude Include="..\include\MGE_core\MgeComponents.h" />
+    <ClInclude Include="..\include\MGE_core\MgeObject.h" />
+    <ClInclude Include="..\include\MGE_core\Transform.h" />
+    <ClInclude Include="..\include\MGE_core\Trigger.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\BasicShapes.h" />
-    <ClInclude Include="include\BasicTypes.h" />
-    <ClInclude Include="include\CollisionHandler.h" />
-    <ClInclude Include="include\EventSystem.h" />
-    <ClInclude Include="include\EventTable.h" />
-    <ClInclude Include="include\GlobalFunctions.h" />
-    <ClInclude Include="include\MgeActor.h" />
-    <ClInclude Include="include\MgeComponents.h" />
-    <ClInclude Include="include\MgeObject.h" />
-    <ClInclude Include="include\Transform.h" />
-    <ClInclude Include="include\Trigger.h" />
+    <ClCompile Include="..\src\MGE_core\GlobalFunctions.cpp" />
+    <ClCompile Include="..\src\MGE_core\MgeActor.cpp" />
+    <ClCompile Include="..\src\MGE_core\MgeComponents.cpp" />
+    <ClCompile Include="..\src\MGE_core\MgeObject.cpp" />
+    <ClCompile Include="..\src\MGE_core\Trigger.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -91,10 +91,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)build\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)lib\$(Platform)\$(Configuration)\</OutDir>
+    <SourcePath>$(VC_SourcePath);$(SolutionDir)src\MGE_core</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)build\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)lib\$(Platform)\$(Configuration)\</OutDir>
+    <SourcePath>$(VC_SourcePath);$(SolutionDir)src\MGE_core</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -130,7 +132,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include\MGE_core</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -148,7 +150,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include\MGE_core</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

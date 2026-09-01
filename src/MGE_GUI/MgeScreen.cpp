@@ -3,7 +3,7 @@
 #include "EventSystem.h"
 
 MgeScreen::MgeScreen()
-	: MgeWidget(IPoint(), mgeType::Size<int>())
+	: MgeWidget(FPoint(), mgeType::Size<int>())
 {
 	mlWrapper = ML_wrapper::getGlobalMlWrapper();
 	setSize(getMlWrapper()->getScreenSize());
@@ -50,7 +50,6 @@ void MgeScreen::middleMouseReleaseEvent(IPoint pos)
 void MgeScreen::wheelScrollEventCall(WheelScroll scroll)
 {
 	//may be used in derived class
-
 }
 
 FPoint MgeScreen::getRelativeFromCursor()

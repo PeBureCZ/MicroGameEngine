@@ -16,7 +16,7 @@ TEST(Widgets, basicLocation)
 	auto widget = std::make_shared<MgeWidget_test>();
 	EXPECT_EQ(widget->getAbsolutePosition(), startTestPosition);
 
-	constexpr IPoint testLocation1(77,44);
+	constexpr FPoint testLocation1(77.f,44.f);
 	widget->setRelativePosition(testLocation1);
 	EXPECT_EQ(widget->getAbsolutePosition(), testLocation1);
 	EXPECT_EQ(widget->getRelativePosition(), testLocation1);
@@ -27,7 +27,7 @@ TEST(Widgets, parentLocation)
 	auto widget_parent = std::make_shared<MgeWidget_test>();
 
 
-	constexpr IPoint testLocation(10, 10);
+	constexpr FPoint testLocation(10.f, 10.f);
 	widget_parent->setRelativePosition(testLocation);
 	widget_child->setRelativePosition(testLocation);
 

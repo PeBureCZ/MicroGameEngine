@@ -12,10 +12,10 @@ constexpr mgeType::Color_RGBA DEFAULT_COLOR = mgeType::Color_RGBA(140, 140, 140,
 class MgeButton : public MgeFrame
 {
 public:
-	MgeButton(const IPoint& newPosition, mgeType::Size<int> newSize);
+	MgeButton(const FPoint& newPosition, mgeType::Size<int> newSize);
 	MgeButton
 		(
-			const IPoint& newPosition,
+			const FPoint& newPosition,
 			TextureId idUnselected,
 			TextureId idSelected = TextureId(),
 			TextureId idClicked = TextureId()

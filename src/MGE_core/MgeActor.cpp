@@ -81,9 +81,9 @@ void MgeDefaultComponent::setParent(const std::shared_ptr<MgeActor>& newParent) 
 		return getPosition();
 }
 
-[[nodiscard]] const FPoint& MgeDefaultComponent::getRelativePosition() const noexcept
+[[nodiscard]] const FPoint& MgeDefaultComponent::getPosition() const noexcept
 {
-	return getPosition();
+	return MgeTransform::getPosition();
 }
 
 void MgeDefaultComponent::setRelativePosition(const FPoint& position) noexcept
@@ -156,7 +156,7 @@ void MgeBasicActor::addComponent(std::shared_ptr<MgeBasicComponent> newComponent
 
 void MgeActor::setRelativePosition(const FPoint& newPosition) noexcept
 {
-	editMgeDefaultComponent().setRelativePosition(newPosition);
+	editMgeDefaultComponent().setRelativePosition(newPosition + m_relativeOffset);
 }
 
 void MgeActor::setAbsolutePosition(const FPoint& newPosition) noexcept
@@ -199,9 +199,9 @@ void MgeActor::addChild(const std::shared_ptr<MgeActor>& child) noexcept
 	return editMgeDefaultComponent().removeChild(childId);
 }
 
-[[nodiscard]] const FPoint& MgeActor::getRelativePosition() const noexcept
+[[nodiscard]] FPoint MgeActor::getRelativePosition() const noexcept
 {
-	return getMgeDefaultComponent().getRelativePosition();
+	return getMgeDefaultComponent().getPosition() - m_relativeOffset;
 }
 
 [[nodiscard]] FPoint MgeActor::getAbsolutePosition() const noexcept
@@ -212,6 +212,18 @@ void MgeActor::addChild(const std::shared_ptr<MgeActor>& child) noexcept
 void MgeActor::setRelativeRotation(float rotation)
 {
 	return editMgeDefaultComponent().setRotation(rotation);
+}
+
+void MgeActor::setPositionOffset(const FPoint& offset) noexcept
+{
+	auto dif = offset - m_relativeOffset;
+	setRelativePosition(getRelativePosition() + dif);
+	m_relativeOffset = offset;
+}
+
+const FPoint& MgeActor::getPositionOffset() const noexcept
+{
+	return m_relativeOffset;
 }
 
 [[nodiscard]] float MgeActor::getRelativeRotation() const noexcept

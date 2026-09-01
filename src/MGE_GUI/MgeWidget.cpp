@@ -5,22 +5,12 @@
 
 static MgeDefaultComponent STATIC_PARENT_SYSTEM;
 
-MgeWidget::MgeWidget(const IPoint& newPosition, const ISize& newSize)
-	: MgeActor(newPosition.asFloat())
+MgeWidget::MgeWidget(const FPoint& newPosition, const ISize& newSize)
+	: MgeActor(newPosition)
 {
-	editMgeDefaultComponent().setRelativePosition(newPosition.asFloat());
+	editMgeDefaultComponent().setRelativePosition(newPosition);
 	editMgeDefaultComponent().setSize(newSize.asFloat());
 	lastLayoutAbsolutePosition = newPosition;
-}
-
-[[nodiscard]] IPoint MgeWidget::getRelativePosition() const noexcept
-{
-	return getMgeDefaultComponent().getRelativePosition().asInt() - getAlignmentOffset();
-}
-
-IPoint MgeWidget::getAbsolutePosition() const noexcept
-{
-	return getMgeDefaultComponent().getAbsolutePosition().asInt();
 }
 
 void MgeWidget::setIsVisible(bool visible) noexcept
@@ -49,6 +39,15 @@ bool MgeWidget::removeChildFromWidget(std::variant<WidgetId, std::shared_ptr<Mge
 void MgeWidget::setSize(const ISize& size) noexcept
 {
 	editMgeDefaultComponent().setSize(size.asFloat());
+	for (auto& child : getChildren())
+	{
+		_ASSERT(child);
+		if (!child)
+			return;
+
+		if (auto widget = std::dynamic_pointer_cast<MgeWidget>(child))
+			widget->setAlignment(widget->getAlignment()); //re-align due to resize
+	}
 	layout();
 }
 
@@ -58,9 +57,9 @@ std::shared_ptr<MgeWidget> MgeWidget::getSelfPtr() const noexcept
 	return selfPtr.lock();
 }
 
-IPoint MgeWidget::getAlignmentOffset() const noexcept
+FPoint MgeWidget::getAlignmentOffset() const noexcept
 {
-	IPoint offset{};
+	FPoint offset{};
 	try
 	{
 		std::optional<const std::shared_ptr<MgeActor>> parent_opt = getParent();
@@ -80,7 +79,7 @@ IPoint MgeWidget::getAlignmentOffset() const noexcept
 	auto parent_opt = getParent();
 	auto parent = std::dynamic_pointer_cast<MgeWidget>(parent_opt.value());
 
-	ISize parentSize = parent->getSize();
+	FSize parentSize = parent->getSize().asFloat();
 	auto thisSize = getSize();
 
 	switch (m_alignment)
@@ -100,25 +99,15 @@ IPoint MgeWidget::getAlignmentOffset() const noexcept
 	return offset;
 }
 
-void MgeWidget::setRelativePosition(const IPoint& newPosition, bool makeLayout) noexcept
-{
-	editMgeDefaultComponent().setRelativePosition(newPosition.asFloat() + getAlignmentOffset().asFloat());
-	if (makeLayout)
-		layout();
-}
-
-void MgeWidget::setAbsolutePosition(const IPoint& newPosition, bool makeLayout) noexcept
-{
-	editMgeDefaultComponent().setAbsolutePosition(newPosition.asFloat());
-	if (makeLayout)
-		layout();
-}
-
 void MgeWidget::setAlignment(WidgetAlignment alignment) noexcept
 {
-	IPoint savedPos_relative = getRelativePosition();
-	m_alignment = alignment; // Calculate the new alignment offset.
-	setRelativePosition(savedPos_relative, false);
+	m_alignment = alignment;
+	setPositionOffset(getAlignmentOffset());
+}
+
+WidgetAlignment MgeWidget::getAlignment() const noexcept
+{
+	return m_alignment;
 }
 
 [[nodiscard]] ISize MgeWidget::getSize() const noexcept

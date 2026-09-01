@@ -9,7 +9,7 @@
 #include "MgeText.h"
 
 
-MgeFrame::MgeFrame(const IPoint& newPosition, const ISize& newSize)
+MgeFrame::MgeFrame(const FPoint& newPosition, const ISize& newSize)
 	: MgeWidget(newPosition, newSize)
 {
 	const MgeVertices<float> drawable(mgeShape::Rectangle<float>(FPoint(0,0), mgeType::Size<float>((float)newSize.width, (float)newSize.height)), mgeType::Color_RGBA(100, 100, 100, 150));
@@ -17,7 +17,7 @@ MgeFrame::MgeFrame(const IPoint& newPosition, const ISize& newSize)
 	frameObject = std::move(newWidgetVertices);
 }
 
-MgeFrame::MgeFrame(const IPoint& newPosition, TextureId textureId)
+MgeFrame::MgeFrame(const FPoint& newPosition, TextureId textureId)
 	: MgeWidget(newPosition, mgeType::Size<int>())
 {
 	auto newImage = MgeImage(std::move(textureId), GraphicItemLayer::GUI_LAYER, newPosition.asFloat());;
@@ -31,7 +31,7 @@ void MgeFrame::setImage(TextureId textureId)
 	setSize(image.getSize());
 	frameObject = std::move(image);
 	editCollision().clear();
-	editCollision().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition(), getSize())));
+	editCollision().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition().asInt(), getSize())));
 }
 
 void MgeFrame::setVertices(MgeDrawable&& newVertices) noexcept
@@ -52,7 +52,7 @@ const std::vector<Trigger<int>>& MgeFrame::getCollision() const noexcept
 void MgeFrame::addCollision(Trigger<int> addedCollision)
 {
 	auto difPos_pxl = (getParent()) ? getRelativePosition() : getAbsolutePosition();
-	addedCollision.setAbsolutePosition(addedCollision.getAbsolutePosition() + difPos_pxl);
+	addedCollision.setAbsolutePosition(addedCollision.getAbsolutePosition() + difPos_pxl.asInt());
 	collisions.push_back(std::move(addedCollision));
 }
 
@@ -202,12 +202,11 @@ void MgeFrame::layout() noexcept
 		if (editCollision().size() > 0)
 		{
 			for (auto& col : editCollision())
-				col.setAbsolutePosition(col.getAbsolutePosition() + differencePos);
+				col.setAbsolutePosition(col.getAbsolutePosition() + differencePos.asInt());
 		}
 
 		for (auto& text : frameTexts)
-			text.second.setAbsolutePosition(text.second.getAbsolutePosition() + differencePos);
-
+			text.second.setAbsolutePosition(text.second.getAbsolutePosition() + differencePos.asInt());
 		if (std::holds_alternative<MgeDrawable>(frameObject))
 		{
 			auto& obj = std::get<MgeDrawable>(frameObject);
@@ -270,7 +269,7 @@ bool MgeFrame::isUnderCursor() const noexcept
 
 IPoint MgeFrame::getAlignedPosition(GuiAlign align, mgeType::Size<int> objectSize)
 {
-	IPoint framePos = getAbsolutePosition();
+	IPoint framePos = getAbsolutePosition().asInt();
 	auto frameSize = getSize();
 
 	switch (align)

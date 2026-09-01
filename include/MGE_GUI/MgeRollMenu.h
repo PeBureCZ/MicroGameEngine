@@ -9,7 +9,7 @@
 class MgeRollMenu : public MgeFrame
 {
 public: 
-	MgeRollMenu(IPoint newPosition, mgeType::Size<int> newSize = mgeType::Size<int>(100,60), std::string text = "");
+	MgeRollMenu(const FPoint& newPosition, mgeType::Size<int> newSize = mgeType::Size<int>(100,60), std::string text = "");
 
 	std::shared_ptr<MgeButton> addRollButton(const std::string& butText, Callback_deprecated onLMBClickFunc = nullptr, Callback_deprecated onRMBClickFunc = nullptr);
 	std::shared_ptr<MgeButton> getMainButton();

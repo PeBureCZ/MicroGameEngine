@@ -37,7 +37,7 @@ public:
 	[[nodiscard]] bool removeChild(MgeObjectId childId);
 
 	[[nodiscard]] FPoint getAbsolutePosition() const noexcept;
-	[[nodiscard]] const FPoint& getRelativePosition() const noexcept;
+	[[nodiscard]] const FPoint& getPosition() const noexcept;
 	void setAbsolutePosition(const FPoint& position) noexcept;
 	void setRelativePosition(const FPoint& position) noexcept;
 
@@ -80,11 +80,14 @@ public:
 
 	void setRelativePosition(const FPoint& newPosition) noexcept;
 	void setAbsolutePosition(const FPoint& newPosition) noexcept;
-	[[nodiscard]] const FPoint& getRelativePosition() const noexcept;
+	[[nodiscard]] FPoint getRelativePosition() const noexcept;
 	[[nodiscard]] FPoint getAbsolutePosition() const noexcept;
 
 	void setAbsoluteRotation(float rotation);
 	void setRelativeRotation(float rotation);
+	void setPositionOffset(const FPoint& offset) noexcept;
+	[[nodiscard]] const FPoint& getPositionOffset() const noexcept;
+
 	[[nodiscard]] float getRelativeRotation() const noexcept;
 	[[nodiscard]] float getAbsoluteRotation() const noexcept;
 
@@ -116,6 +119,7 @@ protected:
 private:
 	void createMgeDefaultComponent();
 	ObserverTokens eventsLifeTimeObserver;
+	FPoint m_relativeOffset;
 
 	std::shared_ptr<MgeDefaultComponent> defaultActorData;
 };

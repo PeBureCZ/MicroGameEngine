@@ -2,7 +2,7 @@
 
 #include "..\include\MGE_GUI\MgeFrame.h"
 
-constexpr IPoint startFrameTestPosition(23, 785);
+constexpr FPoint startFrameTestPosition(23.f, 785.f);
 constexpr mgeType::Size<int> startFrameTestSize(201, 335);
 
 class MgeFrame_test : public MgeFrame
@@ -18,7 +18,7 @@ public:
 		MgeFrame::layout();
 	}
 
-	[[nodiscard]] IPoint mock_getLastLayoutAbsolutePosition() const noexcept
+	[[nodiscard]] FPoint mock_getLastLayoutAbsolutePosition() const noexcept
 	{
 		return lastLayoutAbsolutePosition;
 	}

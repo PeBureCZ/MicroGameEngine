@@ -4,7 +4,7 @@
 
 #include "GuiDependencies.h"
 
-MgeTextFrame::MgeTextFrame(IPoint newPosition, mgeType::Size<int> newSize)
+MgeTextFrame::MgeTextFrame(const FPoint& newPosition, mgeType::Size<int> newSize)
 	: MgeFrame(newPosition, newSize)
 {
 
@@ -71,7 +71,7 @@ void MgeTextFrame::redrawTextFrame() noexcept
 
 	try
 	{
-		IPoint actualAbsolutePos_pxls = getAbsolutePosition();
+		IPoint actualAbsolutePos_pxls = getAbsolutePosition().asInt();
 		actualAbsolutePos_pxls.y += topPadding;
 		actualAbsolutePos_pxls.x += leftPadding;
 

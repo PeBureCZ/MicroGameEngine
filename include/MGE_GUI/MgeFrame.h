@@ -28,8 +28,8 @@ using FRAME_OBJECT = std::variant<UNDEFINED_FRAME_OBJECT, MgeImage, MgeDrawable>
 class MgeFrame : public MgeWidget
 {
 public:
-	MgeFrame(const IPoint& newPosition, const ISize& newSize);
-	MgeFrame(const IPoint& newPosition, TextureId textureId);
+	MgeFrame(const FPoint& newPosition, const ISize& newSize);
+	MgeFrame(const FPoint& newPosition, TextureId textureId);
 
 	void setImage(TextureId textureId);
 	void setVertices(MgeDrawable&& newVertices) noexcept;

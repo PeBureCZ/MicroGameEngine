@@ -30,7 +30,7 @@ class MgeWidget : public MgeActor
 {
 public:
 	WidgetId getWidgetId()  const noexcept;
-	MgeWidget(const IPoint& newPosition, const ISize& newSize);
+	MgeWidget(const FPoint& newPosition, const ISize& newSize);
 
 	bool removeChildFromWidget(std::variant<WidgetId, std::shared_ptr<MgeActor>> child);
 
@@ -39,11 +39,8 @@ public:
 
 	void initializeSelf(std::weak_ptr<MgeWidget> self);
 
-	[[nodiscard]] IPoint getRelativePosition() const noexcept;
-	[[nodiscard]] IPoint getAbsolutePosition() const noexcept;
-	void setRelativePosition(const IPoint& newPosition, bool makeLayout = true)  noexcept;
-	void setAbsolutePosition(const IPoint& newPosition, bool makeLayout = true)  noexcept;
 	void setAlignment(WidgetAlignment alignment) noexcept;
+	WidgetAlignment getAlignment() const noexcept;
 
 	void setSize(const ISize& newSize) noexcept;
 	[[nodiscard]] ISize getSize() const noexcept;
@@ -54,8 +51,8 @@ public:
 protected:
 	std::shared_ptr<MgeWidget> getSelfPtr() const noexcept;
 
-	IPoint lastLayoutAbsolutePosition;
-	IPoint getAlignmentOffset() const noexcept;
+	FPoint lastLayoutAbsolutePosition;
+	FPoint getAlignmentOffset() const noexcept;
 
 private:
 

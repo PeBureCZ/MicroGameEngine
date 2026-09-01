@@ -21,6 +21,9 @@ namespace mgeGui
 			child->setParent(parent);
 			parent->addChild(child);
 			child->initializeSelf(child);
+
+			if (parent && child->getAlignment() != WidgetAlignment::UpLeft)
+				child->setAlignment(child->getAlignment()); //re-align offset due to new parent
 		}
 	}
 }

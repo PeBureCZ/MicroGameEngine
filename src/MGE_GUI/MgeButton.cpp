@@ -2,7 +2,7 @@
 
 #include "MgeText.h"
 
-MgeButton::MgeButton(const IPoint& newPosition, mgeType::Size<int> newSize)
+MgeButton::MgeButton(const FPoint& newPosition, mgeType::Size<int> newSize)
 	: MgeFrame(newPosition, newSize)
 	
 {
@@ -12,7 +12,7 @@ MgeButton::MgeButton(const IPoint& newPosition, mgeType::Size<int> newSize)
 
 MgeButton::MgeButton
 	(
-		const IPoint& newPosition,
+		const FPoint& newPosition,
 		TextureId idUnselected,
 		TextureId idSelected,
 		TextureId idClicked
@@ -123,6 +123,6 @@ void MgeButton::onCursorLeaveCall() noexcept
 
 void MgeButton::setBasicCollision()
 {
-	editCollision().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition(), getSize())));
+	editCollision().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition().asInt(), getSize())));
 	_ASSERT(editCollision().size() == 1);
 }

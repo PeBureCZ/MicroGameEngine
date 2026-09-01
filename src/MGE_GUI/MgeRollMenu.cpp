@@ -1,6 +1,6 @@
 #include "MgeRollMenu.h"
 
-MgeRollMenu::MgeRollMenu(IPoint newPosition, mgeType::Size<int> newSize, std::string text)
+MgeRollMenu::MgeRollMenu(const FPoint& newPosition, mgeType::Size<int> newSize, std::string text)
 	: MgeFrame(newPosition, newSize)
 {
 	mainButtonText = text;
@@ -11,7 +11,7 @@ std::shared_ptr<MgeButton> MgeRollMenu::addRollButton(const std::string& butText
 	getMainButton(); //generate main but if not exist
 
 	size_t relativeYpos_pxls = getSize().height * (rollButtons.size() + 1);
-	auto newButton = std::make_shared<MgeButton>(IPoint(0, (int)relativeYpos_pxls), getSize());
+	auto newButton = std::make_shared<MgeButton>(FPoint(0.f, (float)relativeYpos_pxls), getSize());
 	newButton->setIsVisible(false);
 	newButton->setOnLMBClick(onLMBClickFunc);
 	newButton->setOnRMBClick(onRMBClickFunc);
@@ -27,7 +27,7 @@ std::shared_ptr<MgeButton> MgeRollMenu::getMainButton()
 {
 	if (!mainButton)
 	{
-		mainButton = std::make_shared<MgeButton>(IPoint(0, 0), getSize());
+		mainButton = std::make_shared<MgeButton>(FPoint(0.f, 0.f), getSize());
 		mainButton->setColor(DEFAULT_FRAME_COLOR);
 		mainButton->setMouseOverButtonColor(MOUSE_OVER_FRAME_COLOR);
 		mainButton->setButtonTextColors(DEFAULT_TEXT_COLOR, MOUSE_OVER_TEXT_COLOR);
@@ -119,8 +119,8 @@ void MgeRollMenu::openOrCloseMenu(bool open) noexcept
 
 void MgeRollMenu::generateNewRollMenuCollision()
 {
-	IPoint leftUpCorner = getAbsolutePosition();
-	IPoint rightUpCorner = leftUpCorner + IPoint(getSize().width, getSize().height * 2);
+	FPoint leftUpCorner = getAbsolutePosition();
+	FPoint rightUpCorner = leftUpCorner + FPoint((float)getSize().width, (float)getSize().height * 2.f);
 
 	for (const auto& child : rollButtons)
 	{
@@ -145,11 +145,11 @@ void MgeRollMenu::generateNewRollMenuCollision()
 		}
 	}
 
-	auto newSize = mgeType::Size<int>(rightUpCorner.x - leftUpCorner.x, rightUpCorner.y - leftUpCorner.y);
+	auto newSize = mgeType::Size<int>((int)rightUpCorner.x - (int)leftUpCorner.x, (int)rightUpCorner.y - (int)leftUpCorner.y);
 
 	if (!rollMenuCollisionFrame)
 	{ //invisible frame for non-blocking collision up to buttons
-		rollMenuCollisionFrame = std::make_shared<MgeFrame>(IPoint(), mgeType::Size<int>());
+		rollMenuCollisionFrame = std::make_shared<MgeFrame>(FPoint(), mgeType::Size<int>());
 		rollMenuCollisionFrame->setColor(DEFAULT_FRAME_COLOR);
 		rollMenuCollisionFrame->setOnCursorOver
 			(
@@ -161,7 +161,7 @@ void MgeRollMenu::generateNewRollMenuCollision()
 	else
 		rollMenuCollisionFrame->editCollision().clear();
 	auto newCollision = Trigger<int>
-		(false, mgeShape::Rectangle<int>(leftUpCorner, newSize));
+		(false, mgeShape::Rectangle<int>(leftUpCorner.asInt(), newSize));
 	newCollision.setIsBlocking(false);
 	rollMenuCollisionFrame->editCollision().push_back(std::move(newCollision));
 

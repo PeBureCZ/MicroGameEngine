@@ -158,6 +158,8 @@ void BaseApp::setActualScreen(std::shared_ptr<MgeScreen> newScreen)
     actualScreen = newScreen;
     if (actualScreen)
     {
+        if (!actualScreen->isInitialized())
+            addScreenToGui(newScreen);
         auto oldSize = actualScreen->getSize();
         auto newSize = ML_wrapper::getGlobalMlWrapper()->getScreenSize();
         if (oldSize != newSize)
@@ -166,4 +168,19 @@ void BaseApp::setActualScreen(std::shared_ptr<MgeScreen> newScreen)
             actualScreen->layout();
         }
     }
+}
+
+void BaseApp::addScreenToGui(std::shared_ptr<MgeScreen> screen)
+{
+	_ASSERT(screen && !screen->isInitialized()); //initialize only once! (or wrong ptr)
+    if (screen && !screen->isInitialized())
+    {
+        screen->initializeSelf(screen);
+		screen->initialize(); //can be overridden
+    }
+}
+
+std::shared_ptr<MgeScreen> BaseApp::getActualScreen() const noexcept
+{
+    return actualScreen;
 }

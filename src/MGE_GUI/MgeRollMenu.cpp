@@ -17,7 +17,7 @@ std::shared_ptr<MgeButton> MgeRollMenu::addRollButton(const std::string& butText
 	newButton->setOnRMBClick(onRMBClickFunc);
 	newButton->addTextToFrame(butText, 14);
 
-	mgeGui::addWidgetToGui(getSelfPtr(), newButton);
+	addWidget(newButton);
 	rollButtons.push_back(newButton); //due to custom collision management, we need to keep track of buttons in the menu
 	generateNewRollMenuCollision();
 	return newButton;
@@ -34,7 +34,7 @@ std::shared_ptr<MgeButton> MgeRollMenu::getMainButton()
 		mainButton->setOnLMBClick([this]() { onRollMenuLMBClick(); });
 		mainButton->setOnCursorOver([this]() {onCursorEnterCall(); }); //used for auto opening - if it is set
 		mainButton->addTextToFrame(mainButtonText, 14);
-		mgeGui::addWidgetToGui(getSelfPtr(), mainButton);
+		addWidget(mainButton);
 	}
 	return mainButton;
 }
@@ -156,7 +156,7 @@ void MgeRollMenu::generateNewRollMenuCollision()
 				[this]() noexcept { onCursorEnterCall(); },
 				[this]() noexcept { onCursorLeaveCall(); }
 			);
-		mgeGui::addWidgetToGui(getSelfPtr(), rollMenuCollisionFrame);
+		addWidget(rollMenuCollisionFrame);
 	}
 	else
 		rollMenuCollisionFrame->editCollision().clear();

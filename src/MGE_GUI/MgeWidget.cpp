@@ -99,6 +99,15 @@ FPoint MgeWidget::getAlignmentOffset() const noexcept
 	return offset;
 }
 
+void MgeWidget::initialize() noexcept
+{
+	// Could be used for custom initialization in derived classes.
+	// The event is published when adding to a parent (or to the GUI for screens),
+	// so it doesn't need to be called here.
+
+	// possible to use getSelfPtr() function here
+}
+
 void MgeWidget::setAlignment(WidgetAlignment alignment) noexcept
 {
 	m_alignment = alignment;
@@ -115,6 +124,11 @@ WidgetAlignment MgeWidget::getAlignment() const noexcept
 	return getMgeDefaultComponent().getSize().asInt();
 }
 
+bool MgeWidget::isInitialized() const noexcept
+{
+	return !selfPtr.expired();
+}
+
 void MgeWidget::layout() noexcept
 {
 	try
@@ -128,6 +142,20 @@ void MgeWidget::layout() noexcept
 	catch (...)
 	{
 		_ASSERT(false);
+	}
+}
+
+void MgeWidget::addWidget(std::shared_ptr<MgeWidget> child)
+{
+	_ASSERT(getSelfPtr() && child && getSelfPtr() != child);
+	if (getSelfPtr() && child && getSelfPtr() != child)
+	{
+		child->setParent(getSelfPtr());
+		getSelfPtr()->addChild(child);
+		child->initializeSelf(child);
+
+		if (child->getAlignment() != WidgetAlignment::UpLeft)
+			child->setAlignment(child->getAlignment()); //re-align offset due to new parent
 	}
 }
 

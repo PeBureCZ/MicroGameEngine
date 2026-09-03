@@ -448,3 +448,8 @@ FPoint ml::getCursorPosition() noexcept
     return ML_wrapper::getGlobalMlWrapper()->getCursorWorldPosition();
 }
 
+std::shared_ptr<sf::RenderWindow> ml::getRenderWindow() noexcept
+{
+    return mainWindow;
+}
+

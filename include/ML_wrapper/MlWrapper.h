@@ -19,6 +19,7 @@ namespace sf
     class Sprite;
 	class Text;
     class Texture;
+    class RenderWindow;
 }
 
 struct MlVerticesObject;
@@ -107,6 +108,7 @@ namespace ML_wrapper
 namespace ml
 {
     [[nodiscard]] FPoint getCursorPosition() noexcept;
+    [[nodiscard]] std::shared_ptr<sf::RenderWindow> getRenderWindow() noexcept;
 } //namespace ml end
 
                                                                       

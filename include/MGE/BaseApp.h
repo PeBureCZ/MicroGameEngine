@@ -39,6 +39,8 @@ public:
 
 protected:
 	void setActualScreen(std::shared_ptr<MgeScreen> newScreen);
+	void addScreenToGui(std::shared_ptr<MgeScreen> screen);
+	[[nodiscard]] std::shared_ptr<MgeScreen> getActualScreen() const noexcept;
 
 	/**could be managed in derived*/
 	virtual void onAppTick(double deltaTime);
@@ -71,4 +73,3 @@ private:
 	void processResizeEvent();
 	void tickApplication(double deltaTime);
 };
-

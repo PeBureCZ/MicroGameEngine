@@ -3,7 +3,6 @@
 #include <vector>
 #include <variant>
 
-#include "Add.h"
 #include "MgeActor.h"
 #include "MlWrapper.h"
 #include "BasicTypes.h"
@@ -44,8 +43,13 @@ public:
 
 	void setSize(const ISize& newSize) noexcept;
 	[[nodiscard]] ISize getSize() const noexcept;
+	[[nodiscard]] bool isInitialized() const noexcept;
 
 	virtual void layout() noexcept;
+	virtual void initialize() noexcept; //to be called after adding to parent or to GUI
+
+	void addWidget(std::shared_ptr<MgeWidget> child);
+
 	virtual ~MgeWidget() = default;
 
 protected:

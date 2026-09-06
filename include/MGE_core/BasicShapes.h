@@ -52,29 +52,34 @@ namespace mgeShape
 	{
 	private:
 	protected:
-		mgeType::Size<T> size;
+		mgeType::Size<T> m_size;
 	public:
 		Rectangle()
 			: Shape<T>(mgeType::Point<T>(), 0.0)
 		{
-			size = mgeType::Size<T>();
+			m_size = mgeType::Size<T>();
 			Shape<T>::type = SHAPE_TYPE::box;
 		};
 		Rectangle(mgeType::Point<T> newPosition, mgeType::Size<T> newSize, float newRotation = 0.0f)
 			: Shape<T>(newPosition, newRotation)
 		{
-			size = newSize;
+			m_size = newSize;
 			Shape<T>::type = SHAPE_TYPE::box;
 		};
 
-		mgeType::Size<T> getSize() const { return size; }
+		mgeType::Size<T> getSize() const { return m_size; }
+		void setSize(mgeType::Size<T> newSize)
+		{ 
+			m_size = newSize;
+		}
+
 
 		//return the center of the rectangle, taking into account its rotation (absolute position)
 		mgeType::Point<T> getCenter() const
 		{
 			auto rotation = Shape<T>::getRotation();
 			if (rotation == 0.0f)
-				return mgeType::Point<T>(Shape<T>::getPosition().x + size.width / 2, Shape<T>::getPosition().y + size.height / 2);
+				return mgeType::Point<T>(Shape<T>::getPosition().x + m_size.width / 2, Shape<T>::getPosition().y + m_size.height / 2);
 			else
 			{
 				constexpr float DEG_TO_RAD = 3.14159265358979323846f / 180.f;
@@ -82,7 +87,7 @@ namespace mgeShape
 				const float cosA = std::cos(rad);
 				const float sinA = std::sin(rad);
 				// Calculate the center of the rectangle before rotation
-				mgeType::Point<T> centerBeforeRotation(Shape<T>::getPosition().x + size.width / 2, Shape<T>::getPosition().y + size.height / 2);
+				mgeType::Point<T> centerBeforeRotation(Shape<T>::getPosition().x + m_size.width / 2, Shape<T>::getPosition().y + m_size.height / 2);
 				// Rotate the center point around the rectangle's position
 				T rotatedX = (centerBeforeRotation.x - Shape<T>::getPosition().x) * cosA - (centerBeforeRotation.y - Shape<T>::getPosition().y) * sinA + Shape<T>::getPosition().x;
 				T rotatedY = (centerBeforeRotation.x - Shape<T>::getPosition().x) * sinA + (centerBeforeRotation.y - Shape<T>::getPosition().y) * cosA + Shape<T>::getPosition().y;

@@ -46,7 +46,9 @@ namespace ML_wrapper
         [[nodiscard]] const IPoint& getCursorGuiPosition() const noexcept;
         void addMgeLayerObject(const std::shared_ptr<MgeLayerObject> newObject);
 
-        [[nodiscard]] mgeType::Size<int> getScreenSize() const noexcept;
+        [[nodiscard]] mgeType::Size<int> getRenderWindowSize() const noexcept;
+        [[nodiscard]] std::shared_ptr<sf::RenderWindow> getRenderWindow() noexcept;
+
 		void moveScreenOffset(FPoint offset) noexcept;
 		void setMaxScreenZoom(double zoomFactor) noexcept;
 		void setMinScreenZoom(double zoomFactor) noexcept;
@@ -108,7 +110,6 @@ namespace ML_wrapper
 namespace ml
 {
     [[nodiscard]] FPoint getCursorPosition() noexcept;
-    [[nodiscard]] std::shared_ptr<sf::RenderWindow> getRenderWindow() noexcept;
 } //namespace ml end
 
                                                                       

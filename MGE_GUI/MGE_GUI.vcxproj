@@ -158,6 +158,7 @@
     <ClInclude Include="..\include\MGE_GUI\MgeFrame.h" />
     <ClInclude Include="..\include\MGE_GUI\GuiDependencies.h" />
     <ClInclude Include="..\include\MGE_GUI\MgeRollMenu.h" />
+    <ClInclude Include="..\include\MGE_GUI\MgeSizer.h" />
     <ClInclude Include="..\include\MGE_GUI\MgeTextFrame.h" />
     <ClInclude Include="..\include\MGE_GUI\MgeWidget.h" />
   </ItemGroup>
@@ -166,6 +167,7 @@
     <ClCompile Include="..\src\MGE_GUI\MgeButton.cpp" />
     <ClCompile Include="..\src\MGE_GUI\MgeFrame.cpp" />
     <ClCompile Include="..\src\MGE_GUI\MgeRollMenu.cpp" />
+    <ClCompile Include="..\src\MGE_GUI\MgeSizer.cpp" />
     <ClCompile Include="..\src\MGE_GUI\MgeTextFrame.cpp" />
     <ClCompile Include="..\src\MGE_GUI\MgeWidget.cpp" />
   </ItemGroup>

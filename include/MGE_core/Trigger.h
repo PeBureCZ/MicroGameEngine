@@ -133,6 +133,24 @@ public:
 			}, collisionShape);
 	}
 
+	void rescaleShape(float scaleX, float scaleY) noexcept
+	{
+		if (std::holds_alternative<mgeShape::Rectangle<T>>(collisionShape))
+		{
+			auto& shape = std::get<mgeShape::Rectangle<T>>(collisionShape);
+			shape.setSize(mgeType::Size<T>(shape.getSize().width * static_cast<T>(scaleX), shape.getSize().height * static_cast<T>(scaleY)));
+		}
+		else if (std::holds_alternative<mgeShape::Circle<T>>(collisionShape))
+		{
+			//not yet
+			_ASSERT(false); //unhandled shape type
+		}
+		else
+		{
+			_ASSERT(false); //unhandled shape type
+		}
+	}
+
 	void setEnabled(bool enabled) noexcept
 	{
 		isEnabled = enabled;

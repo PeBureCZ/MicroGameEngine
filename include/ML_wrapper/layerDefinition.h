@@ -6,6 +6,16 @@ struct MlVerticesObject
 {
     sf::VertexArray m_batch;
     sf::RenderStates m_state; //transform
+    
+	void rescale(float scaleX, float scaleY)
+    {
+        for (size_t i = 0; i < m_batch.getVertexCount(); ++i)
+        {
+            auto& vertex = m_batch[i];
+            vertex.position.x *= scaleX;
+            vertex.position.y *= scaleY;
+        }
+	}
 };
 
 using Z_POSITION = int64_t;

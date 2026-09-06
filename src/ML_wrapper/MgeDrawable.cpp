@@ -190,6 +190,33 @@ void MgeDrawable::moveAbsolutePosition(const FPoint& newPos)
     }
 }
 
+void MgeDrawable::rescale(float scaleX, float scaleY) noexcept
+{
+    _ASSERT(!m_vertices.expired());
+    if (auto vertices = m_vertices.lock())
+    {
+        if (std::holds_alternative<MlVerticesObject>(vertices->data))
+        {
+            std::get<MlVerticesObject>(vertices->data).rescale(scaleX, scaleY);
+            m_absolutePositionOffset.x *= scaleX;
+            m_absolutePositionOffset.y *= scaleY;
+        }
+        else if (std::holds_alternative<sf::Sprite>(vertices->data))
+        {
+			_ASSERT(false); //not implemented yet
+        }
+        else if (std::holds_alternative<sf::Text>(vertices->data))
+        {
+			//no rescale for sf::Text
+        }
+        else
+		{ // unknown type
+			_ASSERT(false); //invalid rescale request for this type of object
+        }
+	}
+}
+
+
 void MgeDrawable::setVerticesColor()
 {
     _ASSERT(!m_vertices.expired());

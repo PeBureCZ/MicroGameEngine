@@ -63,7 +63,7 @@ void BaseApp::processResizeEvent()
     if (actualScreen)
     {
         auto mlWrapper = ML_wrapper::getGlobalMlWrapper();
-        actualScreen->setSize(mlWrapper->getScreenSize());
+        actualScreen->setSize(mlWrapper->getRenderWindowSize());
     }
 }
 
@@ -161,7 +161,7 @@ void BaseApp::setActualScreen(std::shared_ptr<MgeScreen> newScreen)
         if (!actualScreen->isInitialized())
             addScreenToGui(newScreen);
         auto oldSize = actualScreen->getSize();
-        auto newSize = ML_wrapper::getGlobalMlWrapper()->getScreenSize();
+        auto newSize = ML_wrapper::getGlobalMlWrapper()->getRenderWindowSize();
         if (oldSize != newSize)
         {
             actualScreen->setSize(newSize);

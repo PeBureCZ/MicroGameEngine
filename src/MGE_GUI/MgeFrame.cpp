@@ -197,21 +197,38 @@ void MgeFrame::layout() noexcept
 	try
 	{
 		auto differencePos = getAbsolutePosition() - lastLayoutAbsolutePosition;
-		lastLayoutAbsolutePosition = getAbsolutePosition();
+
+		const auto sizeChanged = (lastLayoutSize != getSize());
+		float scaleX = (float)getSize().width / (float)lastLayoutSize.width;
+		float scaleY = (float)getSize().height / (float)lastLayoutSize.height;
 
 		if (editCollision().size() > 0)
 		{
 			for (auto& col : editCollision())
+			{
 				col.setAbsolutePosition(col.getAbsolutePosition() + differencePos.asInt());
+
+				if (sizeChanged && col.getType() == SHAPE_TYPE::box)
+					col.rescaleShape(scaleX, scaleY);
+			}
 		}
 
 		for (auto& text : frameTexts)
-			text.second.setAbsolutePosition(text.second.getAbsolutePosition() + differencePos.asInt());
+		{
+			if (sizeChanged)
+				text.second.setAbsolutePosition(getAlignedPosition(text.first, text.second.getTextSize()));
+			else
+				text.second.setAbsolutePosition(text.second.getAbsolutePosition() + differencePos.asInt());
+		}
+
 		if (std::holds_alternative<MgeDrawable>(frameObject))
 		{
 			auto& obj = std::get<MgeDrawable>(frameObject);
 			auto difPos = obj.getPosition() + differencePos.asFloat();
 			obj.setPosition(difPos);
+
+			if (sizeChanged)
+				obj.rescale(scaleX, scaleY);
 		}
 		else if (std::holds_alternative<MgeImage>(frameObject))
 		{
@@ -277,39 +294,28 @@ IPoint MgeFrame::getAlignedPosition(GuiAlign align, mgeType::Size<int> objectSiz
 		case GuiAlign::TopLeft:
 			return framePos;
 		case GuiAlign::TopCenter:
-			_ASSERT(false); //not implemented yet
-			break;
+			return IPoint(framePos.x + frameSize.width / 2 - objectSize.width / 2, framePos.y);
 		case GuiAlign::TopRight:
-			_ASSERT(false); //not implemented yet
-			break;
+			return IPoint(framePos.x + frameSize.width - objectSize.width, framePos.y);
 		case GuiAlign::MiddleLeft:
-			_ASSERT(false); //not implemented yetq
-			break;
+			return IPoint(framePos.x, framePos.y + frameSize.height / 2 - objectSize.height / 2);
 		case GuiAlign::MiddleCenter:
-		{
-			IPoint newPos(framePos.x + frameSize.width / 2 - objectSize.width / 2,
+			return IPoint(framePos.x + frameSize.width / 2 - objectSize.width / 2,
 				framePos.y + frameSize.height / 2 - objectSize.height / 2);
-			return newPos;
-		}
 		case GuiAlign::MiddleRight:
-			_ASSERT(false); //not implemented yet
-			break;
+			return IPoint(framePos.x + frameSize.width - objectSize.width,
+				framePos.y + frameSize.height / 2 - objectSize.height / 2);
 		case GuiAlign::BottomLeft:
-			_ASSERT(false); //not implemented yet
-			break;
+			return IPoint(framePos.x, framePos.y + frameSize.height - objectSize.height);
 		case GuiAlign::BottomCenter:
-			_ASSERT(false); //not implemented yet
-			break;
-		case GuiAlign::BottomRight:
-		{
-			IPoint newPos(framePos.x + frameSize.width - objectSize.width,
+			return IPoint(framePos.x + frameSize.width / 2 - objectSize.width / 2,
 				framePos.y + frameSize.height - objectSize.height);
-			return newPos;
-		}
+		case GuiAlign::BottomRight:
+			return IPoint(framePos.x + frameSize.width - objectSize.width,
+				framePos.y + frameSize.height - objectSize.height);
 		default:
 			_ASSERT(false); //unknown alignment
 			break;
 	}
-
-	return IPoint();
+	return framePos;
 }

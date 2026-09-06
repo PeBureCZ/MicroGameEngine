@@ -38,6 +38,8 @@ public:
     void setIsVisible(bool visible) noexcept;
     void moveAbsolutePosition(const FPoint& movedPosBy);
 
+	void rescale(float scaleX, float scaleY) noexcept;
+
     [[nodiscard]] size_t getLayer() const noexcept;
     void setLayer(size_t newLayer);
     void setZPosition(const int64_t newZPosition) noexcept;

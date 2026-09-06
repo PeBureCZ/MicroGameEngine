@@ -6,7 +6,7 @@ MgeScreen::MgeScreen()
 	: MgeWidget(FPoint(), mgeType::Size<int>())
 {
 	mlWrapper = ML_wrapper::getGlobalMlWrapper();
-	setSize(getMlWrapper()->getScreenSize());
+	setSize(getMlWrapper()->getRenderWindowSize());
 }
 
 std::shared_ptr<ML_wrapper::MlWrapper> MgeScreen::getMlWrapper()

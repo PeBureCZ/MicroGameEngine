@@ -10,17 +10,18 @@ MgeWidget::MgeWidget(const FPoint& newPosition, const ISize& newSize)
 {
 	editMgeDefaultComponent().setRelativePosition(newPosition);
 	editMgeDefaultComponent().setSize(newSize.asFloat());
+	lastLayoutSize = newSize;
 	lastLayoutAbsolutePosition = newPosition;
 }
 
 void MgeWidget::setIsVisible(bool visible) noexcept
 {
-	isVisible = visible;
+	m_isVisible = visible;
 }
 
 bool MgeWidget::getIsVisible() const noexcept
 {
-	return isVisible;
+	return m_isVisible;
 }
 
 bool MgeWidget::removeChildFromWidget(std::variant<WidgetId, std::shared_ptr<MgeActor>> child)
@@ -38,7 +39,11 @@ bool MgeWidget::removeChildFromWidget(std::variant<WidgetId, std::shared_ptr<Mge
 
 void MgeWidget::setSize(const ISize& size) noexcept
 {
-	editMgeDefaultComponent().setSize(size.asFloat());
+	ISize newSize = size;
+	newSize.width = std::clamp(newSize.width, m_minSize.width, m_maxSize.width);
+	newSize.height = std::clamp(newSize.height, m_minSize.height, m_maxSize.height);
+
+	editMgeDefaultComponent().setSize(newSize.asFloat());
 	for (auto& child : getChildren())
 	{
 		_ASSERT(child);
@@ -53,8 +58,8 @@ void MgeWidget::setSize(const ISize& size) noexcept
 
 std::shared_ptr<MgeWidget> MgeWidget::getSelfPtr() const noexcept
 {
-	_ASSERT(selfPtr.lock()); //wrong ptr management
-	return selfPtr.lock();
+	_ASSERT(m_selfPtr.lock()); //wrong ptr management
+	return m_selfPtr.lock();
 }
 
 FPoint MgeWidget::getAlignmentOffset() const noexcept
@@ -124,9 +129,39 @@ WidgetAlignment MgeWidget::getAlignment() const noexcept
 	return getMgeDefaultComponent().getSize().asInt();
 }
 
+void MgeWidget::setMinSize(const ISize& newMinSize) noexcept
+{
+	m_minSize = newMinSize;
+}
+
+ISize MgeWidget::getMinSize() const noexcept
+{
+	return m_minSize;
+}
+
+void MgeWidget::setMaxSize(const ISize& newMaxSize) noexcept
+{
+	m_maxSize = newMaxSize;
+}
+
+ISize MgeWidget::getMaxSize() const noexcept
+{
+	return m_maxSize;
+}
+
+void MgeWidget::setAutoSizeFactor(float factor) noexcept
+{
+	m_autoSizeFactor = factor;
+}
+
+float MgeWidget::getAutoSizeFactor() const noexcept
+{
+	return m_autoSizeFactor;
+}
+
 bool MgeWidget::isInitialized() const noexcept
 {
-	return !selfPtr.expired();
+	return !m_selfPtr.expired();
 }
 
 void MgeWidget::layout() noexcept
@@ -143,6 +178,8 @@ void MgeWidget::layout() noexcept
 	{
 		_ASSERT(false);
 	}
+	lastLayoutSize = getSize();
+	lastLayoutAbsolutePosition = getAbsolutePosition();
 }
 
 void MgeWidget::addWidget(std::shared_ptr<MgeWidget> child)
@@ -166,7 +203,7 @@ WidgetId MgeWidget::getWidgetId() const noexcept
 
 void MgeWidget::initializeSelf(std::weak_ptr<MgeWidget> self)
 {
-	selfPtr = self;
+	m_selfPtr = self;
 }
 
 

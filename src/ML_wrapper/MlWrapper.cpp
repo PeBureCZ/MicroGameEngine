@@ -72,9 +72,15 @@ namespace ML_wrapper
         it_layer->m_layerObjects.push_back(newObject);
     }
 
-    mgeType::Size<int> MlWrapper::getScreenSize() const noexcept
+    mgeType::Size<int> MlWrapper::getRenderWindowSize() const noexcept
     {
-        return mgeType::Size<int>((int)guiView.getSize().x, (int)guiView.getSize().y);
+		auto renderWindowSize = mainWindow->getSize();
+        return mgeType::Size<int>((int)renderWindowSize.x, (int)renderWindowSize.y);
+    }
+
+    std::shared_ptr<sf::RenderWindow> MlWrapper::getRenderWindow() noexcept
+    {
+        return mainWindow;
     }
 
     void MlWrapper::moveScreenOffset(FPoint offset) noexcept
@@ -448,8 +454,4 @@ FPoint ml::getCursorPosition() noexcept
     return ML_wrapper::getGlobalMlWrapper()->getCursorWorldPosition();
 }
 
-std::shared_ptr<sf::RenderWindow> ml::getRenderWindow() noexcept
-{
-    return mainWindow;
-}
 

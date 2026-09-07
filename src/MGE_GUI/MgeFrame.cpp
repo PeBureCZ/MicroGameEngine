@@ -194,6 +194,11 @@ void MgeFrame::setOnCursorOver(Callback_deprecated cursorEnterFunction, Callback
 
 void MgeFrame::layout() noexcept
 {
+#ifdef _DEBUG
+	[[maybe_unused]] auto id = getId();
+	if (id > 0)
+		id = id;
+#endif
 	try
 	{
 		auto differencePos = getAbsolutePosition() - lastLayoutAbsolutePosition;

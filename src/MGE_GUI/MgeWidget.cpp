@@ -39,7 +39,20 @@ bool MgeWidget::removeChildFromWidget(std::variant<WidgetId, std::shared_ptr<Mge
 
 void MgeWidget::setSize(const ISize& size) noexcept
 {
+#ifdef _DEBUG
+	[[maybe_unused]] auto id = getId();
+	if (id > 0)
+		id = id;
+#endif
 	ISize newSize = size;
+
+	_ASSERT(m_minSize.width <= m_maxSize.width);
+	_ASSERT(m_minSize.height <= m_maxSize.height);
+	if (m_maxSize.width < m_minSize.width)
+		m_maxSize.width = m_minSize.width;
+	if (m_maxSize.height < m_minSize.height)
+		m_maxSize.height = m_minSize.height;
+
 	newSize.width = std::clamp(newSize.width, m_minSize.width, m_maxSize.width);
 	newSize.height = std::clamp(newSize.height, m_minSize.height, m_maxSize.height);
 
@@ -53,7 +66,6 @@ void MgeWidget::setSize(const ISize& size) noexcept
 		if (auto widget = std::dynamic_pointer_cast<MgeWidget>(child))
 			widget->setAlignment(widget->getAlignment()); //re-align due to resize
 	}
-	layout();
 }
 
 std::shared_ptr<MgeWidget> MgeWidget::getSelfPtr() const noexcept
@@ -166,6 +178,11 @@ bool MgeWidget::isInitialized() const noexcept
 
 void MgeWidget::layout() noexcept
 {
+#ifdef _DEBUG
+	[[maybe_unused]] auto id = getId();
+	if (id > 0)
+		id = id;
+#endif
 	try
 	{
 		for (auto& child : getChildren()) //to call layout in children

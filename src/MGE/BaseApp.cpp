@@ -64,6 +64,7 @@ void BaseApp::processResizeEvent()
     {
         auto mlWrapper = ML_wrapper::getGlobalMlWrapper();
         actualScreen->setSize(mlWrapper->getRenderWindowSize());
+        actualScreen->layout();
     }
 }
 

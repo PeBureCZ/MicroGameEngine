@@ -13,6 +13,11 @@ MgeSizer::MgeSizer(SizerType type)
 
 void MgeSizer::layout() noexcept
 {
+#ifdef _DEBUG
+	[[maybe_unused]] auto id = getId();
+	if (id > 0)
+		id = id;
+#endif
 	if (auto parent = std::dynamic_pointer_cast<MgeWidget>(getParent().value_or(nullptr)))
 	{
 		if (parent->getSize() != getSize())

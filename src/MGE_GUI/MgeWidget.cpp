@@ -8,6 +8,7 @@ static MgeDefaultComponent STATIC_PARENT_SYSTEM;
 MgeWidget::MgeWidget(const FPoint& newPosition, const ISize& newSize)
 	: MgeActor(newPosition)
 {
+	_ASSERT(newSize.width > 0 && newSize.height > 0);
 	editMgeDefaultComponent().setRelativePosition(newPosition);
 	editMgeDefaultComponent().setSize(newSize.asFloat());
 	lastLayoutSize = newSize;

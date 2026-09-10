@@ -32,6 +32,7 @@ public:
 	MgeFrame(const FPoint& newPosition, TextureId textureId);
 
 	void setImage(TextureId textureId);
+	void setImage(MgeImage&& image);
 	void setVertices(MgeDrawable&& newVertices) noexcept;
 	[[nodiscard]] std::vector<Trigger<int>>& editCollision() noexcept;
 	[[nodiscard]] const std::vector<Trigger<int>>& getCollision() const noexcept;

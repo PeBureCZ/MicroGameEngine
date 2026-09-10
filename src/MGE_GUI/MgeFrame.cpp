@@ -34,6 +34,15 @@ void MgeFrame::setImage(TextureId textureId)
 	editCollision().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition().asInt(), getSize())));
 }
 
+void MgeFrame::setImage(MgeImage&& image)
+{
+	_ASSERT(image.getLayer() == GraphicItemLayer::GUI_LAYER); //image should be in GUI layer to avoid unrelated issues
+	setSize(image.getSize());
+	frameObject = std::move(image);
+	editCollision().clear();
+	editCollision().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition().asInt(), getSize())));
+}
+
 void MgeFrame::setVertices(MgeDrawable&& newVertices) noexcept
 {
 	frameObject = std::move(newVertices);
@@ -204,8 +213,13 @@ void MgeFrame::layout() noexcept
 		auto differencePos = getAbsolutePosition() - lastLayoutAbsolutePosition;
 
 		const auto sizeChanged = (lastLayoutSize != getSize());
-		float scaleX = (float)getSize().width / (float)lastLayoutSize.width;
-		float scaleY = (float)getSize().height / (float)lastLayoutSize.height;
+		_ASSERT(lastLayoutSize.width > 0.0001 && lastLayoutSize.height > 0.0001);
+		float scaleX = (lastLayoutSize.width > 0.0001)
+			? (float)getSize().width / (float)lastLayoutSize.width
+			: 1.f;
+		float scaleY = ((float)lastLayoutSize.height > 0.0001)
+			? (float)getSize().height / (float)lastLayoutSize.height
+			: 1.f;
 
 		if (editCollision().size() > 0)
 		{

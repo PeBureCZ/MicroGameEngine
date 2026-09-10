@@ -3,10 +3,9 @@
 #include "EventSystem.h"
 
 MgeScreen::MgeScreen()
-	: MgeWidget(FPoint(), mgeType::Size<int>())
+	: MgeWidget(FPoint(), ML_wrapper::getGlobalMlWrapper()->getRenderWindowSize())
 {
 	mlWrapper = ML_wrapper::getGlobalMlWrapper();
-	setSize(getMlWrapper()->getRenderWindowSize());
 }
 
 std::shared_ptr<ML_wrapper::MlWrapper> MgeScreen::getMlWrapper()

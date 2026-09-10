@@ -23,6 +23,12 @@ MgeButton::MgeButton
 	setBasicCollision();
 }
 
+MgeButton::MgeButton(const FPoint& newPosition, MgeImage&& image)
+	: MgeFrame(newPosition, ISize(image.getSize()))
+{
+	MgeFrame::setImage(std::move(image));
+}
+
 void MgeButton::setDefaultButtonColor(const mgeType::Color_RGBA& newColor)
 {
 	defaultColor = newColor;

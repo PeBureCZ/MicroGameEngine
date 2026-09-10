@@ -20,6 +20,14 @@ public:
 			TextureId idSelected = TextureId(),
 			TextureId idClicked = TextureId()
 		);
+
+	MgeButton(const FPoint& newPosition, MgeImage&& image);
+
+	MgeButton(MgeButton&) = delete;
+	MgeButton(MgeButton&&) = delete;
+
+	MgeButton& operator= (MgeButton&) = default;
+	MgeButton& operator= (MgeButton&&) = default;
 	~MgeButton() = default;
 
 	void setDefaultButtonColor(const mgeType::Color_RGBA& newColor = DEFAULT_FRAME_COLOR);

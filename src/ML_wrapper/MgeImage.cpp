@@ -161,7 +161,7 @@ size_t MgeImage::getLayer() const noexcept
 {
 	_ASSERT(!m_sprite.expired());
 	if (auto sprite = m_sprite.lock())
-		sprite->m_layer;
+		return sprite->m_layer;
 	return 0;
 }
 

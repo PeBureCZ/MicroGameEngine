@@ -25,6 +25,24 @@ class Trigger;
 using UNDEFINED_FRAME_OBJECT = bool;
 using FRAME_OBJECT = std::variant<UNDEFINED_FRAME_OBJECT, MgeImage, MgeDrawable>;
 
+enum class BorderSide : uint8_t
+{
+	None = 0,
+	Top = 1 << 0,
+	Right = 1 << 1,
+	Bottom = 1 << 2,
+	Left = 1 << 3,
+
+	All = Top | Right | Bottom | Left
+};
+
+constexpr BorderSide operator|(BorderSide lhs, BorderSide rhs)
+{
+	return static_cast<BorderSide>(
+		static_cast<uint8_t>(lhs) |
+		static_cast<uint8_t>(rhs));
+}
+
 class MgeFrame : public MgeWidget
 {
 public:
@@ -50,6 +68,8 @@ public:
 	void setRelativeRotation(float newRotation);
 	float getRelativeRotation(); 
 	void setOrigin(IPoint newOrigin);
+	
+	void setBorder(BorderSide sides, unsigned int width_pxls, const mgeType::Color_RGBA& color = mgeType::Color_RGBA());
 
 	//to define function which will be call when mouse is over the widget
 	void setOnCursorOver(Callback_deprecated cursorEnterFunction, Callback_deprecated cursorLeaveFunction = nullptr);
@@ -73,9 +93,14 @@ protected:
 private:
 	std::vector<Trigger<int>> collisions;
 	FRAME_OBJECT frameObject = false;
+	FRAME_OBJECT borderObject = false;
 
 	std::function<void()> onCursorEnter = nullptr;
 	std::function<void()> onCursorLeave = nullptr;
+
+	BorderSide m_borderFlags = BorderSide::None;
+	unsigned int m_borderWidth_pxls = 0;
+	mgeType::Color_RGBA m_borderColor;
 
 	IPoint getAlignedPosition(GuiAlign align, mgeType::Size<int> objectSize);
 };

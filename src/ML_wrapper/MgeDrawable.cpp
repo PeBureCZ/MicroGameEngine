@@ -30,6 +30,7 @@ MgeDrawable::MgeDrawable(const MgeVertices<float>& drawable, FPoint absolutePosi
 
 MgeDrawable::MgeDrawable(MgeDrawable&& other) noexcept
 {
+    removeVertices();
     if (auto drawable = other.m_vertices.lock())
     {
         m_color = other.m_color;
@@ -42,6 +43,24 @@ MgeDrawable::MgeDrawable(MgeDrawable&& other) noexcept
 
         other.m_vertices.reset(); //to eliminate double free in layer system
     }
+}
+
+MgeDrawable& MgeDrawable::operator= (MgeDrawable&& other) noexcept
+{
+    removeVertices();
+    if (auto drawable = other.m_vertices.lock())
+    {
+        m_color = other.m_color;
+        m_vertices = drawable;
+        frameObject = std::move(other.frameObject);
+        m_absolutePositionOffset = other.m_absolutePositionOffset;
+        m_rotation = other.m_rotation;
+        m_alpha = other.m_alpha;
+        m_isVisible = other.m_isVisible;
+
+        other.m_vertices.reset(); //to eliminate double free in layer system
+    }
+    return *this;
 }
 
 void MgeDrawable::addObjects(const MgeVertices<float> content)
@@ -216,7 +235,6 @@ void MgeDrawable::rescale(float scaleX, float scaleY) noexcept
 	}
 }
 
-
 void MgeDrawable::setVerticesColor()
 {
     _ASSERT(!m_vertices.expired());
@@ -236,6 +254,23 @@ void MgeDrawable::setVerticesColor()
         {
             _ASSERT(false);
         }
+    }
+}
+
+void MgeDrawable::removeVertices() noexcept
+{
+    try
+    {
+        if (auto vertices = m_vertices.lock())
+        {
+            ML_wrapper::getGlobalMlWrapper()->removeMgeLayerObject(vertices);
+            m_vertices.reset();
+            _ASSERT(vertices.use_count() == 1); //correct = last instance is local
+        }
+    }
+    catch (...)
+    {
+        _ASSERT(false);
     }
 }
 
@@ -275,11 +310,6 @@ int64_t MgeDrawable::getZPosition() const noexcept
 
 MgeDrawable::~MgeDrawable()
 {
-    if (auto vertices = m_vertices.lock())
-    {
-        ML_wrapper::getGlobalMlWrapper()->removeMgeLayerObject(vertices);
-        m_vertices.reset();
-        _ASSERT(vertices.use_count() == 1); //correct = last instance is local
-    }
+    removeVertices();
 }
 

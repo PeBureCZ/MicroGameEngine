@@ -18,7 +18,7 @@ public:
     MgeDrawable(const MgeDrawable& other) = delete;
     MgeDrawable(MgeDrawable&& other) noexcept;
 	MgeDrawable& operator= (const MgeDrawable& other) = delete; 
-	MgeDrawable& operator= (MgeDrawable&& other) = default;
+    MgeDrawable& operator= (MgeDrawable&& other) noexcept;
 
     ~MgeDrawable();
 
@@ -55,5 +55,6 @@ private:
     bool m_isVisible = true;
 
     void setVerticesColor();
+    void removeVertices() noexcept;
 };
 

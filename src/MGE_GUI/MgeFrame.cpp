@@ -195,6 +195,60 @@ void MgeFrame::setOrigin(IPoint newOrigin)
 		_ASSERT(false); //unhandled
 }
 
+void MgeFrame::setBorder(BorderSide sides, unsigned int width_pxls, const mgeType::Color_RGBA& color)
+{
+	auto flags = static_cast<uint8_t>(sides);
+	m_borderFlags = sides;
+	m_borderWidth_pxls = width_pxls;
+	m_borderColor = color;
+
+	MgeDrawable borders(GraphicItemLayer::GUI_LAYER);
+
+	std::vector<MgeVertices<float>> vecVertices;
+	ISize actualSize = getSize();
+
+	if (flags & static_cast<uint8_t>(BorderSide::None))
+	{
+		borderObject = false;
+		return;
+	}
+
+	if (flags & static_cast<uint8_t>(BorderSide::Top))
+	{
+		auto shape = mgeShape::Rectangle<float>(FPoint(0.f, 0.f), FSize((float)actualSize.width, (float)m_borderWidth_pxls));
+		vecVertices.emplace_back(shape, m_borderColor);
+	}
+
+	if (flags & static_cast<uint8_t>(BorderSide::Right))
+	{
+		auto shape = mgeShape::Rectangle<float>(FPoint((float)actualSize.width - (float)m_borderWidth_pxls, (float)m_borderWidth_pxls), FSize((float)m_borderWidth_pxls, (float)actualSize.height - (float)m_borderWidth_pxls));
+		vecVertices.emplace_back(shape, m_borderColor);
+	}
+
+	if (flags & static_cast<uint8_t>(BorderSide::Bottom))
+	{
+		auto shape = mgeShape::Rectangle<float>(FPoint(0.f, (float)actualSize.height - (float)m_borderWidth_pxls), FSize((float)actualSize.width, (float)m_borderWidth_pxls));
+		vecVertices.emplace_back(shape, m_borderColor);
+	}
+
+	if (flags & static_cast<uint8_t>(BorderSide::Left))
+	{
+		auto shape = mgeShape::Rectangle<float>(FPoint(0.f, (float)m_borderWidth_pxls), FSize((float)m_borderWidth_pxls, (float)actualSize.height - (float)m_borderWidth_pxls));
+		vecVertices.emplace_back(shape, m_borderColor);
+	}
+
+	borders.addObjects(std::move(vecVertices));
+	borders.setPosition(getAbsolutePosition());
+
+	if (std::holds_alternative<MgeDrawable>(borderObject))
+	{
+		auto& drawable = std::get<MgeDrawable>(borderObject);
+		int x = 0;
+	}
+
+	borderObject = std::move(borders);
+}
+
 void MgeFrame::setOnCursorOver(Callback_deprecated cursorEnterFunction, Callback_deprecated cursorLeaveFunction)
 {
 	onCursorEnter = std::move(cursorEnterFunction);
@@ -240,6 +294,17 @@ void MgeFrame::layout() noexcept
 				text.second.setAbsolutePosition(text.second.getAbsolutePosition() + differencePos.asInt());
 		}
 
+		//BORDERS
+		if (std::holds_alternative<MgeDrawable>(borderObject))
+			setBorder(m_borderFlags, m_borderWidth_pxls, m_borderColor); //re-draw border with aktual size
+		else if (std::holds_alternative<bool>(borderObject))
+		{} //nothing to re-draw
+		else
+		{
+			_ASSERT(false); //unwantend behaviour
+		}
+
+		//FRAME OBJECT
 		if (std::holds_alternative<MgeDrawable>(frameObject))
 		{
 			auto& obj = std::get<MgeDrawable>(frameObject);

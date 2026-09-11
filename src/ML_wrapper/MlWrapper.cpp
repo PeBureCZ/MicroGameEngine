@@ -22,10 +22,10 @@ namespace ML_wrapper
 #if defined(NDEBUG) || defined(USE_FULLSCREEN)
             // Fullscreen mode with current desktop resolution
             auto dm = sf::VideoMode::getDesktopMode();
-            mainWindow = std::make_shared<sf::RenderWindow>(dm, "Train siding manager", sf::Style::Default, sf::State::Fullscreen);
+            mainWindow = std::make_shared<sf::RenderWindow>(dm, "Mge Application", sf::Style::Default, sf::State::Fullscreen);
 #else
             sf::Vector2u windowSize{ 1280, 720 };
-            mainWindow = std::make_shared<sf::RenderWindow>(sf::VideoMode(windowSize), "Train siding manager", sf::Style::Default, sf::State::Windowed);
+            mainWindow = std::make_shared<sf::RenderWindow>(sf::VideoMode(windowSize), "Mge Application", sf::Style::Default, sf::State::Windowed);
 #endif 
             auto size = mainWindow->getSize();
 

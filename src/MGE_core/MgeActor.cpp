@@ -156,11 +156,21 @@ void MgeBasicActor::addComponent(std::shared_ptr<MgeBasicComponent> newComponent
 
 void MgeActor::setRelativePosition(const FPoint& newPosition) noexcept
 {
+#ifdef _DEBUG
+	[[maybe_unused]] auto id = getId();
+	if (id > 0)
+		id = id;
+#endif
 	editMgeDefaultComponent().setRelativePosition(newPosition + m_relativeOffset);
 }
 
 void MgeActor::setAbsolutePosition(const FPoint& newPosition) noexcept
 {
+#ifdef _DEBUG
+	[[maybe_unused]] auto id = getId();
+	if (id > 0)
+		id = id;
+#endif
 	editMgeDefaultComponent().setAbsolutePosition(newPosition);
 }
 

@@ -20,7 +20,9 @@ void MgeSizer::layout() noexcept
 #endif
 	if (auto parent = std::dynamic_pointer_cast<MgeWidget>(getParent().value_or(nullptr)))
 	{
-		if (parent->getSize() != getSize())
+		// Set the size to the parent's size if the parent is not a sizer.
+		// Otherwise, set the sizer's size like other elements.
+		if (parent->getSize() != getSize() && !std::dynamic_pointer_cast<MgeSizer>(parent))
 			setSize(parent->getSize());
 	}
 	else
@@ -262,6 +264,10 @@ void MgeSizer::resizeChildren() noexcept
 	for (auto& childInfo : childrenInfoVec)
 	{
 		childInfo.widget->setSize(childInfo.size);
+		_ASSERT(childInfo.widget->getAlignment() == WidgetAlignment::UpLeft); //sizer ignores alignment
+		if (childInfo.widget->getAlignment() != WidgetAlignment::UpLeft)
+			childInfo.widget->setAlignment(WidgetAlignment::UpLeft);
+
 		childInfo.widget->setRelativePosition(currentRelativePosition);
 
 		currentRelativePosition += isVerticalOrientation

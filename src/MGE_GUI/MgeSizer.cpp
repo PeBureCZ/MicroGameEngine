@@ -264,9 +264,9 @@ void MgeSizer::resizeChildren() noexcept
 	for (auto& childInfo : childrenInfoVec)
 	{
 		childInfo.widget->setSize(childInfo.size);
-		_ASSERT(childInfo.widget->getAlignment() == WidgetAlignment::UpLeft); //sizer ignores alignment
-		if (childInfo.widget->getAlignment() != WidgetAlignment::UpLeft)
-			childInfo.widget->setAlignment(WidgetAlignment::UpLeft);
+		_ASSERT(childInfo.widget->getAlignment() == GuiAlign::TopLeft); //sizer ignores alignment
+		if (childInfo.widget->getAlignment() != GuiAlign::TopLeft)
+			childInfo.widget->setAlignment(GuiAlign::TopLeft);
 
 		childInfo.widget->setRelativePosition(currentRelativePosition);
 

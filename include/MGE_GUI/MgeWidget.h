@@ -12,19 +12,6 @@
 
 using WidgetId = uintptr_t;
 
-enum class WidgetAlignment : int
-{
-	UpLeft,
-	MiddleLeft,
-	BottomLeft,
-	UpCenter,
-	Center,
-	BottomCenter,
-	UpRight,
-	RightCenter,
-	BottomRight
-};
-
 class MgeWidget : public MgeActor
 {
 public:
@@ -38,8 +25,8 @@ public:
 
 	void initializeSelf(std::weak_ptr<MgeWidget> self);
 
-	void setAlignment(WidgetAlignment alignment) noexcept;
-	WidgetAlignment getAlignment() const noexcept;
+	void setAlignment(GuiAlign alignment) noexcept;
+	GuiAlign getAlignment() const noexcept;
 
 	void setSize(const ISize& newSize) noexcept;
 	[[nodiscard]] ISize getSize() const noexcept;
@@ -70,7 +57,7 @@ protected:
 
 private:
 
-	WidgetAlignment m_alignment = WidgetAlignment::UpLeft;
+	GuiAlign m_alignment = GuiAlign::TopLeft;
 
 	std::weak_ptr<MgeWidget> m_selfPtr;
 	bool m_isVisible = true;

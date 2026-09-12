@@ -102,15 +102,15 @@ FPoint MgeWidget::getAlignmentOffset() const noexcept
 
 	switch (m_alignment)
 	{
-	case WidgetAlignment::UpLeft: break; 
-	case WidgetAlignment::MiddleLeft: offset.x = 0; offset.y = (parentSize.height - thisSize.height) / 2; break; 
-	case WidgetAlignment::BottomLeft: offset.x = 0; offset.y = parentSize.height - thisSize.height; break; 
-	case WidgetAlignment::UpCenter: offset.x = (parentSize.width - thisSize.width) / 2; offset.y = 0; break;
-	case WidgetAlignment::Center: offset.x = (parentSize.width - thisSize.width) / 2; offset.y = (parentSize.height - thisSize.height) / 2; break; 
-	case WidgetAlignment::BottomCenter: offset.x = (parentSize.width - thisSize.width) / 2; offset.y = parentSize.height - thisSize.height; break; 
-	case WidgetAlignment::UpRight: offset.x = parentSize.width - thisSize.width; offset.y = 0; break; 
-	case WidgetAlignment::RightCenter: offset.x = parentSize.width - thisSize.width; offset.y = (parentSize.height - thisSize.height) / 2; break; 
-	case WidgetAlignment::BottomRight: offset.x = parentSize.width - thisSize.width; offset.y = parentSize.height - thisSize.height; break; 
+	case GuiAlign::TopLeft: break;
+	case GuiAlign::MiddleLeft: offset.x = 0; offset.y = (parentSize.height - thisSize.height) / 2; break;
+	case GuiAlign::BottomLeft: offset.x = 0; offset.y = parentSize.height - thisSize.height; break;
+	case GuiAlign::TopCenter: offset.x = (parentSize.width - thisSize.width) / 2; offset.y = 0; break;
+	case GuiAlign::MiddleCenter: offset.x = (parentSize.width - thisSize.width) / 2; offset.y = (parentSize.height - thisSize.height) / 2; break;
+	case GuiAlign::BottomCenter: offset.x = (parentSize.width - thisSize.width) / 2; offset.y = parentSize.height - thisSize.height; break;
+	case GuiAlign::TopRight: offset.x = parentSize.width - thisSize.width; offset.y = 0; break;
+	case GuiAlign::MiddleRight: offset.x = parentSize.width - thisSize.width; offset.y = (parentSize.height - thisSize.height) / 2; break;
+	case GuiAlign::BottomRight: offset.x = parentSize.width - thisSize.width; offset.y = parentSize.height - thisSize.height; break;
 	default: _ASSERT(false); break;
 	}
 
@@ -126,13 +126,13 @@ void MgeWidget::initialize() noexcept
 	// possible to use getSelfPtr() function here
 }
 
-void MgeWidget::setAlignment(WidgetAlignment alignment) noexcept
+void MgeWidget::setAlignment(GuiAlign alignment) noexcept
 {
 	m_alignment = alignment;
 	setPositionOffset(getAlignmentOffset());
 }
 
-WidgetAlignment MgeWidget::getAlignment() const noexcept
+GuiAlign MgeWidget::getAlignment() const noexcept
 {
 	return m_alignment;
 }
@@ -209,7 +209,7 @@ void MgeWidget::addWidget(std::shared_ptr<MgeWidget> child)
 		getSelfPtr()->addChild(child);
 		child->initializeSelf(child);
 
-		if (child->getAlignment() != WidgetAlignment::UpLeft)
+		if (child->getAlignment() != GuiAlign::TopLeft)
 			child->setAlignment(child->getAlignment()); //re-align offset due to new parent
 	}
 }

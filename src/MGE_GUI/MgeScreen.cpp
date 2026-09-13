@@ -1,6 +1,7 @@
 #include "MgeScreen.h"
 
 #include "EventSystem.h"
+#include "GlobalEvents.h"
 
 MgeScreen::MgeScreen()
 	: MgeWidget(FPoint(), ML_wrapper::getGlobalMlWrapper()->getRenderWindowSize())

@@ -2,6 +2,8 @@
 
 #include "EventSystem.h"
 
+#include "MgeObject.h"
+
 enum MgeEventType : uint64_t
 {
     MgeEventType_None = 0,
@@ -37,5 +39,4 @@ struct resizeWindowEvent
 {
     MGE_EVENT_TYPE = MgeEventType::ResizeWindow;
 };
-
 

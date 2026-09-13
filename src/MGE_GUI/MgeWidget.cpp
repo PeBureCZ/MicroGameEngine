@@ -78,11 +78,10 @@ std::shared_ptr<MgeWidget> MgeWidget::getSelfPtr() const noexcept
 FPoint MgeWidget::getAlignmentOffset() const noexcept
 {
 	FPoint offset{};
+	std::shared_ptr<MgeWidget> widget;
 	try
 	{
-		std::optional<const std::shared_ptr<MgeActor>> parent_opt = getParent();
-		if (!parent_opt.has_value() || !parent_opt.value() || !std::dynamic_pointer_cast<MgeWidget>(parent_opt.value()))
-			return offset;
+		widget = std::dynamic_pointer_cast<MgeWidget>(getParent());
 	}
 	catch (const std::exception& e)
 	{
@@ -94,10 +93,10 @@ FPoint MgeWidget::getAlignmentOffset() const noexcept
 		_ASSERT(false);
 	}
 
-	auto parent_opt = getParent();
-	auto parent = std::dynamic_pointer_cast<MgeWidget>(parent_opt.value());
+	if (!widget)
+		return offset;
 
-	FSize parentSize = parent->getSize().asFloat();
+	FSize parentSize = widget->getSize().asFloat();
 	auto thisSize = getSize();
 
 	switch (m_alignment)
@@ -206,11 +205,26 @@ void MgeWidget::addWidget(std::shared_ptr<MgeWidget> child)
 	if (getSelfPtr() && child && getSelfPtr() != child)
 	{
 		child->setParent(getSelfPtr());
-		getSelfPtr()->addChild(child);
+		addChild(child);
 		child->initializeSelf(child);
 
 		if (child->getAlignment() != GuiAlign::TopLeft)
 			child->setAlignment(child->getAlignment()); //re-align offset due to new parent
+	}
+}
+
+void MgeWidget::closeWidget()
+{
+	for (auto& child : editChildren())
+	{
+		_ASSERT(child);
+		if (auto widget = std::dynamic_pointer_cast<MgeWidget>(child))
+			widget->closeWidget();
+	}
+
+	if (auto parent = getParent())
+	{
+		[[maybe_unused]] bool removed = parent->removeChild(getId()); //remove self in parent vector (owner)
 	}
 }
 

@@ -30,8 +30,8 @@ public:
 	[[nodiscard]] const std::vector<std::shared_ptr<MgeActor>>& getChildren() const noexcept;
 	[[nodiscard]] std::vector<std::shared_ptr<MgeActor>>& editChildren() noexcept;
 
-	[[nodiscard]] std::optional<std::shared_ptr<MgeActor>> editParent() noexcept;
-	[[nodiscard]] std::optional<const std::shared_ptr<MgeActor>> getParent() const noexcept;
+	[[nodiscard]] std::shared_ptr<MgeActor> editParent() noexcept;
+	[[nodiscard]] const std::shared_ptr<MgeActor> getParent() const noexcept;
 
 	[[nodiscard]] bool removeChild(std::shared_ptr<MgeActor>& child);
 	[[nodiscard]] bool removeChild(MgeObjectId childId);
@@ -92,7 +92,7 @@ public:
 	[[nodiscard]] float getAbsoluteRotation() const noexcept;
 
 	void setParent(const std::shared_ptr<MgeActor>& newParent = std::shared_ptr<MgeActor>()) noexcept;
-	[[nodiscard]] std::optional<const std::shared_ptr<MgeActor>> getParent() const noexcept;
+	[[nodiscard]] const std::shared_ptr<MgeActor> getParent() const noexcept;
 	[[nodiscard]] const std::vector<std::shared_ptr<MgeActor>>& getChildren() const noexcept;
 	[[nodiscard]] std::vector<std::shared_ptr<MgeActor>>& editChildren() noexcept;
 	void addChild(const std::shared_ptr<MgeActor>& child) noexcept;
@@ -101,6 +101,8 @@ public:
 
 	MgeDefaultComponent& editMgeDefaultComponent() noexcept;
 	const MgeDefaultComponent& getMgeDefaultComponent() const noexcept;
+
+	virtual void destroy();
 
 protected:
 

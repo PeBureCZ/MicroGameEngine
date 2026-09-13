@@ -23,17 +23,13 @@ void MgeDefaultComponent::setParent(const std::shared_ptr<MgeActor>& newParent) 
 	return m_children;
 }
 
-[[nodiscard]] std::optional<std::shared_ptr<MgeActor>> MgeDefaultComponent::editParent() noexcept
+[[nodiscard]] std::shared_ptr<MgeActor> MgeDefaultComponent::editParent() noexcept
 {
-	if (!parent.expired())
-		return parent.lock();
-	return std::nullopt;
+	return parent.lock();
 }
 
-[[nodiscard]] std::optional<const std::shared_ptr<MgeActor>> MgeDefaultComponent::getParent() const noexcept
+[[nodiscard]] const std::shared_ptr<MgeActor> MgeDefaultComponent::getParent() const noexcept
 {
-	if (parent.expired())
-		return std::nullopt;
 	return parent.lock();
 }
 
@@ -47,6 +43,7 @@ void MgeDefaultComponent::setParent(const std::shared_ptr<MgeActor>& newParent) 
 			{
 				checkedChild->editMgeDefaultComponent().setParent();
 				m_children.erase(it);
+				_ASSERT(child.use_count() == 1); //input shared_ptr should be the last live element
 				return true;
 			}
 		}
@@ -64,6 +61,10 @@ void MgeDefaultComponent::setParent(const std::shared_ptr<MgeActor>& newParent) 
 			if (checkedChild && checkedChild->getId() == childId)
 			{
 				checkedChild->editMgeDefaultComponent().setParent();
+#ifdef _DEBUG
+				[[maybe_unused]] auto count = checkedChild.use_count();
+				_ASSERT(count == 1); //no elements should remain alive AFTER erase
+#endif //_DEBUG
 				m_children.erase(it);
 				return true;
 			}
@@ -179,7 +180,7 @@ void MgeActor::setParent(const std::shared_ptr<MgeActor>& newParent) noexcept
 	editMgeDefaultComponent().setParent(newParent);
 }
 
-[[nodiscard]] std::optional<const std::shared_ptr<MgeActor>> MgeActor::getParent() const noexcept
+[[nodiscard]] const std::shared_ptr<MgeActor> MgeActor::getParent() const noexcept
 {
 	return getMgeDefaultComponent().getParent();
 }
@@ -266,6 +267,22 @@ const MgeDefaultComponent& MgeActor::getMgeDefaultComponent() const noexcept
 		return *defaultActorData;
 	_ASSERT(false);
 	return ERROR_STATE_COMPONENT;
+}
+
+void MgeActor::destroy()
+{
+	for (auto& child : editChildren())
+	{
+		_ASSERT(child);
+		if (child)
+			child->destroy();
+	}
+
+	if (auto parent = getParent())
+	{
+		[[maybe_unused]] bool removed = parent->removeChild(getId()); //remove self in parent vector (owner)
+		_ASSERT(removed);
+	}
 }
 
 void MgeActor::createMgeDefaultComponent()

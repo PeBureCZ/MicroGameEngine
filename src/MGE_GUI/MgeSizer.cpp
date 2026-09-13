@@ -18,7 +18,7 @@ void MgeSizer::layout() noexcept
 	if (id > 0)
 		id = id;
 #endif
-	if (auto parent = std::dynamic_pointer_cast<MgeWidget>(getParent().value_or(nullptr)))
+	if (auto parent = std::dynamic_pointer_cast<MgeWidget>(getParent()))
 	{
 		// Set the size to the parent's size if the parent is not a sizer.
 		// Otherwise, set the sizer's size like other elements.

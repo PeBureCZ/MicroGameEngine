@@ -211,7 +211,7 @@ using ILine = mgeType::Line<int>;
 
 namespace tsmBasic
 {
-	constexpr double PI = 3.14159265358979323846;
+	constexpr inline double PI = 3.14159265358979323846;
 
 	[[nodiscard]] inline float getDistance(const FPoint& pointA, const FPoint& pointB)
 	{

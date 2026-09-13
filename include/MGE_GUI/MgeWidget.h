@@ -45,6 +45,7 @@ public:
 	virtual void initialize() noexcept; //to be called after adding to parent or to GUI
 
 	void addWidget(std::shared_ptr<MgeWidget> child);
+	void closeWidget();
 
 	virtual ~MgeWidget() = default;
 

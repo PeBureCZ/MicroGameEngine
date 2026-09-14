@@ -43,11 +43,20 @@ constexpr BorderSide operator|(BorderSide lhs, BorderSide rhs)
 		static_cast<uint8_t>(rhs));
 }
 
+class MgeFrame;
+
+namespace mge
+{
+	using Frame = std::shared_ptr<MgeFrame>;
+	Frame createFrame(const FPoint& newPosition = FPoint(), const ISize& newSize = ISize(1, 1));
+	Frame createFrame(const FPoint& newPosition, const TextureId& textureId);
+}
+
 class MgeFrame : public MgeWidget
 {
 public:
 	MgeFrame(const FPoint& newPosition, const ISize& newSize);
-	MgeFrame(const FPoint& newPosition, TextureId textureId);
+	MgeFrame(const FPoint& newPosition, const TextureId& textureId);
 
 	void setImage(TextureId textureId);
 	void setImage(MgeImage&& image);
@@ -104,4 +113,5 @@ private:
 
 	IPoint getAlignedPosition(GuiAlign align, mgeType::Size<int> objectSize);
 };
+
 

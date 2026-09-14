@@ -12,15 +12,15 @@
 MgeFrame::MgeFrame(const FPoint& newPosition, const ISize& newSize)
 	: MgeWidget(newPosition, newSize)
 {
-	const MgeVertices<float> drawable(mgeShape::Rectangle<float>(FPoint(0,0), mgeType::Size<float>((float)newSize.width, (float)newSize.height)), mgeType::Color_RGBA(100, 100, 100, 150));
+	const MgeVertices<float> drawable(mgeShape::Rectangle<float>(FPoint(0,0), FSize((float)newSize.width, (float)newSize.height)), mgeType::Color_RGBA(100, 100, 100, 150));
 	MgeDrawable newWidgetVertices(drawable, newPosition.asFloat(), 0.f, GraphicItemLayer::GUI_LAYER);
 	frameObject = std::move(newWidgetVertices);
 }
 
-MgeFrame::MgeFrame(const FPoint& newPosition, TextureId textureId)
-	: MgeWidget(newPosition, mgeType::Size<int>())
+MgeFrame::MgeFrame(const FPoint& newPosition, const TextureId& textureId)
+	: MgeWidget(newPosition, ISize(1,1))
 {
-	auto newImage = MgeImage(std::move(textureId), GraphicItemLayer::GUI_LAYER, newPosition.asFloat());;
+	auto newImage = MgeImage(textureId, GraphicItemLayer::GUI_LAYER, newPosition.asFloat());;
 	setSize(newImage.getSize());
 	frameObject = std::move(newImage);
 }
@@ -402,4 +402,17 @@ IPoint MgeFrame::getAlignedPosition(GuiAlign align, mgeType::Size<int> objectSiz
 			break;
 	}
 	return framePos;
+}
+
+namespace mge
+{
+	Frame createFrame(const FPoint& newPosition, const ISize& newSize)
+	{
+		return std::make_shared<MgeFrame>(newPosition, newSize);
+	}
+
+	Frame mge::createFrame(const FPoint& newPosition, const TextureId& textureId)
+	{
+		return std::make_shared<MgeFrame>(newPosition, textureId);
+	}
 }

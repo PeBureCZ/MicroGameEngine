@@ -13,9 +13,9 @@ MgeButton::MgeButton(const FPoint& newPosition, mgeType::Size<int> newSize)
 MgeButton::MgeButton
 	(
 		const FPoint& newPosition,
-		TextureId idUnselected,
-		TextureId idSelected,
-		TextureId idClicked
+		const TextureId& idUnselected,
+		const TextureId& idSelected,
+		const TextureId& idClicked
 	)
 	: MgeFrame(newPosition, idUnselected)
 	, unselectedTexture(idUnselected), selectedTexture(idSelected), clickedTexture(idClicked)
@@ -132,3 +132,17 @@ void MgeButton::setBasicCollision()
 	editCollision().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition().asInt(), getSize())));
 	_ASSERT(editCollision().size() == 1);
 }
+
+namespace mge
+{
+	Button mge::createButton(const FPoint& position, const ISize& size)
+	{
+		return std::make_shared<MgeButton>(position, size);
+	}
+
+	Button createButton(const FPoint& position, MgeImage&& image)
+	{
+		return std::make_shared<MgeButton>(position, std::move(image));
+	}
+}
+

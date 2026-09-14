@@ -3,8 +3,8 @@
 #include "MlWrapper.h"
 #include "GlobalFunctions.h"
 
-MgeImage::MgeImage(TextureId usedTextureId, size_t usedLayer, FPoint newPosition)
-	: usedTexture(std::move(usedTextureId))
+MgeImage::MgeImage(const TextureId& usedTextureId, size_t usedLayer, const FPoint& newPosition)
+	: usedTexture(usedTextureId)
 {
 	imageId = reinterpret_cast<VerticesId>(this);
 

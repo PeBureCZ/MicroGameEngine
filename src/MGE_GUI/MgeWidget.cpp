@@ -69,7 +69,7 @@ void MgeWidget::setSize(const ISize& size) noexcept
 	}
 }
 
-std::shared_ptr<MgeWidget> MgeWidget::getSelfPtr() const noexcept
+mge::Widget MgeWidget::getSelfPtr() const noexcept
 {
 	_ASSERT(m_selfPtr.lock()); //wrong ptr management
 	return m_selfPtr.lock();
@@ -78,7 +78,7 @@ std::shared_ptr<MgeWidget> MgeWidget::getSelfPtr() const noexcept
 FPoint MgeWidget::getAlignmentOffset() const noexcept
 {
 	FPoint offset{};
-	std::shared_ptr<MgeWidget> widget;
+	mge::Widget widget;
 	try
 	{
 		widget = std::dynamic_pointer_cast<MgeWidget>(getParent());
@@ -199,7 +199,7 @@ void MgeWidget::layout() noexcept
 	lastLayoutAbsolutePosition = getAbsolutePosition();
 }
 
-void MgeWidget::addWidget(std::shared_ptr<MgeWidget> child)
+void MgeWidget::addWidget(mge::Widget child)
 {
 	_ASSERT(getSelfPtr() && child && getSelfPtr() != child);
 	if (getSelfPtr() && child && getSelfPtr() != child)
@@ -238,4 +238,10 @@ void MgeWidget::initializeSelf(std::weak_ptr<MgeWidget> self)
 	m_selfPtr = self;
 }
 
-
+namespace mge
+{
+	Widget mge::createWidget(const FPoint& position, const ISize& size)
+	{
+		return std::make_shared<MgeWidget>(position, size);
+	}
+}

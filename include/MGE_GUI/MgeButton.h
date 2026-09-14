@@ -9,6 +9,15 @@ constexpr mgeType::Color_RGBA DEFAULT_FRAME_COLOR = mgeType::Color_RGBA(160, 160
 constexpr mgeType::Color_RGBA MOUSE_OVER_FRAME_COLOR = mgeType::Color_RGBA(220, 220, 220, 255);
 constexpr mgeType::Color_RGBA DEFAULT_COLOR = mgeType::Color_RGBA(140, 140, 140, 255);
 
+class MgeButton;
+
+namespace mge
+{
+	using Button = std::shared_ptr<MgeButton>;
+	Button createButton(const FPoint& position = FPoint(), const ISize& size = ISize(1, 1));
+	Button createButton(const FPoint& position, MgeImage&& image);
+}
+
 class MgeButton : public MgeFrame
 {
 public:
@@ -16,9 +25,9 @@ public:
 	MgeButton
 		(
 			const FPoint& newPosition,
-			TextureId idUnselected,
-			TextureId idSelected = TextureId(),
-			TextureId idClicked = TextureId()
+			const TextureId& idUnselected,
+			const TextureId& idSelected = TextureId(),
+			const TextureId& idClicked = TextureId()
 		);
 
 	MgeButton(const FPoint& newPosition, MgeImage&& image);
@@ -61,3 +70,4 @@ private:
 	std::function<void()> onLMBClick = nullptr;
 	std::function<void()> onRMBClick = nullptr;
 };
+

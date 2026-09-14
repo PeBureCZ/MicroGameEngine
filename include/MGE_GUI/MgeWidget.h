@@ -12,6 +12,14 @@
 
 using WidgetId = uintptr_t;
 
+class MgeWidget;
+
+namespace mge
+{
+	using Widget = std::shared_ptr<MgeWidget>;
+	Widget createWidget(const FPoint& position = FPoint(), const ISize& size = ISize(1, 1));
+}
+
 class MgeWidget : public MgeActor
 {
 public:
@@ -44,13 +52,13 @@ public:
 	virtual void layout() noexcept;
 	virtual void initialize() noexcept; //to be called after adding to parent or to GUI
 
-	void addWidget(std::shared_ptr<MgeWidget> child);
+	void addWidget(mge::Widget child);
 	void closeWidget();
 
 	virtual ~MgeWidget() = default;
 
 protected:
-	std::shared_ptr<MgeWidget> getSelfPtr() const noexcept;
+	mge::Widget getSelfPtr() const noexcept;
 
 	FPoint lastLayoutAbsolutePosition;
 	ISize lastLayoutSize;

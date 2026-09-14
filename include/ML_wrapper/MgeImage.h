@@ -15,7 +15,7 @@ struct MgeLayerObject;
 class MgeImage
 {
 public:
-	MgeImage(TextureId usedTextureId, size_t usedLayer = (size_t)GraphicItemLayer::DEFAULT_LAYER, FPoint newPosition = FPoint());
+	MgeImage(const TextureId& usedTextureId, size_t usedLayer = (size_t)GraphicItemLayer::DEFAULT_LAYER, const FPoint& newPosition = FPoint());
 	MgeImage();
 
 	MgeImage(const MgeImage& other);

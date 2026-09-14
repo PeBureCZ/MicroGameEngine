@@ -80,7 +80,7 @@ bool MgeGui::isCursorBlockedByGui() const noexcept
 
 void MgeGui::tickScreenChildren(const MgeScreen& screen)
 {
-    const std::shared_ptr<MgeWidget> lastBlockWidget = actualBlockWidget;
+    const mge::Widget lastBlockWidget = actualBlockWidget;
 	actualBlockWidget.reset(); //will be set again if any widget is under cursor
     tickWidgets(screen.getChildren());
 

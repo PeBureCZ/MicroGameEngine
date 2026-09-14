@@ -7,6 +7,7 @@
 #include "BasicShapes.h"
 #include "BasicTypes.h"
 #include "GraphicDependencies.h"
+#include "MgeWidget.h"
 
 namespace ML_wrapper
 {
@@ -48,8 +49,8 @@ public:
 
 private:
 	std::shared_ptr<ML_wrapper::MlWrapper> sharedMlWrapper;
-	std::vector<std::shared_ptr<MgeWidget>> guiWidgets;
-	std::shared_ptr<MgeWidget> actualBlockWidget;
+	std::vector<mge::Widget> guiWidgets;
+	mge::Widget actualBlockWidget;
 
 	//SCREEN_EVENTS screenEvents; 
 

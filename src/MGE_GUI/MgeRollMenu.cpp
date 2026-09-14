@@ -1,17 +1,17 @@
 #include "MgeRollMenu.h"
 
-MgeRollMenu::MgeRollMenu(const FPoint& newPosition, mgeType::Size<int> newSize, std::string text)
+MgeRollMenu::MgeRollMenu(const FPoint& newPosition, ISize newSize, std::string_view text)
 	: MgeFrame(newPosition, newSize)
 {
 	mainButtonText = text;
 }
 
-std::shared_ptr<MgeButton> MgeRollMenu::addRollButton(const std::string& butText, Callback_deprecated onLMBClickFunc, Callback_deprecated onRMBClickFunc)
+mge::Button MgeRollMenu::addRollButton(const std::string& butText, Callback_deprecated onLMBClickFunc, Callback_deprecated onRMBClickFunc)
 {
 	getMainButton(); //generate main but if not exist
 
 	size_t relativeYpos_pxls = getSize().height * (rollButtons.size() + 1);
-	auto newButton = std::make_shared<MgeButton>(FPoint(0.f, (float)relativeYpos_pxls), getSize());
+	auto newButton = mge::createButton(FPoint(0.f, (float)relativeYpos_pxls), getSize());
 	newButton->setIsVisible(false);
 	newButton->setOnLMBClick(onLMBClickFunc);
 	newButton->setOnRMBClick(onRMBClickFunc);
@@ -23,11 +23,11 @@ std::shared_ptr<MgeButton> MgeRollMenu::addRollButton(const std::string& butText
 	return newButton;
 }
 
-std::shared_ptr<MgeButton> MgeRollMenu::getMainButton()
+mge::Button MgeRollMenu::getMainButton()
 {
 	if (!mainButton)
 	{
-		mainButton = std::make_shared<MgeButton>(FPoint(0.f, 0.f), getSize());
+		mainButton = mge::createButton(FPoint(0.f, 0.f), getSize());
 		mainButton->setColor(DEFAULT_FRAME_COLOR);
 		mainButton->setMouseOverButtonColor(MOUSE_OVER_FRAME_COLOR);
 		mainButton->setButtonTextColors(DEFAULT_TEXT_COLOR, MOUSE_OVER_TEXT_COLOR);
@@ -149,7 +149,7 @@ void MgeRollMenu::generateNewRollMenuCollision()
 
 	if (!rollMenuCollisionFrame)
 	{ //invisible frame for non-blocking collision up to buttons
-		rollMenuCollisionFrame = std::make_shared<MgeFrame>(FPoint(), mgeType::Size<int>());
+		rollMenuCollisionFrame = mge::createFrame(FPoint(), mgeType::Size<int>());
 		rollMenuCollisionFrame->setColor(DEFAULT_FRAME_COLOR);
 		rollMenuCollisionFrame->setOnCursorOver
 			(

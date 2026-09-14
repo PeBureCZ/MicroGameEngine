@@ -47,7 +47,7 @@ void MgeSizer::resizeChildren() noexcept
 
 	struct ChildInfo
 	{
-		std::shared_ptr<MgeWidget> widget;
+		mge::Widget widget;
 		ISize size;
 		ISize minSize;
 		ISize maxSize;
@@ -275,3 +275,12 @@ void MgeSizer::resizeChildren() noexcept
 			: FPoint(static_cast<float>(childInfo.size.width),0.f);
 	}
 }
+
+namespace mge
+{
+	Sizer mge::createSizer(SizerType type)
+	{
+		return std::make_shared<MgeSizer>(type);
+	}
+}
+

@@ -18,6 +18,7 @@ namespace mge
 {
 	using Widget = std::shared_ptr<MgeWidget>;
 	Widget createWidget(const FPoint& position = FPoint(), const ISize& size = ISize(1, 1));
+	bool destroyWidget(mge::Widget widgetToClose);
 }
 
 class MgeWidget : public MgeActor
@@ -53,7 +54,6 @@ public:
 	virtual void initialize() noexcept; //to be called after adding to parent or to GUI
 
 	void addWidget(mge::Widget child);
-	void closeWidget();
 
 	virtual ~MgeWidget() = default;
 

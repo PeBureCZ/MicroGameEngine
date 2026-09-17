@@ -43,7 +43,10 @@ void MgeDefaultComponent::setParent(const std::shared_ptr<MgeActor>& newParent) 
 			{
 				checkedChild->editMgeDefaultComponent().setParent();
 				m_children.erase(it);
-				_ASSERT(child.use_count() == 1); //input shared_ptr should be the last live element
+#ifdef _DEBUG
+				[[maybe_unused]] auto count = child.use_count();
+				_ASSERT(count == 1); //input shared_ptr should be the last live element
+#endif //_DEBUG
 				return true;
 			}
 		}

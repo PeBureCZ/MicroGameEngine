@@ -213,21 +213,6 @@ void MgeWidget::addWidget(mge::Widget child)
 	}
 }
 
-void MgeWidget::closeWidget()
-{
-	for (auto& child : editChildren())
-	{
-		_ASSERT(child);
-		if (auto widget = std::dynamic_pointer_cast<MgeWidget>(child))
-			widget->closeWidget();
-	}
-
-	if (auto parent = getParent())
-	{
-		[[maybe_unused]] bool removed = parent->removeChild(getId()); //remove self in parent vector (owner)
-	}
-}
-
 WidgetId MgeWidget::getWidgetId() const noexcept
 {
 	return reinterpret_cast<WidgetId>(this);
@@ -243,5 +228,33 @@ namespace mge
 	Widget mge::createWidget(const FPoint& position, const ISize& size)
 	{
 		return std::make_shared<MgeWidget>(position, size);
+	}
+
+	bool destroyWidget(mge::Widget widgetToClose)
+	{
+#ifdef _DEBUG
+		auto count = widgetToClose.use_count();
+		// Attempting to close a widget that still has other references. Release all other shared_ptr copies first and use std::move
+		_ASSERT(count == 2); //correct = 1 as local variable + 1 in parent
+#endif
+
+		if (!widgetToClose)
+			return false;
+		for (auto& child : widgetToClose->editChildren())
+		{
+			_ASSERT(child);
+			if (auto widget = std::dynamic_pointer_cast<MgeWidget>(child))
+				destroyWidget(std::move(widget));
+		}
+
+		if (auto parent = widgetToClose->getParent())
+		{
+			auto id = widgetToClose->getId();
+			widgetToClose.reset();
+			[[maybe_unused]] bool removed = parent->removeChild(id); //remove self in parent vector (owner)
+		}
+		else
+			widgetToClose.reset();
+		return true;
 	}
 }

@@ -51,8 +51,8 @@ private:
 	std::shared_ptr<ML_wrapper::MlWrapper> sharedMlWrapper;
 	std::vector<mge::Widget> guiWidgets;
 	mge::Widget actualBlockWidget;
-
-	//SCREEN_EVENTS screenEvents; 
+	bool m_clickEventActive = false;
+	FPoint m_lastGuiMovePos; //used for moving MgeWindows
 
 	void tickScreenChildren(const MgeScreen& screen);
 	void tickWidgets(const std::vector<std::shared_ptr<MgeActor>>& widgets);

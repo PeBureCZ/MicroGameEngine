@@ -18,7 +18,7 @@ namespace mge
 {
 	using Widget = std::shared_ptr<MgeWidget>;
 	Widget createWidget(const FPoint& position = FPoint(), const ISize& size = ISize(1, 1));
-	bool destroyWidget(mge::Widget widgetToClose);
+	bool destroyWidget(Widget widgetToClose);
 }
 
 class MgeWidget : public MgeActor
@@ -39,9 +39,11 @@ public:
 
 	void setSize(const ISize& newSize) noexcept;
 	[[nodiscard]] ISize getSize() const noexcept;
-	void setMinSize(const ISize& newMinSize) noexcept;
+	void setMinSize(const ISize& newMinSize_pxls) noexcept;
+	void setMaxSize(const ISize& newMaxSize_pxls) noexcept;
+	void setMinSize(const int width_pxls, const int height_pxls) noexcept;
+	void setMaxSize(const int width_pxls, const int height_pxls) noexcept;
 	[[nodiscard]] ISize getMinSize() const noexcept;
-	void setMaxSize(const ISize& newMaxSize) noexcept;
 	[[nodiscard]] ISize getMaxSize() const noexcept;
 
 	// AutoSizeFactor is a multiplier used in MgeSizer to determine the size during rescaling.

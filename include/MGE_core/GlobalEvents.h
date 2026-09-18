@@ -11,7 +11,8 @@ enum MgeEventType : uint64_t
     MgeMouseClick,
     MgeWheel,
     ExitApp,
-    ResizeWindow,
+    ResizeRenderWindow,
+    CloseMgeWindow,
     //add new event types here...
 
     STATIC_CHECKER,
@@ -35,8 +36,14 @@ struct TerminateApp
 	MGE_EVENT_TYPE = MgeEventType::ExitApp;
 };
 
-struct resizeWindowEvent
+struct ResizeWindowEvent
 {
-    MGE_EVENT_TYPE = MgeEventType::ResizeWindow;
+    MGE_EVENT_TYPE = MgeEventType::ResizeRenderWindow;
+};
+
+struct CloseMgeWindowEvent
+{
+    MGE_EVENT_TYPE = MgeEventType::CloseMgeWindow;
+    uintptr_t m_widgetId = 0;
 };
 

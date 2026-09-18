@@ -141,19 +141,29 @@ GuiAlign MgeWidget::getAlignment() const noexcept
 	return getMgeDefaultComponent().getSize().asInt();
 }
 
-void MgeWidget::setMinSize(const ISize& newMinSize) noexcept
+void MgeWidget::setMinSize(const ISize& newMinSize_pxls) noexcept
 {
-	m_minSize = newMinSize;
+	m_minSize = newMinSize_pxls;
+}
+
+void MgeWidget::setMaxSize(const ISize& newMaxSize_pxls) noexcept
+{
+	m_maxSize = newMaxSize_pxls;
+}
+
+void MgeWidget::setMinSize(const int width_pxls, const int height_pxls) noexcept
+{
+	m_minSize = ISize(width_pxls, height_pxls);
+}
+
+void MgeWidget::setMaxSize(const int width_pxls, const int height_pxls) noexcept
+{
+	m_maxSize = ISize(width_pxls, height_pxls);
 }
 
 ISize MgeWidget::getMinSize() const noexcept
 {
 	return m_minSize;
-}
-
-void MgeWidget::setMaxSize(const ISize& newMaxSize) noexcept
-{
-	m_maxSize = newMaxSize;
 }
 
 ISize MgeWidget::getMaxSize() const noexcept
@@ -206,7 +216,8 @@ void MgeWidget::addWidget(mge::Widget child)
 	{
 		child->setParent(getSelfPtr());
 		addChild(child);
-		child->initializeSelf(child);
+		if (!child->isInitialized())
+			child->initializeSelf(child);
 
 		if (child->getAlignment() != GuiAlign::TopLeft)
 			child->setAlignment(child->getAlignment()); //re-align offset due to new parent
@@ -220,6 +231,7 @@ WidgetId MgeWidget::getWidgetId() const noexcept
 
 void MgeWidget::initializeSelf(std::weak_ptr<MgeWidget> self)
 {
+	_ASSERT(!isInitialized());
 	m_selfPtr = self;
 }
 
@@ -234,12 +246,13 @@ namespace mge
 	{
 #ifdef _DEBUG
 		auto count = widgetToClose.use_count();
-		// Attempting to close a widget that still has other references. Release all other shared_ptr copies first and use std::move
-		_ASSERT(count == 2); //correct = 1 as local variable + 1 in parent
+			// Attempting to close a widget that still has other references. Release all other shared_ptr copies first and use std::move
+			_ASSERT(count == 2); //correct = 1 as local variable + 1 in parent
 #endif
 
 		if (!widgetToClose)
-			return false;
+				return false;
+
 		for (auto& child : widgetToClose->editChildren())
 		{
 			_ASSERT(child);

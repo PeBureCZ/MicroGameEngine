@@ -4,6 +4,7 @@
 #include "MgeWidget.h"
 #include "MgeRollMenu.h"
 #include "MgeScreen.h"
+#include "MgeWindow.h"
 
 #include "MlWrapper.h"
 #include "BasicTypes.h"
@@ -55,8 +56,10 @@ void MgeGui::tickWidgets(const std::vector<std::shared_ptr<MgeActor>>& widgets)
 
 void MgeGui::sendLmbEventToGui(const IPoint& clickPos, bool clicked)
 {
+    m_clickEventActive = clicked;
     if (clicked && actualBlockWidget)
     {
+        m_lastGuiMovePos = clickPos;
         if (const auto& button = std::dynamic_pointer_cast<MgeButton>(actualBlockWidget))
 			button->onLmbClickCall();
     }
@@ -92,6 +95,18 @@ void MgeGui::tickScreenChildren(const MgeScreen& screen)
 
     if (actualBlockWidget)
 	{ //if actualBlockWidget is not null, it means cursor is over the widget
+        if (m_clickEventActive)
+        {
+            if (const auto& window = std::dynamic_pointer_cast<MgeWindow>(actualBlockWidget))
+            { //move window
+                const auto& actualCursorPos = ML_wrapper::getGlobalMlWrapper()->getCursorWorldPosition();
+                auto dif = actualCursorPos - m_lastGuiMovePos;
+                window->setAbsolutePosition(window->getAbsolutePosition() + dif);
+                m_lastGuiMovePos = actualCursorPos;
+                window->layout();
+            }
+        }
+
         if (const auto& frame = std::dynamic_pointer_cast<MgeFrame>(actualBlockWidget))
             frame->setUnderMouseCursor(true);
     }

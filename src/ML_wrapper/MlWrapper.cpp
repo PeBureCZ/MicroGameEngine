@@ -193,7 +193,7 @@ namespace ML_wrapper
                 worldView.setCenter(newSize / 2.f);
                 worldView.zoom((float)zoom);
 
-                sendEvent(std::move(resizeWindowEvent{}));
+                sendEvent(std::move(ResizeWindowEvent{}));
             }
         }
 

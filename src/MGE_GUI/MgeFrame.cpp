@@ -4,23 +4,22 @@
 #include "BasicTypes.h"
 #include "MgeDrawable.h"
 #include "MlWrapper.h"
-#include "GraphicDependencies.h"
 #include "Trigger.h"
 #include "MgeText.h"
 
 
-MgeFrame::MgeFrame(const FPoint& newPosition, const ISize& newSize)
+MgeFrame::MgeFrame(const FPoint& newPosition, const ISize& newSize, GraphicItemLayer layer, mgeType::Color_RGBA color)
 	: MgeWidget(newPosition, newSize)
 {
-	const MgeVertices<float> drawable(mgeShape::Rectangle<float>(FPoint(0,0), FSize((float)newSize.width, (float)newSize.height)), mgeType::Color_RGBA(100, 100, 100, 150));
-	MgeDrawable newWidgetVertices(drawable, newPosition.asFloat(), 0.f, GraphicItemLayer::GUI_LAYER);
+	const MgeVertices<float> drawable(mgeShape::Rectangle<float>(FPoint(0,0), FSize((float)newSize.width, (float)newSize.height)), color);
+	MgeDrawable newWidgetVertices(drawable, newPosition.asFloat(), 0.f, layer);
 	frameObject = std::move(newWidgetVertices);
 }
 
-MgeFrame::MgeFrame(const FPoint& newPosition, const TextureId& textureId)
+MgeFrame::MgeFrame(const FPoint& newPosition, const TextureId& textureId, GraphicItemLayer layer)
 	: MgeWidget(newPosition, ISize(1,1))
 {
-	auto newImage = MgeImage(textureId, GraphicItemLayer::GUI_LAYER, newPosition.asFloat());;
+	auto newImage = MgeImage(textureId, layer, newPosition.asFloat());;
 	setSize(newImage.getSize());
 	frameObject = std::move(newImage);
 }
@@ -36,7 +35,9 @@ void MgeFrame::setImage(TextureId textureId)
 
 void MgeFrame::setImage(MgeImage&& image)
 {
-	_ASSERT(image.getLayer() == GraphicItemLayer::GUI_LAYER); //image should be in GUI layer to avoid unrelated issues
+	_ASSERT(image.getLayer() == GraphicItemLayer::GUI_LAYER
+		|| image.getLayer() == GraphicItemLayer::WINDOW_LAYER); //image should be in GUI or WIN layer to avoid unrelated issues
+
 	setSize(image.getSize());
 	frameObject = std::move(image);
 	editCollision().clear();
@@ -93,7 +94,14 @@ const FRAME_OBJECT& MgeFrame::getFrameObject() const noexcept
 
 void MgeFrame::addTextToFrame(const std::string& butText, unsigned int characterSize_pxls, GuiAlign align, const mgeType::Color_RGBA& col)
 {
-	MgeText newText(butText, characterSize_pxls);
+	size_t layer = GraphicItemLayer::GUI_LAYER;
+	if (std::holds_alternative<MgeImage>(frameObject))
+		layer = std::get<MgeImage>(frameObject).getLayer();
+	else if (std::holds_alternative<MgeDrawable>(frameObject))
+		layer = std::get<MgeDrawable>(frameObject).getLayer();
+
+
+	MgeText newText(butText, characterSize_pxls, FPoint(), false, layer);
 	newText.setIsVisible(getIsVisible());
 	newText.setColor(col);
 	newText.setAbsolutePosition(getAlignedPosition(align, newText.getTextSize()));
@@ -202,7 +210,13 @@ void MgeFrame::setBorder(BorderSide sides, unsigned int width_pxls, const mgeTyp
 	m_borderWidth_pxls = width_pxls;
 	m_borderColor = color;
 
-	MgeDrawable borders(GraphicItemLayer::GUI_LAYER);
+	size_t layer = GraphicItemLayer::GUI_LAYER;
+	if (std::holds_alternative<MgeDrawable>(frameObject))
+		layer = std::get<MgeDrawable>(frameObject).getLayer();
+	else if (std::holds_alternative<MgeImage>(frameObject))
+		layer = std::get<MgeImage>(frameObject).getLayer();
+
+	MgeDrawable borders(layer);
 
 	std::vector<MgeVertices<float>> vecVertices;
 	ISize actualSize = getSize();
@@ -406,13 +420,17 @@ IPoint MgeFrame::getAlignedPosition(GuiAlign align, mgeType::Size<int> objectSiz
 
 namespace mge
 {
-	Frame createFrame(const FPoint& newPosition, const ISize& newSize)
+	Frame createFrame(const FPoint& newPosition, const ISize& newSize, GraphicItemLayer layer, mgeType::Color_RGBA color)
 	{
-		return std::make_shared<MgeFrame>(newPosition, newSize);
+		auto newFrame = std::make_shared<MgeFrame>(newPosition, newSize, layer, color);
+		newFrame->initializeSelf(newFrame);
+		return newFrame;
 	}
 
-	Frame mge::createFrame(const FPoint& newPosition, const TextureId& textureId)
+	Frame mge::createFrame(const FPoint& newPosition, const TextureId& textureId, GraphicItemLayer layer)
 	{
-		return std::make_shared<MgeFrame>(newPosition, textureId);
+		auto newFrame = std::make_shared<MgeFrame>(newPosition, textureId, layer);
+		newFrame->initializeSelf(newFrame);
+		return newFrame;
 	}
 }

@@ -1,9 +1,7 @@
 #include "MgeButton.h"
 
-#include "MgeText.h"
-
-MgeButton::MgeButton(const FPoint& newPosition, mgeType::Size<int> newSize)
-	: MgeFrame(newPosition, newSize)
+MgeButton::MgeButton(const FPoint& newPosition, mgeType::Size<int> newSize, GraphicItemLayer layer)
+	: MgeFrame(newPosition, newSize, layer)
 	
 {
 	setColor(defaultColor);
@@ -135,14 +133,18 @@ void MgeButton::setBasicCollision()
 
 namespace mge
 {
-	Button mge::createButton(const FPoint& position, const ISize& size)
+	Button mge::createButton(const FPoint& position, const ISize& size, GraphicItemLayer layer)
 	{
-		return std::make_shared<MgeButton>(position, size);
+		auto newButton = std::make_shared<MgeButton>(position, size, layer);
+		newButton->initializeSelf(newButton);
+		return newButton;
 	}
 
 	Button createButton(const FPoint& position, MgeImage&& image)
 	{
-		return std::make_shared<MgeButton>(position, std::move(image));
+		auto newButton = std::make_shared<MgeButton>(position, std::move(image));
+		newButton->initializeSelf(newButton);
+		return newButton;
 	}
 }
 

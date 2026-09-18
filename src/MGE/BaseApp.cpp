@@ -13,7 +13,8 @@ BaseApp::BaseApp()
     bindEvent<MouseClick>([this](const MouseClick& clickEvent) { processMouseClickEvent(clickEvent); });
     bindEvent<WheelScroll>([this](const WheelScroll& wheelEvent) { processWheelEvent(wheelEvent); });
     bindEvent<TerminateApp>([this](const TerminateApp& wheelEvent) { terminateApplication(); });
-    bindEvent<resizeWindowEvent>([this](const resizeWindowEvent& wheelEvent) { processResizeEvent(); });
+    bindEvent<ResizeWindowEvent>([this](const ResizeWindowEvent& wheelEvent) { processResizeEvent(); });
+    bindEvent<CloseMgeWindowEvent>([this](const CloseMgeWindowEvent& winEvent) { processCloseWindowEvent(winEvent); });
 }
 
 void BaseApp::onAppTick(double deltaTime)
@@ -68,6 +69,14 @@ void BaseApp::processResizeEvent()
     }
 }
 
+void BaseApp::processCloseWindowEvent(const CloseMgeWindowEvent& winEvent)
+{
+    if (actualScreen)
+    {
+        actualScreen->removeChildFromWidget(winEvent.m_widgetId);
+    }
+}
+
 void BaseApp::tickApplication(double deltaTime)
 {
     onAppTick(deltaTime);
@@ -88,7 +97,6 @@ void BaseApp::tickApplication(double deltaTime)
 
     if (actualScreen)
         gui.TickScreen(*actualScreen, deltaTime);
-
 
 	sharedMlWrapper->displayActualFrame(); //draw everything to main window and display it
 

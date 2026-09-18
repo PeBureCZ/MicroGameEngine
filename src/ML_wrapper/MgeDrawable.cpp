@@ -7,6 +7,7 @@
 
 MgeDrawable::MgeDrawable(size_t layer)
 {
+    MAIN_THREAD_GUARD;
     MlVerticesObject vertices;
     vertices.m_batch.setPrimitiveType(sf::PrimitiveType::Triangles);
     auto newDrawable = std::make_shared<MgeLayerObject>(MgeLayerObject{ mgeCore::getDefaultZPosition(), layer, std::move(vertices)});
@@ -16,6 +17,7 @@ MgeDrawable::MgeDrawable(size_t layer)
 
 MgeDrawable::MgeDrawable(const MgeVertices<float>& drawable, FPoint absolutePositionOffset, float rotation, size_t layer)
 {
+    MAIN_THREAD_GUARD;
     sf::VertexArray convertedShapes;
     ShapeInterpreter::convertRectangleToVertices(drawable, convertedShapes);
     frameObject = drawable;
@@ -30,6 +32,7 @@ MgeDrawable::MgeDrawable(const MgeVertices<float>& drawable, FPoint absolutePosi
 
 MgeDrawable::MgeDrawable(MgeDrawable&& other) noexcept
 {
+    MAIN_THREAD_GUARD;
     removeVertices();
     if (auto drawable = other.m_vertices.lock())
     {
@@ -47,6 +50,7 @@ MgeDrawable::MgeDrawable(MgeDrawable&& other) noexcept
 
 MgeDrawable& MgeDrawable::operator= (MgeDrawable&& other) noexcept
 {
+    MAIN_THREAD_GUARD;
     removeVertices();
     if (auto drawable = other.m_vertices.lock())
     {
@@ -65,6 +69,7 @@ MgeDrawable& MgeDrawable::operator= (MgeDrawable&& other) noexcept
 
 void MgeDrawable::addObjects(const MgeVertices<float> content)
 {
+    MAIN_THREAD_GUARD;
     _ASSERT(!m_vertices.expired());
     if (auto vertices = m_vertices.lock())
     {
@@ -104,8 +109,8 @@ void MgeDrawable::addObjects(std::vector <MgeVertices<float>> content)
 
 void MgeDrawable::addObjects(sf::VertexArray content)
 {
-    content.setPrimitiveType(sf::PrimitiveType::Triangles);
     MAIN_THREAD_GUARD;
+    content.setPrimitiveType(sf::PrimitiveType::Triangles);
     if (m_vertices.expired())
     {
         MlVerticesObject vertices;
@@ -131,6 +136,7 @@ VerticesId MgeDrawable::getUniqueId() const noexcept
 
 void MgeDrawable::setRotation(float newRotation) noexcept
 {
+    MAIN_THREAD_GUARD;
     _ASSERT(!m_vertices.expired());
     if (auto vertices = m_vertices.lock())
     {
@@ -148,29 +154,34 @@ void MgeDrawable::setRotation(float newRotation) noexcept
 
 float MgeDrawable::getRotation() const noexcept
 {
+    MAIN_THREAD_GUARD;
     _ASSERT(!m_vertices.expired());
     return m_rotation;
 }
 
 void MgeDrawable::setPosition(const FPoint& newPosition)
 {
+    MAIN_THREAD_GUARD;
     _ASSERT(!m_vertices.expired());
     moveAbsolutePosition(newPosition - m_absolutePositionOffset);
 }
 
 FPoint MgeDrawable::getPosition() const noexcept
 {
+    MAIN_THREAD_GUARD;
     _ASSERT(!m_vertices.expired());
     return m_absolutePositionOffset;
 }
 
 const std::shared_ptr<MgeLayerObject> MgeDrawable::getVertices() const noexcept
 {
+    MAIN_THREAD_GUARD;
     return m_vertices.lock();
 }
 
 void MgeDrawable::setColor(const mgeType::Color_RGBA& newColor)
 {
+    MAIN_THREAD_GUARD;
     m_color = newColor;
     _ASSERT(!m_vertices.expired());
     if (!m_vertices.expired())
@@ -182,17 +193,20 @@ void MgeDrawable::setColor(const mgeType::Color_RGBA& newColor)
 
 mgeType::Color_RGBA MgeDrawable::getColor() const noexcept
 {
+    MAIN_THREAD_GUARD;
     return m_color;
 }
 
 void MgeDrawable::setIsVisible(bool visible) noexcept
 {
+    MAIN_THREAD_GUARD;
     m_isVisible = visible;
     setVerticesColor();
 }
 
 void MgeDrawable::moveAbsolutePosition(const FPoint& newPos)
 {
+    MAIN_THREAD_GUARD;
     _ASSERT(!m_vertices.expired());
     if (auto vertices = m_vertices.lock())
     {
@@ -211,6 +225,7 @@ void MgeDrawable::moveAbsolutePosition(const FPoint& newPos)
 
 void MgeDrawable::rescale(float scaleX, float scaleY) noexcept
 {
+    MAIN_THREAD_GUARD;
     _ASSERT(!m_vertices.expired());
     if (auto vertices = m_vertices.lock())
     {
@@ -237,6 +252,7 @@ void MgeDrawable::rescale(float scaleX, float scaleY) noexcept
 
 void MgeDrawable::setVerticesColor()
 {
+    MAIN_THREAD_GUARD;
     _ASSERT(!m_vertices.expired());
     if (auto vertices = m_vertices.lock())
     {
@@ -259,6 +275,7 @@ void MgeDrawable::setVerticesColor()
 
 void MgeDrawable::removeVertices() noexcept
 {
+    MAIN_THREAD_GUARD;
     try
     {
         if (auto vertices = m_vertices.lock())
@@ -276,9 +293,10 @@ void MgeDrawable::removeVertices() noexcept
 
 size_t MgeDrawable::getLayer() const noexcept
 {
+    MAIN_THREAD_GUARD;
     _ASSERT(!m_vertices.expired());
-    if (auto sprite = m_vertices.lock())
-        sprite->m_layer;
+    if (auto vertices = m_vertices.lock())
+        return vertices->m_layer;
     return 0;
 }
 
@@ -292,6 +310,7 @@ void MgeDrawable::setLayer(size_t newLayer)
 
 void MgeDrawable::setZPosition(const int64_t newZPosition) noexcept
 {
+    MAIN_THREAD_GUARD;
     _ASSERT(!m_vertices.expired());
     if (auto vertices = m_vertices.lock())
     {
@@ -302,6 +321,7 @@ void MgeDrawable::setZPosition(const int64_t newZPosition) noexcept
 
 int64_t MgeDrawable::getZPosition() const noexcept
 {
+    MAIN_THREAD_GUARD;
     _ASSERT(!m_vertices.expired());
     if (auto vertices = m_vertices.lock())
         return vertices->zPosition;
@@ -310,6 +330,7 @@ int64_t MgeDrawable::getZPosition() const noexcept
 
 MgeDrawable::~MgeDrawable()
 {
+    MAIN_THREAD_GUARD;
     removeVertices();
 }
 

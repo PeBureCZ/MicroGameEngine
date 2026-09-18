@@ -161,6 +161,7 @@
     <ClInclude Include="..\include\MGE_GUI\MgeSizer.h" />
     <ClInclude Include="..\include\MGE_GUI\MgeTextFrame.h" />
     <ClInclude Include="..\include\MGE_GUI\MgeWidget.h" />
+    <ClInclude Include="..\include\MGE_GUI\MgeWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\MGE_GUI\MgeScreen.cpp" />
@@ -170,6 +171,7 @@
     <ClCompile Include="..\src\MGE_GUI\MgeSizer.cpp" />
     <ClCompile Include="..\src\MGE_GUI\MgeTextFrame.cpp" />
     <ClCompile Include="..\src\MGE_GUI\MgeWidget.cpp" />
+    <ClCompile Include="..\src\MGE_GUI\MgeWindow.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

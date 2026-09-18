@@ -280,7 +280,9 @@ namespace mge
 {
 	Sizer mge::createSizer(SizerType type)
 	{
-		return std::make_shared<MgeSizer>(type);
+		auto newSizer = std::make_shared<MgeSizer>(type);
+		newSizer->initializeSelf(newSizer);
+		return newSizer;
 	}
 }
 

@@ -33,6 +33,19 @@ void MgeDefaultComponent::setParent(const std::shared_ptr<MgeActor>& newParent) 
 	return parent.lock();
 }
 
+const std::shared_ptr<MgeActor> MgeDefaultComponent::getMasterParent() const noexcept
+{
+	if (parent.expired())
+		return parent.lock();
+	else
+	{
+		auto p = parent.lock();
+		if (p->getParent())
+			return parent.lock()->getMasterParent();
+		return parent.lock();
+	}
+}
+
 [[nodiscard]] bool MgeDefaultComponent::removeChild(std::shared_ptr<MgeActor>& child)
 {
 	for (auto it = m_children.begin(); it != m_children.end(); ++it)
@@ -186,6 +199,11 @@ void MgeActor::setParent(const std::shared_ptr<MgeActor>& newParent) noexcept
 [[nodiscard]] const std::shared_ptr<MgeActor> MgeActor::getParent() const noexcept
 {
 	return getMgeDefaultComponent().getParent();
+}
+
+[[nodiscard]] const std::shared_ptr<MgeActor> MgeActor::getMasterParent() const noexcept
+{
+	return getMgeDefaultComponent().getMasterParent();
 }
 
 [[nodiscard]] const std::vector<std::shared_ptr<MgeActor>>& MgeActor::getChildren() const noexcept

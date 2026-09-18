@@ -71,5 +71,6 @@ private:
 	void processWheelEvent(const WheelScroll& wheelEvent);
 	void processTerminationEvent(const AppTermination& exitEvent);
 	void processResizeEvent();
+	void processCloseWindowEvent(const CloseMgeWindowEvent& winEvent);
 	void tickApplication(double deltaTime);
 };

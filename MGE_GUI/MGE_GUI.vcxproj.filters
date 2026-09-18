@@ -25,6 +25,9 @@
     <ClInclude Include="..\include\MGE_GUI\MgeSizer.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\MGE_GUI\MgeWindow.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -54,6 +57,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\MGE_GUI\MgeSizer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MGE_GUI\MgeWindow.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

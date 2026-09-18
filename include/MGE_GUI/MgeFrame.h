@@ -12,9 +12,11 @@
 #include "MgeText.h"
 #include "MgeDrawable.h"
 #include "GuiDependencies.h"
+#include "GraphicDependencies.h"
 
 constexpr mgeType::Color_RGBA DEFAULT_TEXT_COLOR = mgeType::Color_RGBA(0, 0, 0, 255);
 constexpr mgeType::Color_RGBA MOUSE_OVER_TEXT_COLOR = mgeType::Color_RGBA(0, 0, 0, 255);
+constexpr mgeType::Color_RGBA DEFAULT_FRAME_COLOR = mgeType::Color_RGBA(200, 200, 200, 255);
 
 class MgeButton;
 using Callback_deprecated = std::function<void()>;
@@ -48,15 +50,17 @@ class MgeFrame;
 namespace mge
 {
 	using Frame = std::shared_ptr<MgeFrame>;
-	Frame createFrame(const FPoint& newPosition = FPoint(), const ISize& newSize = ISize(1, 1));
-	Frame createFrame(const FPoint& newPosition, const TextureId& textureId);
+	Frame createFrame(const FPoint& newPosition = FPoint(), const ISize& newSize = ISize(1, 1),
+		GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER, mgeType::Color_RGBA color = DEFAULT_FRAME_COLOR);
+	Frame createFrame(const FPoint& newPosition, const TextureId& textureId, GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER);
 }
 
 class MgeFrame : public MgeWidget
 {
 public:
-	MgeFrame(const FPoint& newPosition, const ISize& newSize);
-	MgeFrame(const FPoint& newPosition, const TextureId& textureId);
+	MgeFrame(const FPoint& newPosition, const ISize& newSize, GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER,
+		mgeType::Color_RGBA color = DEFAULT_FRAME_COLOR);
+	MgeFrame(const FPoint& newPosition, const TextureId& textureId, GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER);
 
 	void setImage(TextureId textureId);
 	void setImage(MgeImage&& image);

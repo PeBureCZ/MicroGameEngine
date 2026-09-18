@@ -33,6 +33,9 @@ public:
 	[[nodiscard]] std::shared_ptr<MgeActor> editParent() noexcept;
 	[[nodiscard]] const std::shared_ptr<MgeActor> getParent() const noexcept;
 
+	//get the last parent in the queue of parents
+	[[nodiscard]] const std::shared_ptr<MgeActor> getMasterParent() const noexcept;
+
 	[[nodiscard]] bool removeChild(std::shared_ptr<MgeActor>& child);
 	[[nodiscard]] bool removeChild(MgeObjectId childId);
 
@@ -93,6 +96,10 @@ public:
 
 	void setParent(const std::shared_ptr<MgeActor>& newParent = std::shared_ptr<MgeActor>()) noexcept;
 	[[nodiscard]] const std::shared_ptr<MgeActor> getParent() const noexcept;
+
+	//get the last parent in the queue of parents
+	[[nodiscard]] const std::shared_ptr<MgeActor> getMasterParent() const noexcept;
+
 	[[nodiscard]] const std::vector<std::shared_ptr<MgeActor>>& getChildren() const noexcept;
 	[[nodiscard]] std::vector<std::shared_ptr<MgeActor>>& editChildren() noexcept;
 	void addChild(const std::shared_ptr<MgeActor>& child) noexcept;

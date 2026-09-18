@@ -3,9 +3,8 @@
 #include <memory>
 
 #include "MgeFrame.h"
-#include "GraphicDependencies.h"
 
-constexpr mgeType::Color_RGBA DEFAULT_FRAME_COLOR = mgeType::Color_RGBA(160, 160, 160, 255);
+constexpr mgeType::Color_RGBA DEFAULT_BUTTON_COLOR = mgeType::Color_RGBA(160, 160, 160, 255);
 constexpr mgeType::Color_RGBA MOUSE_OVER_FRAME_COLOR = mgeType::Color_RGBA(220, 220, 220, 255);
 constexpr mgeType::Color_RGBA DEFAULT_COLOR = mgeType::Color_RGBA(140, 140, 140, 255);
 
@@ -14,14 +13,14 @@ class MgeButton;
 namespace mge
 {
 	using Button = std::shared_ptr<MgeButton>;
-	Button createButton(const FPoint& position = FPoint(), const ISize& size = ISize(1, 1));
+	Button createButton(const FPoint& position = FPoint(), const ISize& size = ISize(1, 1), GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER);
 	Button createButton(const FPoint& position, MgeImage&& image);
 }
 
 class MgeButton : public MgeFrame
 {
 public:
-	MgeButton(const FPoint& newPosition, mgeType::Size<int> newSize);
+	MgeButton(const FPoint& newPosition, mgeType::Size<int> newSize, GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER);
 	MgeButton
 		(
 			const FPoint& newPosition,
@@ -39,7 +38,7 @@ public:
 	MgeButton& operator= (MgeButton&&) = default;
 	~MgeButton() = default;
 
-	void setDefaultButtonColor(const mgeType::Color_RGBA& newColor = DEFAULT_FRAME_COLOR);
+	void setDefaultButtonColor(const mgeType::Color_RGBA& newColor = DEFAULT_BUTTON_COLOR);
 	void setMouseOverButtonColor(const mgeType::Color_RGBA& newColor = MOUSE_OVER_FRAME_COLOR);
 	void setIsVisible(bool visible) noexcept override;
 
@@ -56,7 +55,7 @@ protected:
 	virtual void onCursorLeaveCall() noexcept override;
 
 private:
-	mgeType::Color_RGBA defaultColor = DEFAULT_FRAME_COLOR;
+	mgeType::Color_RGBA defaultColor = DEFAULT_BUTTON_COLOR;
 	mgeType::Color_RGBA mouseOverColor = MOUSE_OVER_FRAME_COLOR;
 	mgeType::Color_RGBA defaultTextColor = DEFAULT_TEXT_COLOR;
 	mgeType::Color_RGBA mouseOverTextColor = MOUSE_OVER_TEXT_COLOR;

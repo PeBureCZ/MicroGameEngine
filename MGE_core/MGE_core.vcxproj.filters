@@ -19,13 +19,7 @@
     <ClInclude Include="..\include\MGE_core\MgeActor.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\MGE_core\MgeComponents.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\MGE_core\MgeObject.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MGE_core\Transform.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\MGE_core\Trigger.h">
@@ -34,6 +28,15 @@
     <ClInclude Include="..\include\MGE_core\GlobalEvents.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\MGE_core\MgeDefaultComponent.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MGE_core\MgeComponents.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MGE_core\Transform.h">
+      <Filter>components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -41,6 +44,9 @@
     </Filter>
     <Filter Include="src">
       <UniqueIdentifier>{24ac3401-c05a-4997-935b-daf190bdcb81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="components">
+      <UniqueIdentifier>{dc74e1ac-b320-4128-9386-a2118f716fe7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -57,6 +63,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\MGE_core\Trigger.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MGE_core\MgeDefaultComponent.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

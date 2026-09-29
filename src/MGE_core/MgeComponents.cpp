@@ -10,11 +10,10 @@ void MgeBasicComponent::setName(std::string_view name) noexcept
 	return m_name;
 }
 
-[[nodiscard]] ComponentType MgeBasicComponent::getType() const noexcept
+[[nodiscard]] uint64_t MgeBasicComponent::getType() const noexcept
 {
 	return m_type;
 }
-
 
 [[nodiscard]] const FPoint& MgeTransform::getPosition() const noexcept
 {

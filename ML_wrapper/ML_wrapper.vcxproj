@@ -157,6 +157,7 @@
     <ClInclude Include="..\include\ML_wrapper\GraphicDependencies.h" />
     <ClInclude Include="..\include\ML_wrapper\layerDefinition.h" />
     <ClInclude Include="..\include\ML_wrapper\MgeDrawable.h" />
+    <ClInclude Include="..\include\ML_wrapper\MgeGraphicComponent.h" />
     <ClInclude Include="..\include\ML_wrapper\MgeImage.h" />
     <ClInclude Include="..\include\ML_wrapper\MgeText.h" />
     <ClInclude Include="..\include\ML_wrapper\MlCurve.h" />
@@ -171,6 +172,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\ML_wrapper\MgeDrawable.cpp" />
+    <ClCompile Include="..\src\ML_wrapper\MgeGraphicComponent.cpp" />
     <ClCompile Include="..\src\ML_wrapper\MgeImage.cpp" />
     <ClCompile Include="..\src\ML_wrapper\MgeText.cpp" />
     <ClCompile Include="..\src\ML_wrapper\MlEvent.cpp" />

@@ -11,8 +11,8 @@
 #include "MgeImage.h"
 #include "MgeText.h"
 #include "MgeDrawable.h"
-#include "GuiDependencies.h"
 #include "GraphicDependencies.h"
+#include "MgeGraphicComponent.h"
 
 constexpr mgeType::Color_RGBA DEFAULT_TEXT_COLOR = mgeType::Color_RGBA(0, 0, 0, 255);
 constexpr mgeType::Color_RGBA MOUSE_OVER_TEXT_COLOR = mgeType::Color_RGBA(0, 0, 0, 255);
@@ -21,11 +21,16 @@ constexpr mgeType::Color_RGBA DEFAULT_FRAME_COLOR = mgeType::Color_RGBA(200, 200
 class MgeButton;
 using Callback_deprecated = std::function<void()>;
 
-template<typename T>
-class Trigger;
-
 using UNDEFINED_FRAME_OBJECT = bool;
 using FRAME_OBJECT = std::variant<UNDEFINED_FRAME_OBJECT, MgeImage, MgeDrawable>;
+
+enum GraphicType : size_t
+{
+	BASIC_GRAPHIC_INDEX = 0,
+};
+
+template<typename T>
+class Trigger;
 
 enum class BorderSide : uint8_t
 {
@@ -71,10 +76,6 @@ public:
 
 	void setColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);
 	void setColor(const mgeType::Color_RGBA& newColor);
-	[[nodiscard]] const FRAME_OBJECT& getFrameObject() const noexcept;
-	void addTextToFrame(const std::string& butText, unsigned int characterSize_pxls = 30, GuiAlign align = GuiAlign::MiddleCenter,
-		const mgeType::Color_RGBA& col = DEFAULT_TEXT_COLOR);
-	const std::deque<std::pair<GuiAlign, MgeText>>& getTextsFromFrame() const noexcept;
 
 	void setIsVisible(bool visible) noexcept override;
 
@@ -90,32 +91,34 @@ public:
 	//function is called automatically from GUI
 	void setUnderMouseCursor(bool isUnderMouse);
 
+	MGE_GRAPHIC getGraphicComponent();
+
 	void layout() noexcept override;
 
 	[[nodiscard]] bool isUnderCursor() const noexcept;
 
 protected:
-	std::deque<std::pair<GuiAlign, MgeText>> frameTexts;
-
 	//to call specific defined function (eg. from another widget)
 	virtual void onCursorEnterCall() noexcept;
 	//to call specific defined function (eg. from another widget)
 	virtual void onCursorLeaveCall() noexcept;
 	bool isUnderMouseCursor = false;
 
+	IPoint getAlignedPosition(GuiAlign align, mgeType::Size<int> objectSize);
+
 private:
 	std::vector<Trigger<int>> collisions;
-	FRAME_OBJECT frameObject = false;
-	FRAME_OBJECT borderObject = false;
 
 	std::function<void()> onCursorEnter = nullptr;
 	std::function<void()> onCursorLeave = nullptr;
+
+	MgeDrawable borderObject;
 
 	BorderSide m_borderFlags = BorderSide::None;
 	unsigned int m_borderWidth_pxls = 0;
 	mgeType::Color_RGBA m_borderColor;
 
-	IPoint getAlignedPosition(GuiAlign align, mgeType::Size<int> objectSize);
+	void setGraphicObject(const MGE_GRAPHIC_PTR& object);
 };
 
 

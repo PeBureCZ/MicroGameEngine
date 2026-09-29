@@ -28,6 +28,9 @@
     <ClInclude Include="..\include\ML_wrapper\ShapeInterpreter.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\ML_wrapper\MgeGraphicComponent.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -54,6 +57,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\ML_wrapper\ShapeInterpreter.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ML_wrapper\MgeGraphicComponent.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

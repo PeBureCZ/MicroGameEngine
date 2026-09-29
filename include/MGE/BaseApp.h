@@ -10,7 +10,6 @@
 
 #include "MgeGui.h"
 #include "GlobalEvents.h"
-#include "GuiDependencies.h"
 
 namespace ML_wrapper
 {

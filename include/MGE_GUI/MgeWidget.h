@@ -8,7 +8,7 @@
 #include "BasicTypes.h"
 #include "BasicShapes.h"
 #include "MgeDrawable.h"
-#include "GuiDependencies.h"
+#include "GraphicDependencies.h"
 
 using WidgetId = uintptr_t;
 

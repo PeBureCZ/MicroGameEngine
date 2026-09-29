@@ -10,9 +10,6 @@
     <ClInclude Include="..\include\MGE_GUI\MgeFrame.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\MGE_GUI\GuiDependencies.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\MGE_GUI\MgeRollMenu.h">
       <Filter>include</Filter>
     </ClInclude>

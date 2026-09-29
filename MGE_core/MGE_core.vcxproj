@@ -27,6 +27,7 @@
     <ClInclude Include="..\include\MGE_core\GlobalFunctions.h" />
     <ClInclude Include="..\include\MGE_core\MgeActor.h" />
     <ClInclude Include="..\include\MGE_core\MgeComponents.h" />
+    <ClInclude Include="..\include\MGE_core\MgeDefaultComponent.h" />
     <ClInclude Include="..\include\MGE_core\MgeObject.h" />
     <ClInclude Include="..\include\MGE_core\Transform.h" />
     <ClInclude Include="..\include\MGE_core\Trigger.h" />
@@ -35,6 +36,7 @@
     <ClCompile Include="..\src\MGE_core\GlobalFunctions.cpp" />
     <ClCompile Include="..\src\MGE_core\MgeActor.cpp" />
     <ClCompile Include="..\src\MGE_core\MgeComponents.cpp" />
+    <ClCompile Include="..\src\MGE_core\MgeDefaultComponent.cpp" />
     <ClCompile Include="..\src\MGE_core\MgeObject.cpp" />
     <ClCompile Include="..\src\MGE_core\Trigger.cpp" />
   </ItemGroup>

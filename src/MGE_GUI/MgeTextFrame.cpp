@@ -2,19 +2,25 @@
 
 #include "MlWrapper.h"
 
-#include "GuiDependencies.h"
+#include "GraphicDependencies.h"
 
-MgeTextFrame::MgeTextFrame(const FPoint& newPosition, mgeType::Size<int> newSize)
+MgeTextFrame::MgeTextFrame(const FPoint& newPosition, mgeType::Size<int> newSize, std::string text, unsigned int characterSize_pxls,
+	GraphicItemLayer layer, mgeType::Color_RGBA textColor, mgeType::Color_RGBA frameColor)
 	: MgeFrame(newPosition, newSize)
 {
-
+	setColor(frameColor);
+	if (!text.empty())
+	{
+		MgeText newText(std::move(text), characterSize_pxls, FPoint(), false, layer);
+		frameTexts.push_back(std::move(newText));
+	}
 }
 
 void MgeTextFrame::addTextLine(std::string text, unsigned int textPxlsSize, mgeType::Color_RGBA color, bool bold) noexcept
 {
 	MgeText newText(std::move(text), textPxlsSize, bold);
 	newText.setColor(std::move(color));
-	frameTexts.emplace_back(std::make_pair(GuiAlign::TopLeft, std::move(newText)));
+	frameTexts.push_back(std::move(newText));
 	redrawTextFrame();
 }
 
@@ -51,8 +57,27 @@ void MgeTextFrame::removeLastLine() noexcept
 		frameTexts.pop_back();
 }
 
+void MgeTextFrame::layout() noexcept
+{
+	if (frameTexts.size() > 0)
+	{
+		auto differencePos = getAbsolutePosition() - lastLayoutAbsolutePosition;
+		const auto sizeChanged = (lastLayoutSize != getSize());
+
+		for (auto& text : frameTexts)
+		{
+			if (sizeChanged)
+				text.setAbsolutePosition(getAlignedPosition(usedAlign, text.getTextSize()));
+			else
+				text.setAbsolutePosition(text.getAbsolutePosition() + differencePos.asInt());
+		}
+	}
+	MgeFrame::layout();
+}
+
 void MgeTextFrame::setTextsAlign(GuiAlign align)
 {
+	redrawTextFrame();
 	usedAlign = align;
 }
 
@@ -60,7 +85,7 @@ size_t MgeTextFrame::getAllTextsHeight() noexcept
 {
 	size_t allTextHeight_pxls = 0;
 	for (const auto& text : frameTexts)
-		allTextHeight_pxls += (size_t)text.second.getTextSize().height + linePadding_pxls;
+		allTextHeight_pxls += (size_t)text.getTextSize().height + linePadding_pxls;
 	return allTextHeight_pxls;
 }
 
@@ -95,8 +120,8 @@ void MgeTextFrame::redrawTextFrame() noexcept
 
 		for (auto& text : frameTexts)
 		{
-			text.second.setAbsolutePosition(actualAbsolutePos_pxls);
-			actualAbsolutePos_pxls.y += linePadding_pxls + text.second.getTextSize().height;
+			text.setAbsolutePosition(actualAbsolutePos_pxls);
+			actualAbsolutePos_pxls.y += linePadding_pxls + text.getTextSize().height;
 		}
 	}
 #ifdef _DEBUG
@@ -108,5 +133,16 @@ void MgeTextFrame::redrawTextFrame() noexcept
 	catch (...)
 	{
 		_ASSERT(false);
+	}
+}
+
+namespace mge
+{
+	TextFrame mge::createTextFrame(const FPoint& position, mgeType::Size<int> size, std::string text, unsigned int characterSize_pxls,
+		GraphicItemLayer layer, mgeType::Color_RGBA textColor, mgeType::Color_RGBA frameColor)
+	{
+		auto newTextFrame = std::make_shared<MgeTextFrame>(position, size, text, characterSize_pxls, layer, textColor, frameColor);
+		newTextFrame->initializeSelf(newTextFrame);
+		return newTextFrame;
 	}
 }

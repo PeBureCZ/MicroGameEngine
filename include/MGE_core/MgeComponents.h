@@ -4,8 +4,9 @@
 #include <string_view>
 #include <vector>
 #include "Transform.h"
+#include <memory>
 
-enum ComponentType : uint64_t
+enum MgePredefinedComponents : uint64_t
 {
 	UNDEFINED = 0,
 	MGE_DEFAULT, //parent system
@@ -23,10 +24,13 @@ enum ComponentType : uint64_t
 	//...
 };
 
+class MgeBasicComponent;
+using MGE_COMPONENT = std::shared_ptr<MgeBasicComponent>;
+
 class MgeBasicComponent
 {
 public:
-	MgeBasicComponent(ComponentType type = ComponentType::UNDEFINED, std::string_view name = "")
+	MgeBasicComponent(uint64_t type = MgePredefinedComponents::UNDEFINED, std::string_view name = "")
 		: m_name(name), m_type(type)
 	{
 	}
@@ -40,17 +44,17 @@ public:
 	MgeBasicComponent& operator=(MgeBasicComponent&&) = default;
 	virtual ~MgeBasicComponent() = default;
 
-	[[nodiscard]] ComponentType getType() const noexcept;
+	[[nodiscard]] uint64_t getType() const noexcept;
 
 private:
 	std::string m_name;
-	ComponentType m_type = ComponentType::UNDEFINED;
+	uint64_t m_type = MgePredefinedComponents::UNDEFINED;
 };
 
 class MgeTransform : public MgeBasicComponent
 {
 public:
-	MgeTransform(ComponentType type = ComponentType::TRANSFORM, std::string_view name = "") : MgeBasicComponent(type, name)
+	MgeTransform(uint64_t type = MgePredefinedComponents::TRANSFORM, std::string_view name = "") : MgeBasicComponent(type, name)
 	{
 
 	}

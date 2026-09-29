@@ -8,12 +8,14 @@
 #include "MgeText.h"
 
 
+
 MgeFrame::MgeFrame(const FPoint& newPosition, const ISize& newSize, GraphicItemLayer layer, mgeType::Color_RGBA color)
 	: MgeWidget(newPosition, newSize)
 {
 	const MgeVertices<float> drawable(mgeShape::Rectangle<float>(FPoint(0,0), FSize((float)newSize.width, (float)newSize.height)), color);
 	MgeDrawable newWidgetVertices(drawable, newPosition.asFloat(), 0.f, layer);
-	frameObject = std::move(newWidgetVertices);
+	std::shared_ptr<MgeGraphicComponent> graphic = std::make_shared<MgeGraphicComponent>(std::move(newWidgetVertices));
+	addComponent(std::move(graphic));
 }
 
 MgeFrame::MgeFrame(const FPoint& newPosition, const TextureId& textureId, GraphicItemLayer layer)
@@ -21,14 +23,15 @@ MgeFrame::MgeFrame(const FPoint& newPosition, const TextureId& textureId, Graphi
 {
 	auto newImage = MgeImage(textureId, layer, newPosition.asFloat());;
 	setSize(newImage.getSize());
-	frameObject = std::move(newImage);
+	std::shared_ptr<MgeGraphicComponent> graphic = std::make_shared<MgeGraphicComponent>(std::move(newImage));
+	addComponent(std::move(graphic));
 }
 
 void MgeFrame::setImage(TextureId textureId)
 {
 	auto image = MgeImage(std::move(textureId), GraphicItemLayer::GUI_LAYER, getAbsolutePosition().asFloat());
 	setSize(image.getSize());
-	frameObject = std::move(image);
+	setGraphicObject(std::move(image));
 	editCollision().clear();
 	editCollision().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition().asInt(), getSize())));
 }
@@ -39,14 +42,14 @@ void MgeFrame::setImage(MgeImage&& image)
 		|| image.getLayer() == GraphicItemLayer::WINDOW_LAYER); //image should be in GUI or WIN layer to avoid unrelated issues
 
 	setSize(image.getSize());
-	frameObject = std::move(image);
+	setGraphicObject(std::move(image));
 	editCollision().clear();
 	editCollision().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition().asInt(), getSize())));
 }
 
 void MgeFrame::setVertices(MgeDrawable&& newVertices) noexcept
 {
-	frameObject = std::move(newVertices);
+	setGraphicObject(std::move(newVertices));
 }
 
 std::vector<Trigger<int>>& MgeFrame::editCollision() noexcept
@@ -73,72 +76,20 @@ void MgeFrame::setColor(unsigned char r, unsigned char g, unsigned char b, unsig
 
 void MgeFrame::setColor(const mgeType::Color_RGBA& newColor)
 {
-	if (std::holds_alternative<MgeDrawable>(frameObject))
-	{
-		auto& drawableObject = std::get<MgeDrawable>(frameObject);
-		drawableObject.setColor(newColor);
-	}
-	else if (std::holds_alternative<MgeImage>(frameObject))
-	{
-		auto& img = std::get<MgeImage>(frameObject);
-		img.setColor(newColor);
-	}
+	if (auto graphicComponent = getGraphicComponent())
+		graphicComponent->setColor(newColor, BASIC_GRAPHIC_INDEX);
 	else
-		{ _ASSERT(false); } //unhandled
-}
-
-const FRAME_OBJECT& MgeFrame::getFrameObject() const noexcept
-{
-	return frameObject;
-}
-
-void MgeFrame::addTextToFrame(const std::string& butText, unsigned int characterSize_pxls, GuiAlign align, const mgeType::Color_RGBA& col)
-{
-	size_t layer = GraphicItemLayer::GUI_LAYER;
-	if (std::holds_alternative<MgeImage>(frameObject))
-		layer = std::get<MgeImage>(frameObject).getLayer();
-	else if (std::holds_alternative<MgeDrawable>(frameObject))
-		layer = std::get<MgeDrawable>(frameObject).getLayer();
-
-
-	MgeText newText(butText, characterSize_pxls, FPoint(), false, layer);
-	newText.setIsVisible(getIsVisible());
-	newText.setColor(col);
-	newText.setAbsolutePosition(getAlignedPosition(align, newText.getTextSize()));
-	frameTexts.push_back(std::move(std::make_pair(align, std::move(newText))));
-}
-
-const std::deque<std::pair<GuiAlign, MgeText>>& MgeFrame::getTextsFromFrame() const noexcept
-{
-	return frameTexts;
+	{
+		_ASSERT(false); //should not happened!
+	}
 }
 
 void MgeFrame::setIsVisible(bool visible) noexcept
 {
 	MgeWidget::setIsVisible(visible);
 
-	for (auto& text : frameTexts)
-		text.second.setIsVisible(visible);
-
-	if (std::holds_alternative<MgeDrawable>(frameObject))
-	{
-		auto& obj = std::get<MgeDrawable>(frameObject);
-		obj.setIsVisible(visible);
-
-	}
-	else if (std::holds_alternative<MgeImage>(frameObject))
-	{
-		auto& img = std::get<MgeImage>(frameObject);
-		img.setVisible(visible);
-	}
-
-#ifdef _DEBUG
-	else if (std::holds_alternative<UNDEFINED_FRAME_OBJECT>(frameObject))
-	{
-	} //nothing to draw
-	else
-		_ASSERT(false); //unhandled
-#endif // _DEBUG
+	if (auto graphic = getGraphicComponent())
+		graphic->setIsVisible(visible);
 
 	for (auto& child : editChildren())
 	{
@@ -150,20 +101,8 @@ void MgeFrame::setIsVisible(bool visible) noexcept
 void MgeFrame::setRelativeRotation(float newRotation)
 {
 	auto difRotation = newRotation - getRelativeRotation();
-	if (std::holds_alternative<MgeDrawable>(frameObject))
-	{
-		auto& obj = std::get<MgeDrawable>(frameObject);
-		obj.setRotation(newRotation);
-	}
-	else if (std::holds_alternative<MgeImage>(frameObject))
-	{
-		auto& obj = std::get<MgeImage>(frameObject);
-		obj.setRotation(newRotation);
-	}
-	else
-	{ 
-		_ASSERT(false); //unhandled variant
-	} 
+	if (auto graphic = getGraphicComponent())
+		graphic->setRotation(newRotation, BASIC_GRAPHIC_INDEX);
 
 	for (auto& col : collisions)
 		col.setRotation(col.getRotation() + difRotation);
@@ -171,36 +110,15 @@ void MgeFrame::setRelativeRotation(float newRotation)
 
 float MgeFrame::getRelativeRotation()
 {
-	if (std::holds_alternative<MgeDrawable>(frameObject))
-	{
-		auto& obj = std::get<MgeDrawable>(frameObject);
-		return obj.getRotation();
-	}
-	else if (std::holds_alternative<MgeImage>(frameObject))
-	{
-		auto& obj = std::get<MgeImage>(frameObject);
-		return obj.getRotation();
-	}
-	else
-	{
-		_ASSERT(false); //unhandled variant
-	}
+	if (auto graphic = getGraphicComponent())
+		return graphic->getRotation(BASIC_GRAPHIC_INDEX).value_or(0.f);
 	return {0.f};
 }
 
 void MgeFrame::setOrigin(IPoint newOrigin)
 {
-	if (std::holds_alternative<MgeDrawable>(frameObject))
-	{
-		_ASSERT(false); //not yet
-	}
-	else if (std::holds_alternative<MgeImage>(frameObject))
-	{
-		auto& img = std::get<MgeImage>(frameObject);
-		img.setOrigin(newOrigin.asFloat());
-	}
-	else
-		_ASSERT(false); //unhandled
+	if (auto graphic = getGraphicComponent())
+		graphic->setOrigin(newOrigin.asFloat(), BASIC_GRAPHIC_INDEX);
 }
 
 void MgeFrame::setBorder(BorderSide sides, unsigned int width_pxls, const mgeType::Color_RGBA& color)
@@ -211,10 +129,8 @@ void MgeFrame::setBorder(BorderSide sides, unsigned int width_pxls, const mgeTyp
 	m_borderColor = color;
 
 	size_t layer = GraphicItemLayer::GUI_LAYER;
-	if (std::holds_alternative<MgeDrawable>(frameObject))
-		layer = std::get<MgeDrawable>(frameObject).getLayer();
-	else if (std::holds_alternative<MgeImage>(frameObject))
-		layer = std::get<MgeImage>(frameObject).getLayer();
+	if (auto graphic = getGraphicComponent())
+		layer = graphic->getLayerFromVariant(BASIC_GRAPHIC_INDEX).value_or(GraphicItemLayer::GUI_LAYER);
 
 	MgeDrawable borders(layer);
 
@@ -253,12 +169,6 @@ void MgeFrame::setBorder(BorderSide sides, unsigned int width_pxls, const mgeTyp
 
 	borders.addObjects(std::move(vecVertices));
 	borders.setPosition(getAbsolutePosition());
-
-	if (std::holds_alternative<MgeDrawable>(borderObject))
-	{
-		auto& drawable = std::get<MgeDrawable>(borderObject);
-		int x = 0;
-	}
 
 	borderObject = std::move(borders);
 }
@@ -300,47 +210,14 @@ void MgeFrame::layout() noexcept
 			}
 		}
 
-		for (auto& text : frameTexts)
-		{
-			if (sizeChanged)
-				text.second.setAbsolutePosition(getAlignedPosition(text.first, text.second.getTextSize()));
-			else
-				text.second.setAbsolutePosition(text.second.getAbsolutePosition() + differencePos.asInt());
-		}
+		setBorder(m_borderFlags, m_borderWidth_pxls, m_borderColor); //re-draw border with aktual size
 
-		//BORDERS
-		if (std::holds_alternative<MgeDrawable>(borderObject))
-			setBorder(m_borderFlags, m_borderWidth_pxls, m_borderColor); //re-draw border with aktual size
-		else if (std::holds_alternative<bool>(borderObject))
-		{} //nothing to re-draw
-		else
+		//FRAME GRAPHIC OBJECT
+		if (auto graphic = getGraphicComponent())
 		{
-			_ASSERT(false); //unwantend behaviour
+			auto difPos = graphic->getPosition(BASIC_GRAPHIC_INDEX).value_or(FPoint()) + differencePos.asFloat();
+			graphic->setPosition(difPos, BASIC_GRAPHIC_INDEX);
 		}
-
-		//FRAME OBJECT
-		if (std::holds_alternative<MgeDrawable>(frameObject))
-		{
-			auto& obj = std::get<MgeDrawable>(frameObject);
-			auto difPos = obj.getPosition() + differencePos.asFloat();
-			obj.setPosition(difPos);
-
-			if (sizeChanged)
-				obj.rescale(scaleX, scaleY);
-		}
-		else if (std::holds_alternative<MgeImage>(frameObject))
-		{
-			auto& img = std::get<MgeImage>(frameObject);
-			img.setImgAbsolutePosition(getAbsolutePosition().asFloat());
-		}
-
-#ifdef _DEBUG
-		else if (std::holds_alternative<UNDEFINED_FRAME_OBJECT>(frameObject))
-		{
-		} //nothing to draw
-		else
-			_ASSERT(false); //unhandled
-#endif // _DEBUG
 
 		MgeWidget::layout();
 	} //try block end
@@ -375,6 +252,13 @@ void MgeFrame::setUnderMouseCursor(bool isUnderMouse)
 	else if (isUnderMouseCursor && !isUnderMouse)
 		onCursorLeaveCall();
 	isUnderMouseCursor = isUnderMouse;
+}
+
+MGE_GRAPHIC MgeFrame::getGraphicComponent()
+{
+	if (auto graphicComponent = std::dynamic_pointer_cast<MgeGraphicComponent>(editComponent(MgePredefinedComponents::GRAPHIC)))
+		return graphicComponent;
+	return nullptr;
 }
 
 bool MgeFrame::isUnderCursor() const noexcept
@@ -416,6 +300,14 @@ IPoint MgeFrame::getAlignedPosition(GuiAlign align, mgeType::Size<int> objectSiz
 			break;
 	}
 	return framePos;
+}
+
+void MgeFrame::setGraphicObject(MGE_GRAPHIC_VARIANT&& object)
+{
+	if (auto graphicComponent = getGraphicComponent())
+		graphicComponent->setVariant(std::move(object), BASIC_GRAPHIC_INDEX);
+	else
+		{ _ASSERT(false); }
 }
 
 namespace mge

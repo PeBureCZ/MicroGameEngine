@@ -127,6 +127,17 @@ void MgeText::setBold(bool setBold)
 	}
 }
 
+GuiAlign MgeText::getAlign() const noexcept
+{
+	return m_align;
+}
+
+void MgeText::setAlign(GuiAlign align) noexcept
+{
+	m_align = align;
+}
+
+
 IPoint MgeText::getAbsolutePosition()
 {
 	_ASSERT(!m_text.expired());

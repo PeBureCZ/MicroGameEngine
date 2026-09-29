@@ -48,6 +48,11 @@ public:
 	void onLmbClickCall() noexcept;
 	void onRmbClickCall() noexcept;
 
+	void layout() noexcept override;
+
+	void addTextToButton(const std::string& butText, unsigned int characterSize_pxls = 30, GuiAlign align = GuiAlign::MiddleCenter,
+		const mgeType::Color_RGBA& col = DEFAULT_TEXT_COLOR);
+
 	void setButtonTextColors(mgeType::Color_RGBA defaultColor, mgeType::Color_RGBA mouseOverColor);
 
 protected:
@@ -63,6 +68,8 @@ private:
 	TextureId unselectedTexture = TextureId();
 	TextureId selectedTexture = TextureId();
 	TextureId clickedTexture = TextureId();
+
+	std::unique_ptr<MgeText> buttonText;
 
 	void setBasicCollision();
 

@@ -2,8 +2,6 @@
 #include <memory> 
 #include <vector>
 
-#include "GuiDependencies.h"
-
 #include "BasicShapes.h"
 #include "BasicTypes.h"
 #include "GraphicDependencies.h"

@@ -68,22 +68,51 @@ void MgeButton::onRmbClickCall() noexcept
 		onRMBClick();
 }
 
+void MgeButton::layout() noexcept
+{
+	if (buttonText)
+	{
+		auto differencePos = getAbsolutePosition() - lastLayoutAbsolutePosition;
+		const auto sizeChanged = (lastLayoutSize != getSize());
+
+		if (sizeChanged)
+			buttonText->setAbsolutePosition(getAlignedPosition(buttonText->getAlign(), buttonText->getTextSize()));
+		else
+			buttonText->setAbsolutePosition(buttonText->getAbsolutePosition() + differencePos.asInt());
+	}
+
+	MgeFrame::layout();
+}
+
+void MgeButton::addTextToButton(const std::string& butText, unsigned int characterSize_pxls, GuiAlign align, const mgeType::Color_RGBA& col)
+{
+	if (!buttonText)
+	{
+		size_t layer = GraphicItemLayer::GUI_LAYER;
+		if (auto graphic = getGraphicComponent())
+			layer = graphic->getLayerFromVariant(GraphicType::BASIC_GRAPHIC_INDEX).value_or(GraphicItemLayer::GUI_LAYER);
+
+		buttonText = std::make_unique<MgeText>(butText, characterSize_pxls, FPoint(), false, layer);
+		buttonText->setIsVisible(getIsVisible());
+		buttonText->setColor(col);
+		buttonText->setAbsolutePosition(getAlignedPosition(align, buttonText->getTextSize()));
+	}
+	else
+	{
+		_ASSERT(false); //not yet
+	}
+}
+
 void MgeButton::setButtonTextColors(mgeType::Color_RGBA defaultColor, mgeType::Color_RGBA mouseOverColor)
 {
 	defaultTextColor = defaultColor;
 	mouseOverTextColor = mouseOverColor;
-	if (frameTexts.size() > 0)
+	if (buttonText)
 	{
 		if (isUnderMouseCursor)
-		{
-			for (auto& text : frameTexts)
-				text.second.setColor(mouseOverTextColor);
-		}
+			buttonText->setColor(mouseOverTextColor);
 		else
-		{
-			for (auto& text : frameTexts)
-				text.second.setColor(defaultTextColor);
-		}
+			buttonText->setColor(defaultTextColor);
 	}
 }
 
@@ -93,11 +122,8 @@ void MgeButton::onCursorEnterCall() noexcept
 	{
 		setColor(mouseOverColor);
 
-		if (frameTexts.size() > 0)
-		{
-			for (auto& text : frameTexts)
-				text.second.setColor(mouseOverTextColor);
-		}
+		if (buttonText)
+			buttonText->setColor(mouseOverTextColor);
 		MgeFrame::onCursorEnterCall();
 	}
 	catch (...)
@@ -112,11 +138,8 @@ void MgeButton::onCursorLeaveCall() noexcept
 	{
 		setColor(defaultColor);
 			
-		if (frameTexts.size() > 0)
-		{
-			for (auto& text : frameTexts)
-				text.second.setColor(defaultTextColor);
-		}
+		if (buttonText)
+			buttonText->setColor(defaultTextColor);
 		MgeFrame::onCursorLeaveCall();
 	}
 	catch (...)

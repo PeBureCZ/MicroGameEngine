@@ -43,6 +43,8 @@ public:
 	void setIsVisible(bool visible) noexcept;
 	void setColor(mgeType::Color_RGBA newColor);
 	void setBold(bool setBold);
+	[[nodiscard]] GuiAlign getAlign() const noexcept;
+	void setAlign(GuiAlign align) noexcept;
 
 	[[nodiscard]] mgeType::Size<int> getTextSize() const;
 	[[nodiscard]] std::shared_ptr<MgeLayerObject> getTextObject() const noexcept;
@@ -58,5 +60,6 @@ private:
 	std::weak_ptr<MgeLayerObject> m_text;
 	std::uint8_t m_alpha = 255;
 	bool m_isVisible = true;
+	GuiAlign m_align = GuiAlign::MiddleCenter;
 };
 

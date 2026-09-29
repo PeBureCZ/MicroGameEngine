@@ -287,7 +287,6 @@ public:
     void removeToken()
     {
         _ASSERT(false);
-        //Todo:
         //not yet...
     }
 

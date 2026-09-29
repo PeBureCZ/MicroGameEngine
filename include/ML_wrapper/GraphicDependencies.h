@@ -6,6 +6,19 @@ inline const char* UNDEFINED_TEXTURE_PATH = "undefined";
 
 using VerticesId = uintptr_t;
 
+enum class GuiAlign : size_t
+{
+	TopLeft,
+	TopCenter,
+	TopRight,
+	MiddleLeft,
+	MiddleCenter,
+	MiddleRight,
+	BottomLeft,
+	BottomCenter,
+	BottomRight
+};
+
 struct TextureId
 {
 public:

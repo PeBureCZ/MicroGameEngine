@@ -39,9 +39,9 @@ void MgeSizer::resizeChildren() noexcept
 
 	const bool isVerticalOrientation = (m_orientation == SizerType::VERTICAL);
 
-	const int requiredSizerDimension = static_cast<int>(isVerticalOrientation
+	const int requiredSizerDimension = isVerticalOrientation
 		? getSize().height
-		: getSize().width);
+		: getSize().width;
 
 	FPoint currentRelativePosition{ 0.f, 0.f };
 
@@ -68,11 +68,11 @@ void MgeSizer::resizeChildren() noexcept
 		if (!widget)
 			continue;
 
-		const ISize size = widget->getSize();
+		const ISize startSize = widget->getMinSize(); //start with min size, then grow/shrink to fit sizer size
 
 		actualUsedSize += isVerticalOrientation
-			? size.height
-			: size.width;
+			? startSize.height
+			: startSize.width;
 
 		childrenInfoVec.emplace_back(ChildInfo
 			{
@@ -80,8 +80,8 @@ void MgeSizer::resizeChildren() noexcept
 
 				(isVerticalOrientation)
 				// maximize second dimension to max sizer size
-				? ISize(getSize().width, size.height)
-				: ISize(size.width, getSize().height),
+				? ISize(getSize().width, startSize.height)
+				: ISize(startSize.width, getSize().height),
 
 				widget->getMinSize(),
 				widget->getMaxSize(),

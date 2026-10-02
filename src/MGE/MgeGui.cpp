@@ -117,7 +117,7 @@ bool MgeGui::checkWidgetBlocking(const MgeFrame& frame) const noexcept
     if (frame.getIsVisible())
     {
         auto& cursorPos = sharedMlWrapper->getCursorGuiPosition();
-        for (const auto& col : frame.getCollision())
+        for (const auto& col : frame.getCollisions())
         {
             if (col.getEnabled() && col.getBlocking() && col.isPointInside(cursorPos))
                 return true;

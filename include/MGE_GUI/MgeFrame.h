@@ -3,11 +3,8 @@
 #include <vector>
 #include <deque>
 #include <memory>
-#include <utility>
-#include <functional>
 
 #include "MgeWidget.h"
-#include "Trigger.h"
 #include "MgeImage.h"
 #include "MgeText.h"
 #include "MgeDrawable.h"
@@ -19,7 +16,7 @@ constexpr mgeType::Color_RGBA MOUSE_OVER_TEXT_COLOR = mgeType::Color_RGBA(0, 0, 
 constexpr mgeType::Color_RGBA DEFAULT_FRAME_COLOR = mgeType::Color_RGBA(200, 200, 200, 255);
 
 class MgeButton;
-using Callback_deprecated = std::function<void()>;
+class MgeFrame;
 
 using UNDEFINED_FRAME_OBJECT = bool;
 using FRAME_OBJECT = std::variant<UNDEFINED_FRAME_OBJECT, MgeImage, MgeDrawable>;
@@ -28,9 +25,6 @@ enum GraphicType : size_t
 {
 	BASIC_GRAPHIC_INDEX = 0,
 };
-
-template<typename T>
-class Trigger;
 
 enum class BorderSide : uint8_t
 {
@@ -50,8 +44,6 @@ constexpr BorderSide operator|(BorderSide lhs, BorderSide rhs)
 		static_cast<uint8_t>(rhs));
 }
 
-class MgeFrame;
-
 namespace mge
 {
 	using Frame = std::shared_ptr<MgeFrame>;
@@ -70,9 +62,6 @@ public:
 	void setImage(TextureId textureId);
 	void setImage(MgeImage&& image);
 	void setVertices(MgeDrawable&& newVertices) noexcept;
-	[[nodiscard]] std::vector<Trigger<int>>& editCollision() noexcept;
-	[[nodiscard]] const std::vector<Trigger<int>>& getCollision() const noexcept;
-	void addCollision(Trigger<int> addedCollision);
 
 	void setColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);
 	void setColor(const mgeType::Color_RGBA& newColor);
@@ -85,9 +74,6 @@ public:
 	
 	void setBorder(BorderSide sides, unsigned int width_pxls, const mgeType::Color_RGBA& color = mgeType::Color_RGBA());
 
-	//to define function which will be call when mouse is over the widget
-	void setOnCursorOver(Callback_deprecated cursorEnterFunction, Callback_deprecated cursorLeaveFunction = nullptr);
-
 	//function is called automatically from GUI
 	void setUnderMouseCursor(bool isUnderMouse);
 
@@ -98,19 +84,10 @@ public:
 	[[nodiscard]] bool isUnderCursor() const noexcept;
 
 protected:
-	//to call specific defined function (eg. from another widget)
-	virtual void onCursorEnterCall() noexcept;
-	//to call specific defined function (eg. from another widget)
-	virtual void onCursorLeaveCall() noexcept;
-	bool isUnderMouseCursor = false;
 
 	IPoint getAlignedPosition(GuiAlign align, mgeType::Size<int> objectSize);
 
 private:
-	std::vector<Trigger<int>> collisions;
-
-	std::function<void()> onCursorEnter = nullptr;
-	std::function<void()> onCursorLeave = nullptr;
 
 	MgeDrawable borderObject;
 

@@ -116,6 +116,42 @@ FPoint MgeWidget::getAlignmentOffset() const noexcept
 	return offset;
 }
 
+std::vector<Trigger<int>>& MgeWidget::editCollisions() noexcept
+{
+	return collisions;
+}
+
+const std::vector<Trigger<int>>& MgeWidget::getCollisions() const noexcept
+{
+	return collisions;
+}
+
+void MgeWidget::addCollision(Trigger<int> addedCollision)
+{
+	auto difPos_pxl = (getParent()) ? getRelativePosition() : getAbsolutePosition();
+	addedCollision.setAbsolutePosition(addedCollision.getAbsolutePosition() + difPos_pxl.asInt());
+	collisions.push_back(std::move(addedCollision));
+}
+
+
+void MgeWidget::onCursorEnterCall() noexcept
+{
+	if (onCursorEnter)
+		onCursorEnter();
+}
+
+void MgeWidget::onCursorLeaveCall() noexcept
+{
+	if (onCursorLeave)
+		onCursorLeave();
+}
+
+void MgeWidget::setOnCursorOver(Callback_deprecated cursorEnterFunction, Callback_deprecated cursorLeaveFunction)
+{
+	onCursorEnter = std::move(cursorEnterFunction);
+	onCursorLeave = std::move(cursorLeaveFunction);
+}
+
 void MgeWidget::initialize() noexcept
 {
 	// Could be used for custom initialization in derived classes.

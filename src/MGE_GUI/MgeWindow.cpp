@@ -13,8 +13,8 @@ MgeWindow::MgeWindow(const FPoint& newPosition, const ISize& size, GraphicItemLa
 		setSize(newSize);
 	}
 
-	editCollision().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition().asInt(), getSize())));
-	_ASSERT(editCollision().size() == 1);
+	editCollisions().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition().asInt(), getSize())));
+	_ASSERT(editCollisions().size() == 1);
 }
 
 void MgeWindow::moveWindowContent(std::shared_ptr<MgeSizer>&& sizerWithContent)
@@ -85,7 +85,7 @@ namespace mge
 		auto newWindow = std::make_shared<MgeWindow>(newPosition, content->getSize(), layer, mgeType::Color_RGBA(0, 0, 0, 0));
 		newWindow->initializeSelf(newWindow);
 		newWindow->addWidget(std::move(content));
-		auto& colVec = newWindow->editCollision();
+		auto& colVec = newWindow->editCollisions();
 		colVec = std::move(snapCollision);
 		return newWindow;
 	}

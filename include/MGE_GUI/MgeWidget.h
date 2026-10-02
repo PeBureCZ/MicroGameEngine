@@ -9,8 +9,12 @@
 #include "BasicShapes.h"
 #include "MgeDrawable.h"
 #include "GraphicDependencies.h"
+#include "Trigger.h"
+#include <utility>
+#include <functional>
 
 using WidgetId = uintptr_t;
+using Callback_deprecated = std::function<void()>;
 
 class MgeWidget;
 
@@ -37,6 +41,9 @@ public:
 	void setAlignment(GuiAlign alignment) noexcept;
 	GuiAlign getAlignment() const noexcept;
 
+	//to define function which will be call when mouse is over the widget
+	void setOnCursorOver(Callback_deprecated cursorEnterFunction, Callback_deprecated cursorLeaveFunction = nullptr);
+
 	void setSize(const ISize& newSize) noexcept;
 	[[nodiscard]] ISize getSize() const noexcept;
 	void setMinSize(const ISize& newMinSize_pxls) noexcept;
@@ -45,6 +52,10 @@ public:
 	void setMaxSize(const int width_pxls, const int height_pxls) noexcept;
 	[[nodiscard]] ISize getMinSize() const noexcept;
 	[[nodiscard]] ISize getMaxSize() const noexcept;
+
+	[[nodiscard]] std::vector<Trigger<int>>& editCollisions() noexcept;
+	[[nodiscard]] const std::vector<Trigger<int>>& getCollisions() const noexcept;
+	void addCollision(Trigger<int> addedCollision);
 
 	// AutoSizeFactor is a multiplier used in MgeSizer to determine the size during rescaling.
 	// It is used to calculate the size of the widget based on its content and the available space in the parent container.
@@ -66,7 +77,14 @@ protected:
 	ISize lastLayoutSize;
 	FPoint getAlignmentOffset() const noexcept;
 
+	//to call specific defined function (eg. from another widget)
+	virtual void onCursorEnterCall() noexcept;
+	//to call specific defined function (eg. from another widget)
+	virtual void onCursorLeaveCall() noexcept;
+	bool isUnderMouseCursor = false;
+
 private:
+	std::vector<Trigger<int>> collisions;
 
 	GuiAlign m_alignment = GuiAlign::TopLeft;
 
@@ -75,6 +93,9 @@ private:
 	ISize m_minSize = ISize(1, 1);
 	ISize m_maxSize = ISize(7680, 4320);
 	float m_autoSizeFactor = 1.0f; //default value, can be changed by user
+
+	std::function<void()> onCursorEnter = nullptr;
+	std::function<void()> onCursorLeave = nullptr;
 };
 
 

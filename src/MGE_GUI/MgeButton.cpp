@@ -152,8 +152,8 @@ void MgeButton::onCursorLeaveCall() noexcept
 
 void MgeButton::setBasicCollision()
 {
-	editCollision().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition().asInt(), getSize())));
-	_ASSERT(editCollision().size() == 1);
+	editCollisions().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition().asInt(), getSize())));
+	_ASSERT(editCollisions().size() == 1);
 }
 
 namespace mge

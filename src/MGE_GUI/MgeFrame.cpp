@@ -33,8 +33,8 @@ void MgeFrame::setImage(TextureId textureId)
 	setSize(image.getSize());
 	auto newImageVariant = std::make_shared<MGE_GRAPHIC_VARIANT>(std::move(image));
 	setGraphicObject(newImageVariant);
-	editCollision().clear();
-	editCollision().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition().asInt(), getSize())));
+	editCollisions().clear();
+	editCollisions().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition().asInt(), getSize())));
 }
 
 void MgeFrame::setImage(MgeImage&& image)
@@ -45,31 +45,14 @@ void MgeFrame::setImage(MgeImage&& image)
 	setSize(image.getSize());
 	auto newImageVariant = std::make_shared<MGE_GRAPHIC_VARIANT>(std::move(image));
 	setGraphicObject(newImageVariant);
-	editCollision().clear();
-	editCollision().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition().asInt(), getSize())));
+	editCollisions().clear();
+	editCollisions().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition().asInt(), getSize())));
 }
 
 void MgeFrame::setVertices(MgeDrawable&& newVertices) noexcept
 {
 	auto newGraphicObj = std::make_shared<MGE_GRAPHIC_VARIANT>(std::move(newVertices));
 	setGraphicObject(newGraphicObj);
-}
-
-std::vector<Trigger<int>>& MgeFrame::editCollision() noexcept
-{
-	return collisions;
-}
-
-const std::vector<Trigger<int>>& MgeFrame::getCollision() const noexcept
-{
-	return collisions;
-}
-
-void MgeFrame::addCollision(Trigger<int> addedCollision)
-{
-	auto difPos_pxl = (getParent()) ? getRelativePosition() : getAbsolutePosition();
-	addedCollision.setAbsolutePosition(addedCollision.getAbsolutePosition() + difPos_pxl.asInt());
-	collisions.push_back(std::move(addedCollision));
 }
 
 void MgeFrame::setColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
@@ -106,8 +89,8 @@ void MgeFrame::setRelativeRotation(float newRotation)
 	auto difRotation = newRotation - getRelativeRotation();
 	if (auto graphic = getGraphicComponent())
 		graphic->setRotation(newRotation, BASIC_GRAPHIC_INDEX);
-
-	for (auto& col : collisions)
+	
+	for (auto& col : editCollisions())
 		col.setRotation(col.getRotation() + difRotation);
 }
 
@@ -174,12 +157,6 @@ void MgeFrame::setBorder(BorderSide sides, unsigned int width_pxls, const mgeTyp
 	borderObject = std::move(borders);
 }
 
-void MgeFrame::setOnCursorOver(Callback_deprecated cursorEnterFunction, Callback_deprecated cursorLeaveFunction)
-{
-	onCursorEnter = std::move(cursorEnterFunction);
-	onCursorLeave = std::move(cursorLeaveFunction);
-}
-
 void MgeFrame::layout() noexcept
 {
 #ifdef _DEBUG
@@ -200,9 +177,9 @@ void MgeFrame::layout() noexcept
 			? (float)getSize().height / (float)lastLayoutSize.height
 			: 1.f;
 
-		if (editCollision().size() > 0)
+		if (editCollisions().size() > 0)
 		{
-			for (auto& col : editCollision())
+			for (auto& col : editCollisions())
 			{
 				col.setAbsolutePosition(col.getAbsolutePosition() + differencePos.asInt());
 
@@ -235,18 +212,6 @@ void MgeFrame::layout() noexcept
 	{
 		_ASSERT(false);
 	}
-}
-
-void MgeFrame::onCursorEnterCall() noexcept
-{
-	if (onCursorEnter)
-		onCursorEnter();
-}
-
-void MgeFrame::onCursorLeaveCall() noexcept
-{
-	if (onCursorLeave)
-		onCursorLeave();
 }
 
 void MgeFrame::setUnderMouseCursor(bool isUnderMouse)

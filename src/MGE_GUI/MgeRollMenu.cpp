@@ -112,7 +112,7 @@ void MgeRollMenu::openOrCloseMenu(bool open) noexcept
 
 	if (rollMenuCollisionFrame)
 	{
-		for (auto& col : rollMenuCollisionFrame->editCollision())
+		for (auto& col : rollMenuCollisionFrame->editCollisions())
 			col.setEnabled(open);
 	}
 }
@@ -159,11 +159,11 @@ void MgeRollMenu::generateNewRollMenuCollision()
 		addWidget(rollMenuCollisionFrame);
 	}
 	else
-		rollMenuCollisionFrame->editCollision().clear();
+		rollMenuCollisionFrame->editCollisions().clear();
 	auto newCollision = Trigger<int>
 		(false, mgeShape::Rectangle<int>(leftUpCorner.asInt(), newSize));
 	newCollision.setIsBlocking(false);
-	rollMenuCollisionFrame->editCollision().push_back(std::move(newCollision));
+	rollMenuCollisionFrame->editCollisions().push_back(std::move(newCollision));
 
 	//move the collision no-blocking frame to the back of the children,
 	// so it can be affected by the mouse events before buttons

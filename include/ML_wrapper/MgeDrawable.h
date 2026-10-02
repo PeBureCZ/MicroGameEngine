@@ -33,8 +33,8 @@ public:
     [[nodiscard]] FPoint getPosition() const noexcept; //absolute coordination
 
     [[nodiscard]] const std::shared_ptr<MgeLayerObject> getVertices() const noexcept;
-    void setColor(const mgeType::Color_RGBA& newColor);
-    [[nodiscard]] mgeType::Color_RGBA getColor() const noexcept;
+    void setColor(const MgeColor& newColor);
+    [[nodiscard]] MgeColor getColor() const noexcept;
     void setIsVisible(bool visible) noexcept;
     void moveAbsolutePosition(const FPoint& movedPosBy);
 
@@ -46,7 +46,7 @@ public:
     int64_t getZPosition() const noexcept;
 
 private:
-    mgeType::Color_RGBA m_color;
+    MgeColor m_color;
     std::weak_ptr<MgeLayerObject> m_vertices;
     MgeVertices<float> frameObject;
     FPoint m_absolutePositionOffset;

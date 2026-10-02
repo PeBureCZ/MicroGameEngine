@@ -9,7 +9,7 @@
 
 
 
-MgeFrame::MgeFrame(const FPoint& newPosition, const ISize& newSize, GraphicItemLayer layer, mgeType::Color_RGBA color)
+MgeFrame::MgeFrame(const FPoint& newPosition, const ISize& newSize, GraphicItemLayer layer, MgeColor color)
 	: MgeWidget(newPosition, newSize)
 {
 	const MgeVertices<float> drawable(mgeShape::Rectangle<float>(FPoint(0,0), FSize((float)newSize.width, (float)newSize.height)), color);
@@ -57,10 +57,10 @@ void MgeFrame::setVertices(MgeDrawable&& newVertices) noexcept
 
 void MgeFrame::setColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 {
-	setColor(mgeType::Color_RGBA(r,g,b,a));
+	setColor(MgeColor(r,g,b,a));
 }
 
-void MgeFrame::setColor(const mgeType::Color_RGBA& newColor)
+void MgeFrame::setColor(const MgeColor& newColor)
 {
 	if (auto graphicComponent = getGraphicComponent())
 		graphicComponent->setColor(newColor, BASIC_GRAPHIC_INDEX);
@@ -107,7 +107,7 @@ void MgeFrame::setOrigin(IPoint newOrigin)
 		graphic->setOrigin(newOrigin.asFloat(), BASIC_GRAPHIC_INDEX);
 }
 
-void MgeFrame::setBorder(BorderSide sides, unsigned int width_pxls, const mgeType::Color_RGBA& color)
+void MgeFrame::setBorder(BorderSide sides, unsigned int width_pxls, const MgeColor& color)
 {
 	auto flags = static_cast<uint8_t>(sides);
 	m_borderFlags = sides;
@@ -281,7 +281,7 @@ void MgeFrame::setGraphicObject(const MGE_GRAPHIC_PTR& object)
 
 namespace mge
 {
-	Frame createFrame(const FPoint& newPosition, const ISize& newSize, GraphicItemLayer layer, mgeType::Color_RGBA color)
+	Frame createFrame(const FPoint& newPosition, const ISize& newSize, GraphicItemLayer layer, MgeColor color)
 	{
 		auto newFrame = std::make_shared<MgeFrame>(newPosition, newSize, layer, color);
 		newFrame->initializeSelf(newFrame);

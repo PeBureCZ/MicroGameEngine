@@ -87,7 +87,7 @@ public:
     MlCurve() = default;
 
     MlCurve(T P0, T P1, T P2, T P3, float thick = 1.f,
-        mgeType::Color_RGBA color = mgeType::Color_RGBA(), float desiredSegmentLength = 20.f);
+        MgeColor color = MgeColor(), float desiredSegmentLength = 20.f);
 
     MlCurve(MlCurve&&) = default;
     MlCurve& operator=(MlCurve&&) = default;
@@ -177,7 +177,7 @@ private:
 
     float distanceFromLine(const T& P, const T& A, const T& B);
 
-    void build(mgeType::Color_RGBA color, float desiredSegmentLength);
+    void build(MgeColor color, float desiredSegmentLength);
 
 private:
     sf::VertexArray content;
@@ -189,7 +189,7 @@ private:
 
 
 template<typename T>
-MlCurve<T>::MlCurve(T P0, T P1, T P2, T P3, float thick, mgeType::Color_RGBA color, float desiredSegmentLength)
+MlCurve<T>::MlCurve(T P0, T P1, T P2, T P3, float thick, MgeColor color, float desiredSegmentLength)
     : positions{ P0, P1, P2, P3 },
     thickness(thick)
 {
@@ -208,7 +208,7 @@ float MlCurve<T>::distanceFromLine(const T& P, const T& A, const T& B)
 }
 
 template<typename T>
-void MlCurve<T>::build(mgeType::Color_RGBA color, float desiredSegmentLength)
+void MlCurve<T>::build(MgeColor color, float desiredSegmentLength)
 {
     // Convert relative to absolute
     T P0 = positions[0];

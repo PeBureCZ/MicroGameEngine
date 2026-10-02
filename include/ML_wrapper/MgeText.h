@@ -41,7 +41,7 @@ public:
 	[[nodiscard]] IPoint getAbsolutePosition();
 
 	void setIsVisible(bool visible) noexcept;
-	void setColor(mgeType::Color_RGBA newColor);
+	void setColor(MgeColor newColor);
 	void setBold(bool setBold);
 	[[nodiscard]] GuiAlign getAlign() const noexcept;
 	void setAlign(GuiAlign align) noexcept;

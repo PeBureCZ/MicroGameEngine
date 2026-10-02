@@ -179,7 +179,7 @@ const std::shared_ptr<MgeLayerObject> MgeDrawable::getVertices() const noexcept
     return m_vertices.lock();
 }
 
-void MgeDrawable::setColor(const mgeType::Color_RGBA& newColor)
+void MgeDrawable::setColor(const MgeColor& newColor)
 {
     MAIN_THREAD_GUARD;
     m_color = newColor;
@@ -191,7 +191,7 @@ void MgeDrawable::setColor(const mgeType::Color_RGBA& newColor)
     }
 }
 
-mgeType::Color_RGBA MgeDrawable::getColor() const noexcept
+MgeColor MgeDrawable::getColor() const noexcept
 {
     MAIN_THREAD_GUARD;
     return m_color;

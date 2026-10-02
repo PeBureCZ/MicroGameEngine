@@ -92,7 +92,7 @@ void MgeText::setIsVisible(bool visible) noexcept
 	}
 }
 
-void MgeText::setColor(mgeType::Color_RGBA newColor)
+void MgeText::setColor(MgeColor newColor)
 {
 	_ASSERT(!m_text.expired());
 	if (auto text = m_text.lock())

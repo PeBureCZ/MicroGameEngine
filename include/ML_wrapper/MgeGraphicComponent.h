@@ -45,7 +45,7 @@ public:
 	void setIsVisible(bool visible);
 	std::optional<size_t> getLayerFromVariant(size_t index);
 
-	void setColor(const mgeType::Color_RGBA& newColor, size_t index);
+	void setColor(const MgeColor& newColor, size_t index);
 
 	void rescaleGraphic(float scaleX, float scaleY, size_t index);
 	void setRotation(float rotation, size_t index);

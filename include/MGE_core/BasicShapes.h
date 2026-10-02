@@ -126,7 +126,7 @@ public:
 		: m_shape(mgeShape::Rectangle<T>())
 	{}
 
-	MgeVertices(SHAPE_VARIANT<T> shape, mgeType::Color_RGBA usedColor = mgeType::Color_RGBA())
+	MgeVertices(SHAPE_VARIANT<T> shape, MgeColor usedColor = MgeColor())
 		: m_shape(shape), color(usedColor) // default white color
 	{
 
@@ -137,18 +137,18 @@ public:
 		return m_shape;
 	}
 
-	mgeType::Color_RGBA getColor() const
+	MgeColor getColor() const
 	{
 		return color;
 	}
 
-	void setColor(mgeType::Color_RGBA& newColor)
+	void setColor(MgeColor& newColor)
 	{
 		color = newColor;
 	}
 	void setColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 	{
-		color = mgeType::Color_RGBA(r,g,b,a);
+		color = MgeColor(r,g,b,a);
 	}
 
 	mgeType::Point<T> getPosition()
@@ -221,7 +221,7 @@ public:
 	virtual ~MgeVertices() = default;
 
 protected:
-	mgeType::Color_RGBA color;
+	MgeColor color;
 	SHAPE_VARIANT<T> m_shape;
 
 };

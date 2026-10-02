@@ -110,7 +110,7 @@ std::optional<size_t> MgeGraphicComponent::getLayerFromVariant(size_t index)
 	return std::nullopt;
 }
 
-void MgeGraphicComponent::setColor(const mgeType::Color_RGBA& newColor, size_t index)
+void MgeGraphicComponent::setColor(const MgeColor& newColor, size_t index)
 {
 	_ASSERT(index < m_graphic.size());
 	if (index >= m_graphic.size())

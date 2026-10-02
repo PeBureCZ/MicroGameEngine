@@ -5,7 +5,7 @@
 #include "GraphicDependencies.h"
 
 MgeTextFrame::MgeTextFrame(const FPoint& newPosition, mgeType::Size<int> newSize, std::string text, unsigned int characterSize_pxls,
-	GraphicItemLayer layer, mgeType::Color_RGBA textColor, mgeType::Color_RGBA frameColor)
+	GraphicItemLayer layer, MgeColor textColor, MgeColor frameColor)
 	: MgeFrame(newPosition, newSize)
 {
 	setColor(frameColor);
@@ -16,7 +16,7 @@ MgeTextFrame::MgeTextFrame(const FPoint& newPosition, mgeType::Size<int> newSize
 	}
 }
 
-void MgeTextFrame::addTextLine(std::string text, unsigned int textPxlsSize, mgeType::Color_RGBA color, bool bold) noexcept
+void MgeTextFrame::addTextLine(std::string text, unsigned int textPxlsSize, MgeColor color, bool bold) noexcept
 {
 	MgeText newText(std::move(text), textPxlsSize, bold);
 	newText.setColor(std::move(color));
@@ -228,7 +228,7 @@ void MgeTextFrame::redrawTextFrame() noexcept
 namespace mge
 {
 	TextFrame mge::createTextFrame(const FPoint& position, mgeType::Size<int> size, std::string text, unsigned int characterSize_pxls,
-		GraphicItemLayer layer, mgeType::Color_RGBA textColor, mgeType::Color_RGBA frameColor)
+		GraphicItemLayer layer, MgeColor textColor, MgeColor frameColor)
 	{
 		auto newTextFrame = std::make_shared<MgeTextFrame>(position, size, text, characterSize_pxls, layer, textColor, frameColor);
 		newTextFrame->initializeSelf(newTextFrame);

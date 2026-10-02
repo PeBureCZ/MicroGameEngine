@@ -26,7 +26,7 @@ public:
 	[[nodiscard]] mgeType::Size<int> getSize() const noexcept;
 
 	void setImgAbsolutePosition(FPoint newPosition);
-	void setColor(const mgeType::Color_RGBA& newColor) noexcept;
+	void setColor(const MgeColor& newColor) noexcept;
 	void setVisible(bool visible);
 
 	void setRotation(float newRotation) const;

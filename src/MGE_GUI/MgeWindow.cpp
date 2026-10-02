@@ -3,7 +3,7 @@
 #include "MgeSizer.h"
 #include "MgeButton.h"
 
-MgeWindow::MgeWindow(const FPoint& newPosition, const ISize& size, GraphicItemLayer layer, mgeType::Color_RGBA color)
+MgeWindow::MgeWindow(const FPoint& newPosition, const ISize& size, GraphicItemLayer layer, MgeColor color)
 	: MgeFrame(newPosition, size, layer, color)
 {
 	if (size.height < MIN_WINDOW_HEIGHT_PXLS || size.width < MIN_WINDOW_WIDTH_PXLS)
@@ -35,7 +35,6 @@ void MgeWindow::moveWindowContent(std::shared_ptr<MgeSizer>&& sizerWithContent)
 
 void MgeWindow::closeWindow()
 {
-	//destroy();
 	sendEvent(std::move(CloseMgeWindowEvent{ .m_widgetId = getId() }));
 }
 
@@ -50,10 +49,10 @@ void MgeWindow::initialize() noexcept
 
 	auto windowCloseButton = mge::createButton(FPoint(), ISize(MIN_WINDOW_HEIGHT_PXLS, MIN_WINDOW_HEIGHT_PXLS), GraphicItemLayer::WINDOW_LAYER);
 	windowCloseButton->setAlignment(GuiAlign::TopRight);
-	windowCloseButton->setDefaultButtonColor(mgeType::Color_RGBA(240, 240, 240));
-	windowCloseButton->setMouseOverButtonColor(mgeType::Color_RGBA(255, 0, 0));
-	windowCloseButton->addTextToButton("X", 8, GuiAlign::MiddleCenter, mgeType::Color_RGBA(255, 0, 0));
-	windowCloseButton->setButtonTextColors(mgeType::Color_RGBA(255, 0, 0), mgeType::Color_RGBA(0,0,255));
+	windowCloseButton->setDefaultButtonColor(MgeColor(240, 240, 240));
+	windowCloseButton->setMouseOverButtonColor(MgeColor(255, 0, 0));
+	windowCloseButton->addTextToButton("X", 8, GuiAlign::MiddleCenter, MgeColor(255, 0, 0));
+	windowCloseButton->setButtonTextColors(MgeColor(255, 0, 0), MgeColor(0,0,255));
 	windowCloseButton->setOnLMBClick([this]() { closeWindow(); });
 
 	windowBar->addWidget(windowCloseButton);
@@ -67,7 +66,7 @@ void MgeWindow::initialize() noexcept
 
 namespace mge
 {
-	Window mge::createEmptyWindow(const FPoint& newPosition, const ISize& size, GraphicItemLayer layer, mgeType::Color_RGBA color)
+	Window mge::createEmptyWindow(const FPoint& newPosition, const ISize& size, GraphicItemLayer layer, MgeColor color)
 	{
 		auto newWindow = std::make_shared<MgeWindow>(newPosition, size, layer, color);
 		newWindow->initializeSelf(newWindow);
@@ -75,15 +74,22 @@ namespace mge
 		return newWindow;
 	}
 
-	Window createCustomWindow(Widget&& content, std::vector<Trigger<int>>&& snapCollision, const FPoint& newPosition, GraphicItemLayer layer)
+	Window createCustomWindow(Widget&& content, std::vector<Trigger<int>>&& snapCollision, const FPoint& newPosition, GraphicItemLayer layer, Button closeButton)
 	{
 		_ASSERT(content);
 		if (!content)
-			return std::make_shared<MgeWindow>(newPosition, ISize(1,1), layer, mgeType::Color_RGBA(0,0,0,0));
+			return std::make_shared<MgeWindow>(newPosition, ISize(1,1), layer, MgeColor(0,0,0,0));
 
 		_ASSERT(content.use_count() == 1); // content should live only there
-		auto newWindow = std::make_shared<MgeWindow>(newPosition, content->getSize(), layer, mgeType::Color_RGBA(0, 0, 0, 0));
+		auto newWindow = std::make_shared<MgeWindow>(newPosition, content->getSize(), layer, MgeColor(0, 0, 0, 0));
 		newWindow->initializeSelf(newWindow);
+
+		if (closeButton)
+		{
+			auto closeFunction = [newWindow]() { newWindow->closeWindow(); };
+			closeButton->setOnLMBClick(std::move(closeFunction));
+		}
+
 		newWindow->addWidget(std::move(content));
 		auto& colVec = newWindow->editCollisions();
 		colVec = std::move(snapCollision);

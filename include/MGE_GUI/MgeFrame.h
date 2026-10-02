@@ -11,9 +11,9 @@
 #include "GraphicDependencies.h"
 #include "MgeGraphicComponent.h"
 
-constexpr mgeType::Color_RGBA DEFAULT_TEXT_COLOR = mgeType::Color_RGBA(0, 0, 0, 255);
-constexpr mgeType::Color_RGBA MOUSE_OVER_TEXT_COLOR = mgeType::Color_RGBA(0, 0, 0, 255);
-constexpr mgeType::Color_RGBA DEFAULT_FRAME_COLOR = mgeType::Color_RGBA(200, 200, 200, 255);
+constexpr MgeColor DEFAULT_TEXT_COLOR = MgeColor(0, 0, 0, 255);
+constexpr MgeColor MOUSE_OVER_TEXT_COLOR = MgeColor(0, 0, 0, 255);
+constexpr MgeColor DEFAULT_FRAME_COLOR = MgeColor(200, 200, 200, 255);
 
 class MgeButton;
 class MgeFrame;
@@ -48,7 +48,7 @@ namespace mge
 {
 	using Frame = std::shared_ptr<MgeFrame>;
 	Frame createFrame(const FPoint& newPosition = FPoint(), const ISize& newSize = ISize(1, 1),
-		GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER, mgeType::Color_RGBA color = DEFAULT_FRAME_COLOR);
+		GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER, MgeColor color = DEFAULT_FRAME_COLOR);
 	Frame createFrame(const FPoint& newPosition, const TextureId& textureId, GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER);
 }
 
@@ -56,7 +56,7 @@ class MgeFrame : public MgeWidget
 {
 public:
 	MgeFrame(const FPoint& newPosition, const ISize& newSize, GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER,
-		mgeType::Color_RGBA color = DEFAULT_FRAME_COLOR);
+		MgeColor color = DEFAULT_FRAME_COLOR);
 	MgeFrame(const FPoint& newPosition, const TextureId& textureId, GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER);
 
 	void setImage(TextureId textureId);
@@ -64,7 +64,7 @@ public:
 	void setVertices(MgeDrawable&& newVertices) noexcept;
 
 	void setColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);
-	void setColor(const mgeType::Color_RGBA& newColor);
+	void setColor(const MgeColor& newColor);
 
 	void setIsVisible(bool visible) noexcept override;
 
@@ -72,7 +72,7 @@ public:
 	float getRelativeRotation(); 
 	void setOrigin(IPoint newOrigin);
 	
-	void setBorder(BorderSide sides, unsigned int width_pxls, const mgeType::Color_RGBA& color = mgeType::Color_RGBA());
+	void setBorder(BorderSide sides, unsigned int width_pxls, const MgeColor& color = MgeColor());
 
 	//function is called automatically from GUI
 	void setUnderMouseCursor(bool isUnderMouse);
@@ -93,7 +93,7 @@ private:
 
 	BorderSide m_borderFlags = BorderSide::None;
 	unsigned int m_borderWidth_pxls = 0;
-	mgeType::Color_RGBA m_borderColor;
+	MgeColor m_borderColor;
 
 	void setGraphicObject(const MGE_GRAPHIC_PTR& object);
 };

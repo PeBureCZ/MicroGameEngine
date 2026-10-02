@@ -197,6 +197,8 @@ namespace mgeType
 	};
 }
 
+using MgeColor = mgeType::Color_RGBA;
+
 using FPoint = mgeType::Point<float>;
 using IPoint = mgeType::Point<int>;
 using DPoint = mgeType::Point<double>;

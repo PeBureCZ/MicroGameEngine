@@ -27,14 +27,14 @@ MgeButton::MgeButton(const FPoint& newPosition, MgeImage&& image)
 	MgeFrame::setImage(std::move(image));
 }
 
-void MgeButton::setDefaultButtonColor(const mgeType::Color_RGBA& newColor)
+void MgeButton::setDefaultButtonColor(const MgeColor& newColor)
 {
 	defaultColor = newColor;
 	if (!isUnderCursor())
 		setColor(defaultColor);
 }
 
-void MgeButton::setMouseOverButtonColor(const mgeType::Color_RGBA& newColor)
+void MgeButton::setMouseOverButtonColor(const MgeColor& newColor)
 {
 	mouseOverColor = newColor;
 	if (isUnderCursor()) 
@@ -86,7 +86,7 @@ void MgeButton::layout() noexcept
 	MgeFrame::layout();
 }
 
-void MgeButton::addTextToButton(const std::string& butText, unsigned int characterSize_pxls, GuiAlign align, const mgeType::Color_RGBA& col)
+void MgeButton::addTextToButton(const std::string& butText, unsigned int characterSize_pxls, GuiAlign align, const MgeColor& col)
 {
 	if (!buttonText)
 	{
@@ -105,7 +105,7 @@ void MgeButton::addTextToButton(const std::string& butText, unsigned int charact
 	}
 }
 
-void MgeButton::setButtonTextColors(mgeType::Color_RGBA defaultColor, mgeType::Color_RGBA mouseOverColor)
+void MgeButton::setButtonTextColors(MgeColor defaultColor, MgeColor mouseOverColor)
 {
 	defaultTextColor = defaultColor;
 	mouseOverTextColor = mouseOverColor;

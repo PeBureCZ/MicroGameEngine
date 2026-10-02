@@ -4,9 +4,9 @@
 
 #include "MgeFrame.h"
 
-constexpr mgeType::Color_RGBA DEFAULT_BUTTON_COLOR = mgeType::Color_RGBA(160, 160, 160, 255);
-constexpr mgeType::Color_RGBA MOUSE_OVER_FRAME_COLOR = mgeType::Color_RGBA(220, 220, 220, 255);
-constexpr mgeType::Color_RGBA DEFAULT_COLOR = mgeType::Color_RGBA(140, 140, 140, 255);
+constexpr MgeColor DEFAULT_BUTTON_COLOR = MgeColor(160, 160, 160, 255);
+constexpr MgeColor MOUSE_OVER_FRAME_COLOR = MgeColor(220, 220, 220, 255);
+constexpr MgeColor DEFAULT_COLOR = MgeColor(140, 140, 140, 255);
 
 class MgeButton;
 
@@ -38,8 +38,8 @@ public:
 	MgeButton& operator= (MgeButton&&) = default;
 	~MgeButton() = default;
 
-	void setDefaultButtonColor(const mgeType::Color_RGBA& newColor = DEFAULT_BUTTON_COLOR);
-	void setMouseOverButtonColor(const mgeType::Color_RGBA& newColor = MOUSE_OVER_FRAME_COLOR);
+	void setDefaultButtonColor(const MgeColor& newColor = DEFAULT_BUTTON_COLOR);
+	void setMouseOverButtonColor(const MgeColor& newColor = MOUSE_OVER_FRAME_COLOR);
 	void setIsVisible(bool visible) noexcept override;
 
 	void setOnLMBClick(Callback_deprecated clickFunction) noexcept;
@@ -51,19 +51,19 @@ public:
 	void layout() noexcept override;
 
 	void addTextToButton(const std::string& butText, unsigned int characterSize_pxls = 30, GuiAlign align = GuiAlign::MiddleCenter,
-		const mgeType::Color_RGBA& col = DEFAULT_TEXT_COLOR);
+		const MgeColor& col = DEFAULT_TEXT_COLOR);
 
-	void setButtonTextColors(mgeType::Color_RGBA defaultColor, mgeType::Color_RGBA mouseOverColor);
+	void setButtonTextColors(MgeColor defaultColor, MgeColor mouseOverColor);
 
 protected:
 	virtual void onCursorEnterCall() noexcept override;
 	virtual void onCursorLeaveCall() noexcept override;
 
 private:
-	mgeType::Color_RGBA defaultColor = DEFAULT_BUTTON_COLOR;
-	mgeType::Color_RGBA mouseOverColor = MOUSE_OVER_FRAME_COLOR;
-	mgeType::Color_RGBA defaultTextColor = DEFAULT_TEXT_COLOR;
-	mgeType::Color_RGBA mouseOverTextColor = MOUSE_OVER_TEXT_COLOR;
+	MgeColor defaultColor = DEFAULT_BUTTON_COLOR;
+	MgeColor mouseOverColor = MOUSE_OVER_FRAME_COLOR;
+	MgeColor defaultTextColor = DEFAULT_TEXT_COLOR;
+	MgeColor mouseOverTextColor = MOUSE_OVER_TEXT_COLOR;
 
 	TextureId unselectedTexture = TextureId();
 	TextureId selectedTexture = TextureId();

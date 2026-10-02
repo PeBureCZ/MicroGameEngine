@@ -73,7 +73,7 @@ const std::shared_ptr<MgeLayerObject> MgeImage::getSprite() const noexcept
 	return m_sprite.lock();
 }
 
-void MgeImage::setColor(const mgeType::Color_RGBA& newColor) noexcept
+void MgeImage::setColor(const MgeColor& newColor) noexcept
 {
 	_ASSERT(!m_sprite.expired());
 	if (auto sprite = m_sprite.lock())

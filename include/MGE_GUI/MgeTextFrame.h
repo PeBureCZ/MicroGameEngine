@@ -39,6 +39,7 @@ public:
 	void layout() noexcept override;
 
 	void setTextsAlign(GuiAlign align = GuiAlign::TopLeft);
+	void setTextColor(MgeColor newColor, size_t lineIndex = 0);
 
 private:
 	int actualTextLinePos_pxls = 0;

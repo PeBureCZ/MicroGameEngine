@@ -82,6 +82,16 @@ void MgeTextFrame::setTextsAlign(GuiAlign align)
 	usedAlign = align;
 }
 
+void MgeTextFrame::setTextColor(MgeColor newColor, size_t lineIndex)
+{
+	_ASSERT(lineIndex < frameTexts.size());
+	if (lineIndex < frameTexts.size())
+	{
+		frameTexts[lineIndex].setColor(newColor);
+		redrawTextFrame();
+	}
+}
+
 size_t MgeTextFrame::getAllTextsHeight() noexcept
 {
 	size_t allTextHeight_pxls = 0;

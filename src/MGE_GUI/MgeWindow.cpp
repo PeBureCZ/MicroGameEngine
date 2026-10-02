@@ -35,7 +35,16 @@ void MgeWindow::moveWindowContent(std::shared_ptr<MgeSizer>&& sizerWithContent)
 
 void MgeWindow::closeWindow()
 {
+	if (auto closeButton = m_closeButton.lock())
+		closeButton->setOnLMBClick(nullptr); //to remove the reference to this window due to ref counting in destructor
 	sendEvent(std::move(CloseMgeWindowEvent{ .m_widgetId = getId() }));
+}
+
+void MgeWindow::setCloseButton(std::shared_ptr<MgeButton> closeButton) noexcept
+{
+	auto closeFunction = [this]() { closeWindow(); };
+	closeButton->setOnLMBClick(std::move(closeFunction));
+	m_closeButton = closeButton;
 }
 
 void MgeWindow::initialize() noexcept
@@ -74,7 +83,7 @@ namespace mge
 		return newWindow;
 	}
 
-	Window createCustomWindow(Widget&& content, std::vector<Trigger<int>>&& snapCollision, const FPoint& newPosition, GraphicItemLayer layer, Button closeButton)
+	Window createCustomWindow(Widget&& content, std::vector<Trigger<int>>&& snapCollision, Button closeButton, const FPoint& newPosition, GraphicItemLayer layer)
 	{
 		_ASSERT(content);
 		if (!content)
@@ -85,10 +94,7 @@ namespace mge
 		newWindow->initializeSelf(newWindow);
 
 		if (closeButton)
-		{
-			auto closeFunction = [newWindow]() { newWindow->closeWindow(); };
-			closeButton->setOnLMBClick(std::move(closeFunction));
-		}
+			newWindow->setCloseButton(closeButton);
 
 		newWindow->addWidget(std::move(content));
 		auto& colVec = newWindow->editCollisions();

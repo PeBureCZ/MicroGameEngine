@@ -18,6 +18,9 @@ constexpr MgeColor DEFAULT_BAR_COLOR = MgeColor(170, 170, 170, 255);
 
 class MgeSizer;
 class MgeWindow;
+class MgeButton;
+
+using Button = std::shared_ptr<MgeButton>;
 
 namespace mge
 {
@@ -25,7 +28,7 @@ namespace mge
 	Window createEmptyWindow(const FPoint& newPosition = FPoint(), const ISize& size = ISize(1, 1),
 		GraphicItemLayer layer = GraphicItemLayer::WINDOW_LAYER, MgeColor color = DEFAULT_FRAME_COLOR);
 
-	Window createCustomWindow(Widget&& content, std::vector<Trigger<int>>&& snapCollision, const FPoint& newPosition = FPoint(),
+	Window createCustomWindow(Widget&& content, std::vector<Trigger<int>>&& snapCollision, std::shared_ptr<MgeButton> closeButton = nullptr, const FPoint& newPosition = FPoint(),
 		GraphicItemLayer layer = GraphicItemLayer::WINDOW_LAYER);
 }
 
@@ -37,11 +40,13 @@ public:
 
 	void moveWindowContent(std::shared_ptr<MgeSizer>&& sizerWithContent);
 	void closeWindow();
+	
+	void setCloseButton(std::shared_ptr<MgeButton> closeButton) noexcept;
 
 	void initialize() noexcept override;
 
 private:
 
-
+	std::weak_ptr<MgeButton> m_closeButton;
 	std::weak_ptr<MgeSizer> m_mainSizer;
 };

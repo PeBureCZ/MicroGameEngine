@@ -122,9 +122,9 @@ std::vector<std::shared_ptr<MgeActor>>& MgeActor::editChildren() noexcept
 	return editMgeDefaultComponent().editChildren();
 }
 
-void MgeActor::addChild(const std::shared_ptr<MgeActor>& child) noexcept
+void MgeActor::addChild(const std::shared_ptr<MgeActor>& child, std::optional<size_t> toIndex) noexcept
 {
-	editMgeDefaultComponent().addChild(child);
+	editMgeDefaultComponent().addChild(child, toIndex);
 }
 
 [[nodiscard]] bool MgeActor::removeChild(std::shared_ptr<MgeActor>& child)

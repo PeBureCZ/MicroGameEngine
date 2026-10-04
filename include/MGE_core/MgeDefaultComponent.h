@@ -3,6 +3,7 @@
 #include "MgeComponents.h"
 
 #include <memory>
+#include <optional>
 
 #include "MgeObject.h"
 
@@ -18,7 +19,7 @@ public:
 		: MgeTransform(MgePredefinedComponents::MGE_DEFAULT)
 	{}
 
-	void addChild(const std::shared_ptr<MgeActor>& child) noexcept;
+	void addChild(const std::shared_ptr<MgeActor>& child, std::optional<size_t> toIndex = std::nullopt) noexcept;
 	void setParent(const std::shared_ptr<MgeActor>& newParent = std::shared_ptr<MgeActor>()) noexcept;
 
 	[[nodiscard]] const std::vector<std::shared_ptr<MgeActor>>& getChildren() const noexcept;

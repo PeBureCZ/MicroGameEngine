@@ -2,6 +2,9 @@
 #include <memory>
 #include <vector>
 #include <variant>
+#include <utility>
+#include <functional>
+#include <optional>
 
 #include "MgeActor.h"
 #include "MlWrapper.h"
@@ -10,8 +13,7 @@
 #include "MgeDrawable.h"
 #include "GraphicDependencies.h"
 #include "Trigger.h"
-#include <utility>
-#include <functional>
+
 
 using WidgetId = uintptr_t;
 using Callback_deprecated = std::function<void()>;
@@ -66,7 +68,7 @@ public:
 	virtual void layout() noexcept;
 	virtual void initialize() noexcept; //to be called after adding to parent or to GUI
 
-	void addWidget(mge::Widget child);
+	void addWidget(mge::Widget child, std::optional<size_t> toIndex = std::nullopt);
 
 	virtual ~MgeWidget() = default;
 

@@ -245,13 +245,13 @@ void MgeWidget::layout() noexcept
 	lastLayoutAbsolutePosition = getAbsolutePosition();
 }
 
-void MgeWidget::addWidget(mge::Widget child)
+void MgeWidget::addWidget(mge::Widget child, std::optional<size_t> toIndex)
 {
 	_ASSERT(getSelfPtr() && child && getSelfPtr() != child);
 	if (getSelfPtr() && child && getSelfPtr() != child)
 	{
 		child->setParent(getSelfPtr());
-		addChild(child);
+		addChild(child, toIndex);
 		if (!child->isInitialized())
 			child->initializeSelf(child);
 

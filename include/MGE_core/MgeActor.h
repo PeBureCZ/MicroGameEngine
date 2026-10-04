@@ -3,6 +3,7 @@
 #include <memory>
 #include <array>
 #include <vector>
+#include <optional>
 
 #include "MgeDefaultComponent.h"
 #include "BasicTypes.h"
@@ -57,7 +58,7 @@ public:
 
 	[[nodiscard]] const std::vector<std::shared_ptr<MgeActor>>& getChildren() const noexcept;
 	[[nodiscard]] std::vector<std::shared_ptr<MgeActor>>& editChildren() noexcept;
-	void addChild(const std::shared_ptr<MgeActor>& child) noexcept;
+	void addChild(const std::shared_ptr<MgeActor>& child, std::optional<size_t> toIndex = std::nullopt) noexcept;
 	[[nodiscard]] bool removeChild(std::shared_ptr<MgeActor>& child);
 	[[nodiscard]] bool removeChild(MgeObjectId childId);
 

@@ -118,6 +118,23 @@ void MgeButton::setButtonTextColors(MgeColor defaultColor, MgeColor mouseOverCol
 	}
 }
 
+void MgeButton::setButtonText(const std::string& butText, unsigned int characterSize_pxls, GuiAlign align, const MgeColor& col)
+{
+	buttonText.reset();
+	addTextToButton(butText, characterSize_pxls, align, col);
+}
+
+std::string MgeButton::getButtonText() const noexcept
+{
+	if (buttonText)
+		return buttonText->getText();
+	else
+	{
+		_ASSERT(false);
+		return {};
+	}
+}
+
 void MgeButton::onCursorEnterCall() noexcept
 {
 	try

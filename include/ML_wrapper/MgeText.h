@@ -42,6 +42,11 @@ public:
 
 	void setIsVisible(bool visible) noexcept;
 	void setColor(MgeColor newColor);
+	void setText(const std::string& newText);
+	[[nodiscard]] std::string getText() const;
+	[[nodiscard]] MgeColor getColor() const noexcept;
+	[[nodiscard]] bool isVisible() const noexcept;
+	[[nodiscard]] bool isBold() const noexcept;
 	void setBold(bool setBold);
 	[[nodiscard]] GuiAlign getAlign() const noexcept;
 	void setAlign(GuiAlign align) noexcept;

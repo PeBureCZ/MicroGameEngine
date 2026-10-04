@@ -8,6 +8,8 @@ constexpr MgeColor DEFAULT_BUTTON_COLOR = MgeColor(160, 160, 160, 255);
 constexpr MgeColor MOUSE_OVER_FRAME_COLOR = MgeColor(220, 220, 220, 255);
 constexpr MgeColor DEFAULT_COLOR = MgeColor(140, 140, 140, 255);
 
+constexpr unsigned int DEFAULT_BUT_TEXT_FONT_SIZE = 20;
+
 class MgeButton;
 
 namespace mge
@@ -50,10 +52,10 @@ public:
 
 	void layout() noexcept override;
 
-	void addTextToButton(const std::string& butText, unsigned int characterSize_pxls = 30, GuiAlign align = GuiAlign::MiddleCenter,
-		const MgeColor& col = DEFAULT_TEXT_COLOR);
-
 	void setButtonTextColors(MgeColor defaultColor, MgeColor mouseOverColor);
+	void setButtonText(const std::string& butText, unsigned int characterSize_pxls = DEFAULT_BUT_TEXT_FONT_SIZE, GuiAlign align = GuiAlign::MiddleCenter,
+		const MgeColor& col = DEFAULT_TEXT_COLOR);
+	std::string getButtonText() const noexcept;
 
 protected:
 	virtual void onCursorEnterCall() noexcept override;
@@ -72,6 +74,7 @@ private:
 	std::unique_ptr<MgeText> buttonText;
 
 	void setBasicCollision();
+	void addTextToButton(const std::string& butText, unsigned int characterSize_pxls, GuiAlign align, const MgeColor& col);
 
 	std::function<void()> onLMBClick = nullptr;
 	std::function<void()> onRMBClick = nullptr;

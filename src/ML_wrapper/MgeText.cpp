@@ -4,14 +4,19 @@
 
 #include "MlWrapper.h"
 
-static void normalizeSize(sf::Text& text)
+//static void normalizeTextHeight(sf::Text& text)
+//{
+//	auto charSize = text.getCharacterSize();
+//	auto& glyph1 = text.getFont().getGlyph('x', charSize, false);
+//	auto& glyph2 = text.getFont().getGlyph('H', charSize, false);
+//	auto topShift = glyph2.textureRect.size.y - glyph1.textureRect.size.y;
+//	text.setOrigin(sf::Vector2f(text.getOrigin().x, text.getOrigin().y + topShift));
+//}
+
+static void normalizeTextOrigin(sf::Text& text)
 {
-	auto charSize = text.getCharacterSize();
-	auto bounds = text.getLocalBounds();
-	auto& glyph1 = text.getFont().getGlyph('x', charSize, false);
-	auto& glyph2 = text.getFont().getGlyph('H', charSize, false);
-	auto topShift = glyph2.textureRect.size.y - glyph1.textureRect.size.y;
-	text.setOrigin(sf::Vector2f(text.getOrigin().x, text.getOrigin().y + topShift));
+	const auto bounds = text.getLocalBounds();
+	text.setOrigin({bounds.position.x, bounds.position.y});
 }
 
 MgeText::MgeText(std::string newText, unsigned int characterSize_pxls, FPoint position, bool bold, size_t layer)
@@ -41,7 +46,8 @@ MgeText::MgeText(std::string newText, unsigned int characterSize_pxls, FPoint po
 
 	sfText.setPosition(sf::Vector2f(position.x, position.y));
 	sfText.setFillColor(sf::Color::White);
-	normalizeSize(sfText); //move origin to font top without "ascender"
+	//normalizeTextHeight(sfText); //move origin to font top without "ascender"
+	normalizeTextOrigin(sfText);
 	ML_wrapper::getGlobalMlWrapper()->addMgeLayerObject(std::move(newMgeText));
 }
 
@@ -107,6 +113,77 @@ void MgeText::setColor(MgeColor newColor)
 		{
 			_ASSERT(false); //wrong type
 		}
+	}
+}
+
+void MgeText::setText(const std::string& newText)
+{
+	_ASSERT(!m_text.expired());
+	if (auto text = m_text.lock())
+	{
+		if (std::holds_alternative<sf::Text>(text->data))
+		{
+			auto& sfText = std::get<sf::Text>(text->data);
+			sfText.setString(newText);
+			normalizeTextOrigin(sfText);
+		}
+		else
+		{
+			_ASSERT(false); //wrong type
+		}
+	}
+}
+
+std::string MgeText::getText() const
+{
+	if (m_text.expired())
+		return std::string();
+	else if (std::holds_alternative<sf::Text>(m_text.lock()->data))
+	{
+		std::string text = std::get<sf::Text>(m_text.lock()->data).getString();
+		return text;
+	}
+	else
+	{
+		_ASSERT(false); //wrong type
+		return std::string();
+	}
+}
+
+MgeColor MgeText::getColor() const noexcept
+{
+	if (m_text.expired())
+		return MgeColor();
+	else if (std::holds_alternative<sf::Text>(m_text.lock()->data))
+	{
+		auto& sfText = std::get<sf::Text>(m_text.lock()->data);
+		auto col = sfText.getFillColor();
+		return MgeColor(col.r, col.g, col.b, col.a);
+	}
+	else
+	{
+		_ASSERT(false); //wrong type
+		return MgeColor();
+	}
+}
+
+bool MgeText::isVisible() const noexcept
+{
+	return m_isVisible;
+}
+
+bool MgeText::isBold() const noexcept
+{
+	if (m_text.expired())
+		return false;
+	else if (std::holds_alternative<sf::Text>(m_text.lock()->data))
+	{
+		return std::get<sf::Text>(m_text.lock()->data).getStyle() & sf::Text::Bold;
+	}
+	else
+	{
+		_ASSERT(false); //wrong type
+		return false;
 	}
 }
 

@@ -60,7 +60,7 @@ void MgeWindow::initialize() noexcept
 	windowCloseButton->setAlignment(GuiAlign::TopRight);
 	windowCloseButton->setDefaultButtonColor(MgeColor(240, 240, 240));
 	windowCloseButton->setMouseOverButtonColor(MgeColor(255, 0, 0));
-	windowCloseButton->addTextToButton("X", 8, GuiAlign::MiddleCenter, MgeColor(255, 0, 0));
+	windowCloseButton->setButtonText("X", 8, GuiAlign::MiddleCenter, MgeColor(255, 0, 0));
 	windowCloseButton->setButtonTextColors(MgeColor(255, 0, 0), MgeColor(0,0,255));
 	windowCloseButton->setOnLMBClick([this]() { closeWindow(); });
 

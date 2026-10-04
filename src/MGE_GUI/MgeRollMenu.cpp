@@ -15,7 +15,7 @@ mge::Button MgeRollMenu::addRollButton(const std::string& butText, Callback_depr
 	newButton->setIsVisible(false);
 	newButton->setOnLMBClick(onLMBClickFunc);
 	newButton->setOnRMBClick(onRMBClickFunc);
-	newButton->addTextToButton(butText, 14);
+	newButton->setButtonText(butText, 14);
 
 	addWidget(newButton);
 	rollButtons.push_back(newButton); //due to custom collision management, we need to keep track of buttons in the menu
@@ -33,7 +33,7 @@ mge::Button MgeRollMenu::getMainButton()
 		mainButton->setButtonTextColors(DEFAULT_TEXT_COLOR, MOUSE_OVER_TEXT_COLOR);
 		mainButton->setOnLMBClick([this]() { onRollMenuLMBClick(); });
 		mainButton->setOnCursorOver([this]() {onCursorEnterCall(); }); //used for auto opening - if it is set
-		mainButton->addTextToButton(mainButtonText, 14);
+		mainButton->setButtonText(mainButtonText, 14);
 		addWidget(mainButton);
 	}
 	return mainButton;

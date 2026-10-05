@@ -124,7 +124,17 @@ void MgeButton::setButtonText(const std::string& butText, unsigned int character
 	addTextToButton(butText, characterSize_pxls, align, col);
 }
 
-std::string MgeButton::getButtonText() const noexcept
+void MgeButton::setButtonText(const std::string& butText)
+{
+	if (buttonText)
+		buttonText->setText(butText);
+	else
+	{
+		_ASSERT(false);
+	}
+}
+
+std::string MgeButton::getButtonText() const
 {
 	if (buttonText)
 		return buttonText->getText();

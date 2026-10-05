@@ -142,7 +142,7 @@ namespace ML_wrapper
                 );
             };
 
-        while (const std::optional event = mainWindow->pollEvent())
+        while (const auto event = mainWindow->pollEvent())
         {
             if (event->is<sf::Event::Closed>())
             {

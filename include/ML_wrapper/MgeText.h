@@ -2,6 +2,7 @@
 
 #include <string>
 #include <memory>
+#include <variant>
 
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Font.hpp>
@@ -24,7 +25,7 @@ public:
 		(
 			std::string newText,
 			unsigned int characterSize_pxls = 30,
-			FPoint = FPoint(),
+			const FPoint& position = FPoint(),
 			bool bold = false,
 			size_t layer = GraphicItemLayer::GUI_LAYER
 		);
@@ -41,8 +42,10 @@ public:
 	[[nodiscard]] IPoint getAbsolutePosition();
 
 	void setIsVisible(bool visible) noexcept;
-	void setColor(MgeColor newColor);
+	void setColor(const MgeColor& newColor);
 	void setText(const std::string& newText);
+	void setFontSize(unsigned int newSize);
+	unsigned int getFontSize() const;
 	[[nodiscard]] std::string getText() const;
 	[[nodiscard]] MgeColor getColor() const noexcept;
 	[[nodiscard]] bool isVisible() const noexcept;

@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include <string>
 
 #include "MgeFrame.h"
 
@@ -53,9 +54,10 @@ public:
 	void layout() noexcept override;
 
 	void setButtonTextColors(MgeColor defaultColor, MgeColor mouseOverColor);
-	void setButtonText(const std::string& butText, unsigned int characterSize_pxls = DEFAULT_BUT_TEXT_FONT_SIZE, GuiAlign align = GuiAlign::MiddleCenter,
+	void setButtonText(const std::string& butText, unsigned int characterSize_pxls, GuiAlign align,
 		const MgeColor& col = DEFAULT_TEXT_COLOR);
-	std::string getButtonText() const noexcept;
+	void setButtonText(const std::string& butText);
+	std::string getButtonText() const;
 
 protected:
 	virtual void onCursorEnterCall() noexcept override;

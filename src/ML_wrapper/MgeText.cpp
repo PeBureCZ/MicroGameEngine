@@ -1,6 +1,7 @@
 #include "MgeText.h"
 
 #include "GlobalFunctions.h"
+#include "layerDefinition.h"
 
 #include "MlWrapper.h"
 
@@ -19,7 +20,7 @@ static void normalizeTextOrigin(sf::Text& text)
 	text.setOrigin({bounds.position.x, bounds.position.y});
 }
 
-MgeText::MgeText(std::string newText, unsigned int characterSize_pxls, FPoint position, bool bold, size_t layer)
+MgeText::MgeText(std::string newText, unsigned int characterSize_pxls, const FPoint& position, bool bold, size_t layer)
 {
 	const std::string fontPath = mgeCore::getExecutablePath() + "\\Fonts\\NotoSerifGeorgian-Regular.ttf";
 	
@@ -36,7 +37,6 @@ MgeText::MgeText(std::string newText, unsigned int characterSize_pxls, FPoint po
 		firstTimeOpen = false;
 	}
 
-
 	auto newMgeText = std::make_shared<MgeLayerObject>(MgeLayerObject{ mgeCore::getDefaultZPosition(), layer, sf::Text{font, std::move(newText), characterSize_pxls} });
 	m_text = newMgeText;
 	auto& sfText = std::get<sf::Text>(newMgeText->data);
@@ -46,7 +46,6 @@ MgeText::MgeText(std::string newText, unsigned int characterSize_pxls, FPoint po
 
 	sfText.setPosition(sf::Vector2f(position.x, position.y));
 	sfText.setFillColor(sf::Color::White);
-	//normalizeTextHeight(sfText); //move origin to font top without "ascender"
 	normalizeTextOrigin(sfText);
 	ML_wrapper::getGlobalMlWrapper()->addMgeLayerObject(std::move(newMgeText));
 }
@@ -98,7 +97,7 @@ void MgeText::setIsVisible(bool visible) noexcept
 	}
 }
 
-void MgeText::setColor(MgeColor newColor)
+void MgeText::setColor(const MgeColor& newColor)
 {
 	_ASSERT(!m_text.expired());
 	if (auto text = m_text.lock())
@@ -123,8 +122,31 @@ void MgeText::setText(const std::string& newText)
 	{
 		if (std::holds_alternative<sf::Text>(text->data))
 		{
+			const sf::String sfString(newText);
 			auto& sfText = std::get<sf::Text>(text->data);
-			sfText.setString(newText);
+			sfText.setString(sfString);
+			normalizeTextOrigin(sfText);
+		}
+		else
+		{
+			_ASSERT(false); //wrong type
+		}
+	}
+	else
+	{
+		_ASSERT(false);
+	}
+}
+
+void MgeText::setFontSize(unsigned int newSize)
+{
+	_ASSERT(!m_text.expired());
+	if (auto text = m_text.lock())
+	{
+		if (std::holds_alternative<sf::Text>(text->data))
+		{
+			auto& sfText = std::get<sf::Text>(text->data);
+			sfText.setCharacterSize(newSize);
 			normalizeTextOrigin(sfText);
 		}
 		else
@@ -134,20 +156,37 @@ void MgeText::setText(const std::string& newText)
 	}
 }
 
-std::string MgeText::getText() const
+unsigned int MgeText::getFontSize() const
 {
-	if (m_text.expired())
-		return std::string();
-	else if (std::holds_alternative<sf::Text>(m_text.lock()->data))
+	_ASSERT(!m_text.expired());
+	if (auto text = m_text.lock())
 	{
-		std::string text = std::get<sf::Text>(m_text.lock()->data).getString();
-		return text;
+		if (std::holds_alternative<sf::Text>(text->data))
+		{
+			auto& sfText = std::get<sf::Text>(text->data);
+			return sfText.getCharacterSize();
+		}
+		else
+		{
+			_ASSERT(false); //wrong type
+			return 0;
+		}
 	}
 	else
-	{
-		_ASSERT(false); //wrong type
-		return std::string();
-	}
+		return 0;
+}
+
+std::string MgeText::getText() const
+{
+	const auto& textObject = m_text.lock();
+
+	if (!textObject || !std::holds_alternative<sf::Text>(textObject->data))
+		return {};
+
+	const sf::Text& text = std::get<sf::Text>(textObject->data);
+	const sf::U8String utf8 = text.getString().toUtf8();
+	std::string result(utf8.begin(), utf8.end());
+	return result;
 }
 
 MgeColor MgeText::getColor() const noexcept

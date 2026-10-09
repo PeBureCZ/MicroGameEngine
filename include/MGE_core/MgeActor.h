@@ -65,8 +65,6 @@ public:
 	MgeDefaultComponent& editMgeDefaultComponent() noexcept;
 	const MgeDefaultComponent& getMgeDefaultComponent() const noexcept;
 
-	virtual void destroy();
-
 protected:
 
 	template <typename Event>
@@ -89,4 +87,10 @@ private:
 
 	std::shared_ptr<MgeDefaultComponent> defaultActorData;
 };
+
+namespace mge
+{
+	bool destroyActor(std::shared_ptr<MgeActor> actor);
+}
+
 

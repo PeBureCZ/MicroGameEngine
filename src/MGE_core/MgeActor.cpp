@@ -179,26 +179,36 @@ void MgeActor::setAbsoluteRotation(float rotation)
 	editMgeDefaultComponent().setAbsoluteRotation(rotation);
 }
 
-void MgeActor::destroy()
-{
-	MAIN_THREAD_GUARD; //must be done in MT due to event system
-	for (auto& child : editChildren())
-	{
-		_ASSERT(child);
-		if (child)
-			child->destroy();
-	}
-
-	if (auto parent = getParent())
-	{
-		[[maybe_unused]] bool removed = parent->removeChild(getId()); //remove self in parent vector (owner)
-		_ASSERT(removed);
-	}
-}
-
 void MgeActor::createMgeDefaultComponent()
 {
 	defaultActorData = std::make_shared<MgeDefaultComponent>();
 	addComponent(defaultActorData);
 }
 
+namespace mge
+{
+	bool destroyActor(std::shared_ptr<MgeActor> actor)
+	{
+		bool removed = false;
+		MAIN_THREAD_GUARD; //must be done in MT due to event system
+		_ASSERT(actor);
+		if (!actor)
+			return removed;
+
+		for (auto& child : actor->editChildren())
+		{
+			_ASSERT(child);
+			if (child)
+				destroyActor(child);
+		}
+
+		if (auto parent = actor->getParent())
+		{
+			MgeObjectId id = actor->getId();
+			actor.reset();
+			removed = parent->removeChild(id); //remove self in parent vector (owner)
+			_ASSERT(removed);
+		}
+		return removed;
+	}
+}

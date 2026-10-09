@@ -5,15 +5,6 @@
 
 #include "MlWrapper.h"
 
-//static void normalizeTextHeight(sf::Text& text)
-//{
-//	auto charSize = text.getCharacterSize();
-//	auto& glyph1 = text.getFont().getGlyph('x', charSize, false);
-//	auto& glyph2 = text.getFont().getGlyph('H', charSize, false);
-//	auto topShift = glyph2.textureRect.size.y - glyph1.textureRect.size.y;
-//	text.setOrigin(sf::Vector2f(text.getOrigin().x, text.getOrigin().y + topShift));
-//}
-
 static void normalizeTextOrigin(sf::Text& text)
 {
 	//change the origin to left-top corner of the text, so that the position is the left-top corner of the text
@@ -38,7 +29,8 @@ MgeText::MgeText(std::string newText, unsigned int characterSize_pxls, const FPo
 		firstTimeOpen = false;
 	}
 
-	auto newMgeText = std::make_shared<MgeLayerObject>(MgeLayerObject{ mgeCore::getDefaultZPosition(), layer, sf::Text{font, std::move(newText), characterSize_pxls} });
+	auto newMgeText = std::make_shared<MgeLayerObject>(MgeLayerObject{ mgeCore::getDefaultZPosition(),
+		layer, sf::Text{font, sf::String::fromUtf8(newText.begin(), newText.end()), characterSize_pxls} });
 	m_text = newMgeText;
 	auto& sfText = std::get<sf::Text>(newMgeText->data);
 
@@ -124,15 +116,13 @@ void MgeText::setText(const std::string& newText)
 		if (std::holds_alternative<sf::Text>(text->data))
 		{
 			const auto getAbsolutePos = getAbsolutePosition();
-			const sf::String sfString(newText);
+			const sf::String sfString = sf::String::fromUtf8(newText.begin(),newText.end());
 			auto& sfText = std::get<sf::Text>(text->data);
-
 			const auto oldBounds = sfText.getLocalBounds();
 			sfText.setString(sfString);
+
 			const auto newBounds = sfText.getLocalBounds();
-
 			const int horizontalOffset = static_cast<int>((newBounds.size.x - oldBounds.size.x) * 0.5f);
-
 			setAbsolutePosition(IPoint(getAbsolutePos.x - horizontalOffset, getAbsolutePos.y));
 		}
 		else
@@ -260,7 +250,6 @@ void MgeText::setAlign(GuiAlign align) noexcept
 {
 	m_align = align;
 }
-
 
 IPoint MgeText::getAbsolutePosition()
 {

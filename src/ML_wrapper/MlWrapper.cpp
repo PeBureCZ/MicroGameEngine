@@ -12,6 +12,30 @@
 
 std::shared_ptr<sf::RenderWindow> mainWindow;
 
+static MgeKeys::MgeKey toMgeKey(sf::Keyboard::Key key)
+{
+    return static_cast<MgeKeys::MgeKey>(key);
+}
+
+static MgeKeys::KeyModifier getKeyModifiers(const sf::Event::KeyPressed& event)
+{
+    MgeKeys::KeyModifier modifiers = MgeKeys::KeyModifier::None;
+
+    if (event.shift)
+        modifiers = modifiers | MgeKeys::KeyModifier::Shift;
+
+    if (event.control)
+        modifiers = modifiers | MgeKeys::KeyModifier::Control;
+
+    if (event.alt)
+        modifiers = modifiers | MgeKeys::KeyModifier::Alt;
+
+    if (event.system)
+        modifiers = modifiers | MgeKeys::KeyModifier::System;
+
+    return modifiers;
+}
+
 namespace ML_wrapper
 {
     MlWrapper::MlWrapper()
@@ -177,11 +201,7 @@ namespace ML_wrapper
             {
                 const auto size = mainWindow->getSize();
 
-                sf::Vector2f newSize
-                    (
-                        static_cast<float>(size.x),
-                        static_cast<float>(size.y)
-                    );
+                sf::Vector2f newSize(static_cast<float>(size.x), static_cast<float>(size.y));
 
                 // --- GUI VIEW ---
                 guiView.setSize(newSize);
@@ -194,6 +214,17 @@ namespace ML_wrapper
                 worldView.zoom((float)zoom);
 
                 sendEvent(std::move(ResizeWindowEvent{}));
+            }
+            else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
+                sendEvent(std::move(KeyPressEvent{ toMgeKey(keyPressed->code), getKeyModifiers(*keyPressed) }));
+            else if (const auto* keyReleased = event->getIf<sf::Event::KeyReleased>())
+                sendEvent(std::move(KeyReleaseEvent{ toMgeKey(keyReleased->code) }));
+            else if (const auto* textEntered = event->getIf<sf::Event::TextEntered>())
+            {
+                sf::String character(textEntered->unicode);
+                sf::U8String utf8 = character.toUtf8();
+                std::string utf8String(reinterpret_cast<const char*>(utf8.data()),utf8.size());
+                sendEvent(TextKeyEnteredEvent{ std::move(utf8String) });
             }
         }
 

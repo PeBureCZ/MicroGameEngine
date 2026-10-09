@@ -16,6 +16,7 @@
 
 static void normalizeTextOrigin(sf::Text& text)
 {
+	//change the origin to left-top corner of the text, so that the position is the left-top corner of the text
 	const auto bounds = text.getLocalBounds();
 	text.setOrigin({bounds.position.x, bounds.position.y});
 }
@@ -122,10 +123,17 @@ void MgeText::setText(const std::string& newText)
 	{
 		if (std::holds_alternative<sf::Text>(text->data))
 		{
+			const auto getAbsolutePos = getAbsolutePosition();
 			const sf::String sfString(newText);
 			auto& sfText = std::get<sf::Text>(text->data);
+
+			const auto oldBounds = sfText.getLocalBounds();
 			sfText.setString(sfString);
-			normalizeTextOrigin(sfText);
+			const auto newBounds = sfText.getLocalBounds();
+
+			const int horizontalOffset = static_cast<int>((newBounds.size.x - oldBounds.size.x) * 0.5f);
+
+			setAbsolutePosition(IPoint(getAbsolutePos.x - horizontalOffset, getAbsolutePos.y));
 		}
 		else
 		{

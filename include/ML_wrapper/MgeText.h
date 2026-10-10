@@ -27,7 +27,8 @@ public:
 			unsigned int characterSize_pxls = 30,
 			const FPoint& position = FPoint(),
 			bool bold = false,
-			size_t layer = GraphicItemLayer::GUI_LAYER
+			size_t layer = GraphicItemLayer::GUI_LAYER,
+			const MgeColor& color = MgeColor()
 		);
 	MgeText() = delete;
 
@@ -44,6 +45,9 @@ public:
 	void setIsVisible(bool visible) noexcept;
 	void setColor(const MgeColor& newColor);
 	void setText(const std::string& newText);
+	void setText(const std::wstring& newText);
+	void appendText(const std::string& newText);
+	void appendText(const std::wstring& newText);
 	void setFontSize(unsigned int newSize);
 	unsigned int getFontSize() const;
 	[[nodiscard]] std::string getText() const;

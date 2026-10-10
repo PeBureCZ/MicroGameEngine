@@ -12,7 +12,7 @@ static void normalizeTextOrigin(sf::Text& text)
 	text.setOrigin({bounds.position.x, bounds.position.y});
 }
 
-MgeText::MgeText(std::string newText, unsigned int characterSize_pxls, const FPoint& position, bool bold, size_t layer)
+MgeText::MgeText(std::string newText, unsigned int characterSize_pxls, const FPoint& position, bool bold, size_t layer, const MgeColor& color)
 {
 	const std::string fontPath = mgeCore::getExecutablePath() + "\\Fonts\\NotoSerifGeorgian-Regular.ttf";
 	
@@ -38,7 +38,7 @@ MgeText::MgeText(std::string newText, unsigned int characterSize_pxls, const FPo
 		sfText.setStyle(sf::Text::Bold);
 
 	sfText.setPosition(sf::Vector2f(position.x, position.y));
-	sfText.setFillColor(sf::Color::White);
+	sfText.setFillColor(sf::Color { color.r, color.g, color .b, color .a});
 	normalizeTextOrigin(sfText);
 	ML_wrapper::getGlobalMlWrapper()->addMgeLayerObject(std::move(newMgeText));
 }
@@ -134,6 +134,46 @@ void MgeText::setText(const std::string& newText)
 	{
 		_ASSERT(false);
 	}
+}
+
+void MgeText::setText(const std::wstring& newText)
+{
+	std::string utf8Text = mgeCore::toUTF8(newText);
+	setText(utf8Text);
+}
+
+void MgeText::appendText(const std::string& newText)
+{
+	_ASSERT(!m_text.expired());
+	if (auto text = m_text.lock())
+	{
+		if (std::holds_alternative<sf::Text>(text->data))
+		{
+			const auto getAbsolutePos = getAbsolutePosition();
+			const sf::String sfString = sf::String::fromUtf8(newText.begin(), newText.end());
+			auto& sfText = std::get<sf::Text>(text->data);
+			auto& actualText = sfText.getString();
+			_ASSERT(actualText.getSize() < 1000); //actually performs an unnecessary copy! Needs reworking if used with longer texts
+			const auto oldBounds = sfText.getLocalBounds();
+			sfText.setString(actualText + sfString);
+			const auto newBounds = sfText.getLocalBounds();
+			const int horizontalOffset = static_cast<int>((newBounds.size.x - oldBounds.size.x) * 0.5f);
+			setAbsolutePosition(IPoint(getAbsolutePos.x - horizontalOffset, getAbsolutePos.y));
+		}
+		else
+		{
+			_ASSERT(false); //wrong type
+		}
+	}
+	else
+	{
+		_ASSERT(false);
+	}
+}
+
+void MgeText::appendText(const std::wstring& newText)
+{
+	appendText(mgeCore::toUTF8(newText));
 }
 
 void MgeText::setFontSize(unsigned int newSize)

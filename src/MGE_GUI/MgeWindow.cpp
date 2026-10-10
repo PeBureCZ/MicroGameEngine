@@ -47,6 +47,11 @@ void MgeWindow::setCloseButton(std::shared_ptr<MgeButton> closeButton) noexcept
 	m_closeButton = closeButton;
 }
 
+mge::Button MgeWindow::getCloseButton()
+{
+	return m_closeButton.lock();
+}
+
 void MgeWindow::initialize() noexcept
 {
 	auto windowMainSizer = mge::createSizer(SizerType::VERTICAL);
@@ -83,7 +88,7 @@ namespace mge
 		return newWindow;
 	}
 
-	Window createCustomWindow(Widget&& content, std::vector<Trigger<int>>&& snapCollision, Button closeButton, const FPoint& newPosition, GraphicItemLayer layer)
+	Window createCustomWindow(Widget&& content, std::vector<Trigger<int>>&& snapCollision, mge::Button closeButton, const FPoint& newPosition, GraphicItemLayer layer)
 	{
 		_ASSERT(content);
 		if (!content)

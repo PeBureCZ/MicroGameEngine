@@ -157,6 +157,15 @@ void MgeFrame::setBorder(BorderSide sides, unsigned int width_pxls, const MgeCol
 	borderObject = std::move(borders);
 }
 
+size_t MgeFrame::getLayer()
+{
+	auto graphicComponent = getGraphicComponent();
+	size_t layer = GraphicItemLayer::GUI_LAYER;
+	if (graphicComponent)
+		layer = graphicComponent->getLayerFromVariant(0).value_or(GraphicItemLayer::GUI_LAYER);
+	return layer;
+}
+
 void MgeFrame::layout() noexcept
 {
 #ifdef _DEBUG

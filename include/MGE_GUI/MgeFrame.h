@@ -73,6 +73,7 @@ public:
 	void setOrigin(IPoint newOrigin);
 	
 	void setBorder(BorderSide sides, unsigned int width_pxls, const MgeColor& color = MgeColor());
+	[[nodiscard]] size_t getLayer();
 
 	//function is called automatically from GUI
 	void setUnderMouseCursor(bool isUnderMouse);

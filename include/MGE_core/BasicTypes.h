@@ -16,7 +16,7 @@ namespace mgeType
 		unsigned char b;
 		unsigned char a;
 		constexpr Color_RGBA()
-			: r(255), g(0), b(0), a(255) {}; //red by default
+			: r(0), g(0), b(0), a(255) {}; //black by default
 		constexpr Color_RGBA(unsigned char R, unsigned char G, unsigned char B, unsigned char A = 255)
 			: r(R), g(G), b(B), a(A) {};
 	};

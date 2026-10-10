@@ -253,7 +253,10 @@ void MgeWidget::addWidget(mge::Widget child, std::optional<size_t> toIndex)
 		child->setParent(getSelfPtr());
 		addChild(child, toIndex);
 		if (!child->isInitialized())
+		{
 			child->initializeSelf(child);
+			child->initialize(); //can be overridden
+		}
 
 		if (child->getAlignment() != GuiAlign::TopLeft)
 			child->setAlignment(child->getAlignment()); //re-align offset due to new parent

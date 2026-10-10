@@ -20,15 +20,16 @@ class MgeSizer;
 class MgeWindow;
 class MgeButton;
 
-using Button = std::shared_ptr<MgeButton>;
 
 namespace mge
 {
+	using Button = std::shared_ptr<MgeButton>;
+
 	using Window = std::shared_ptr<MgeWindow>;
 	Window createEmptyWindow(const FPoint& newPosition = FPoint(), const ISize& size = ISize(1, 1),
 		GraphicItemLayer layer = GraphicItemLayer::WINDOW_LAYER, MgeColor color = DEFAULT_FRAME_COLOR);
 
-	Window createCustomWindow(Widget&& content, std::vector<Trigger<int>>&& snapCollision, std::shared_ptr<MgeButton> closeButton = nullptr, const FPoint& newPosition = FPoint(),
+	Window createCustomWindow(Widget&& content, std::vector<Trigger<int>>&& snapCollision, mge::Button closeButton = nullptr, const FPoint& newPosition = FPoint(),
 		GraphicItemLayer layer = GraphicItemLayer::WINDOW_LAYER);
 }
 
@@ -42,6 +43,7 @@ public:
 	void closeWindow();
 	
 	void setCloseButton(std::shared_ptr<MgeButton> closeButton) noexcept;
+	[[nodiscard]] mge::Button getCloseButton();
 
 	void initialize() noexcept override;
 

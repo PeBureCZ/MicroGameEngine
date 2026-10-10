@@ -17,7 +17,7 @@ namespace mge
 {
 	using Button = std::shared_ptr<MgeButton>;
 	Button createButton(const FPoint& position = FPoint(), const ISize& size = ISize(1, 1), GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER);
-	Button createButton(const FPoint& position, MgeImage&& image);
+	Button createButton(const FPoint& position, MgeImage&& image, GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER);
 }
 
 class MgeButton : public MgeFrame
@@ -32,7 +32,7 @@ public:
 			const TextureId& idClicked = TextureId()
 		);
 
-	MgeButton(const FPoint& newPosition, MgeImage&& image);
+	MgeButton(const FPoint& newPosition, MgeImage&& image, GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER);
 
 	MgeButton(MgeButton&) = delete;
 	MgeButton(MgeButton&&) = delete;

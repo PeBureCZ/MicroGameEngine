@@ -21,8 +21,8 @@ MgeButton::MgeButton
 	setBasicCollision();
 }
 
-MgeButton::MgeButton(const FPoint& newPosition, MgeImage&& image)
-	: MgeFrame(newPosition, ISize(image.getSize()))
+MgeButton::MgeButton(const FPoint& newPosition, MgeImage&& image, GraphicItemLayer layer)
+	: MgeFrame(newPosition, ISize(image.getSize()), layer)
 {
 	MgeFrame::setImage(std::move(image));
 }
@@ -192,9 +192,9 @@ namespace mge
 		return newButton;
 	}
 
-	Button createButton(const FPoint& position, MgeImage&& image)
+	Button createButton(const FPoint& position, MgeImage&& image, GraphicItemLayer layer)
 	{
-		auto newButton = std::make_shared<MgeButton>(position, std::move(image));
+		auto newButton = std::make_shared<MgeButton>(position, std::move(image), layer);
 		newButton->initializeSelf(newButton);
 		return newButton;
 	}

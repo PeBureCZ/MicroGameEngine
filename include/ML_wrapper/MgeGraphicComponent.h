@@ -52,6 +52,16 @@ public:
 	void setPosition(const FPoint& position, size_t index);
 	[[nodiscard]] std::optional<FPoint> getPosition(size_t index);
 
+	/** * @brief Sets the Z-position of a graphic component within its layer.
+	@param newZPosition The new Z-position determining the drawing order within the layer.
+	@param index The index of the graphic component in m_graphic. */
+	void setZPosition(const int64_t newZPosition, size_t index) noexcept;
+
+	/** * @brief Returns the Z-position of a graphic component within its layer.
+	@param index The index of the graphic component in m_graphic.
+	@return The Z-position, or std::nullopt if the component does not exist */
+	std::optional<int64_t> getZPosition(size_t index) noexcept;
+
 	void setOrigin(const FPoint& newOrigin, size_t index);
 	[[nodiscard]] std::optional<float> getRotation(size_t index);
 

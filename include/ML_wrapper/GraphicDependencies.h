@@ -1,6 +1,7 @@
 #pragma once
 #include <array>
 #include <string>
+#include "GlobalFunctions.h"
 
 inline const char* UNDEFINED_TEXTURE_PATH = "undefined";
 
@@ -23,31 +24,38 @@ struct TextureId
 {
 public:
 	TextureId(std::string usedPath = std::string(UNDEFINED_TEXTURE_PATH))
-		: path(std::move(usedPath))
+		: m_path(std::move(usedPath))
 	{
 
 	}
-	std::string path;
 
-	bool operator == (const TextureId& other) const
+	TextureId(std::wstring usedPath)
+		: m_path(mgeCore::toUTF8(usedPath))
 	{
-		return path == other.path;
+
+	}
+
+		bool operator == (const TextureId& other) const
+	{
+		return m_path == other.m_path;
 	}
 
 	bool operator == (const std::string& other) const
 	{
-		return path == other;
+		return m_path == other;
 	}
 
 	bool operator == (const char* other) const
 	{
-		return path == other;
+		return m_path == other;
 	}
 
 	const std::string& getPath() const
 	{
-		return path;
+		return m_path;
 	}
+private:
+	std::string m_path;
 };
 
 namespace std
@@ -57,7 +65,7 @@ namespace std
 	{
 		size_t operator()(const TextureId& id) const noexcept
 		{
-			return std::hash<std::string>{}(id.path);
+			return std::hash<std::string>{}(id.getPath());
 		}
 	};
 }

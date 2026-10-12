@@ -2,6 +2,31 @@
 
 #include "MlWrapper.h"
 #include "GlobalFunctions.h"
+#include <filesystem>
+
+namespace
+{
+	std::string generateExtension(MgeImage::ImgType type)
+	{
+		switch (type)
+		{
+		case MgeImage::ImgType::BMP: return { ".bmp" };
+		case MgeImage::ImgType::PNG: return { ".png" };
+		case MgeImage::ImgType::JPG: return { ".jpg" };
+		case MgeImage::ImgType::TGA: return { ".tga" };
+		case MgeImage::ImgType::GIF: return { ".gif" };
+		case MgeImage::ImgType::PSD: return { ".psd" };
+		case MgeImage::ImgType::HDR: return { ".hdr" };
+		case MgeImage::ImgType::PIC: return { ".pic" };
+		case MgeImage::ImgType::PNM: return { ".pnm" };
+		default: _ASSERT(false); //undefined or unknown type
+		}
+		return { ".png" };
+	}
+
+	std::string defaultPath;
+	std::string defaultExtension = ".png";
+}
 
 MgeImage::MgeImage(const TextureId& usedTextureId, size_t usedLayer, const FPoint& newPosition)
 	: usedTexture(usedTextureId)
@@ -189,7 +214,12 @@ void  MgeImage::setImgAbsolutePosition(FPoint newPosition)
 	}
 }
 
-MgeImage MgeImage::loadTexture(std::string path, size_t layer)
+MgeImage MgeImage::loadTexture(const std::string& path, size_t layer)
+{
+	return MgeImage(TextureId(path), layer);
+}
+
+MgeImage MgeImage::loadTexture(const std::wstring& path, size_t layer)
 {
 	return MgeImage(TextureId(path), layer);
 }
@@ -197,6 +227,37 @@ MgeImage MgeImage::loadTexture(std::string path, size_t layer)
 MgeImage MgeImage::loadTexture(const TextureId& textureId, size_t layer)
 {
 	return MgeImage(TextureId(textureId.getPath()), layer);
+}
+
+MgeImage MgeImage::loadImageFromDefaultFolder(const std::string& name, size_t layer, const FPoint& newPosition, std::optional<MgeImage::ImgType> imgFileFormat)
+{
+	namespace fs = std::filesystem;
+	_ASSERT(!defaultPath.empty());
+	if (defaultPath.empty())
+		return {};
+
+	fs::path path = defaultPath + "\\" + name + generateExtension(imgFileFormat.value_or(MgeImage::ImgType::PNG));
+	_ASSERT(fs::exists(defaultPath));
+	if (!fs::exists(defaultPath))
+		return {};
+	return MgeImage(TextureId(path), layer, newPosition);
+}
+
+MgeImage MgeImage::loadImageFromDefaultFolder(const std::wstring& name, size_t layer, const FPoint& newPosition, std::optional<MgeImage::ImgType> imgFileFormat)
+{
+	return loadImageFromDefaultFolder(mgeCore::toUTF8(name), layer, newPosition, imgFileFormat);
+}
+
+void MgeImage::setDefaultImageFolder(const std::wstring& location)
+{
+	return setDefaultImageFolder(mgeCore::toUTF8(location));
+}
+
+void MgeImage::setDefaultImageFolder(const std::string& location)
+{
+	namespace fs = std::filesystem;
+	_ASSERT(fs::exists(location));
+	defaultPath = location;
 }
 
 void MgeImage::setZPosition(const int64_t newZPosition) noexcept

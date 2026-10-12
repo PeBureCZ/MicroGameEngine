@@ -35,11 +35,13 @@ public:
 	[[nodiscard]] unsigned int getDefaultNewTextSize() const noexcept;
 	void setDefaultNewTextSize(unsigned int height_pxls) noexcept;
 	void addTextLine(std::string text_utf8, unsigned int height_pxls = 12, MgeColor color = MgeColor(0, 0, 0, 255), bool bold = false) noexcept;
+	void addTextLine(std::wstring text, unsigned int height_pxls = 12, MgeColor color = MgeColor(0, 0, 0, 255), bool bold = false) noexcept;
 	void appendTextToLine(const std::string& text_utf8, size_t lineIndex);
 	const std::deque<MgeText>& getTextLines() const;
 	std::deque<MgeText>& editTextLines();
 
-	void setPadding(int leftBorder_pxls, int topBorder_pxls, int betweenTextLine_pxls = 3);
+	void setPadding(int leftPadding_pxls = 0, int topPadding_pxls = 0, int rightPadding_pxls = 0,
+		int botPadding_pxls = 0, int betweenTextLine_pxls = 3);
 
 	void removeLine(size_t index) noexcept;
 	void removeFirstLine() noexcept;
@@ -53,10 +55,10 @@ public:
 private:
 	int actualTextLinePos_pxls = 0;
 	int linePadding_pxls = 3;
-	int leftPadding = 0;
-	int topPadding = 0;
-	int bottomPadding = 0;
-	int rightPadding = 0;
+	int m_leftPadding = 0;
+	int m_topPadding = 0;
+	int m_bottomPadding = 0;
+	int m_rightPadding = 0;
 	GuiAlign usedAlign = GuiAlign::TopLeft;
 	std::deque<MgeText> m_frameTexts;
 

@@ -3,6 +3,7 @@
 #include <utility>
 #include <memory>
 #include <string>
+#include <optional>
 
 #include "SFML\Graphics.hpp"
 #include "GraphicDependencies.h"
@@ -15,6 +16,21 @@ struct MgeLayerObject;
 class MgeImage
 {
 public:
+	enum class ImgType : int
+	{
+		Unknown = -1,
+		undefined,
+		PNG,
+		JPG,
+		BMP,
+		TGA,
+		GIF,
+		PSD,
+		HDR,
+		PIC,
+		PNM
+	};
+
 	MgeImage(const TextureId& usedTextureId, size_t usedLayer = (size_t)GraphicItemLayer::DEFAULT_LAYER, const FPoint& newPosition = FPoint());
 	MgeImage();
 
@@ -36,8 +52,15 @@ public:
 	[[nodiscard]] size_t getLayer() const noexcept;
 	void setLayer(size_t newLayer);
 
-	static [[nodiscard]] MgeImage loadTexture(std::string path, size_t layer = GraphicItemLayer::DEFAULT_LAYER);
+	static [[nodiscard]] MgeImage loadTexture(const std::string& path, size_t layer = GraphicItemLayer::DEFAULT_LAYER);
+	static [[nodiscard]] MgeImage loadTexture(const std::wstring& path, size_t layer = GraphicItemLayer::DEFAULT_LAYER);
 	static [[nodiscard]] MgeImage loadTexture(const TextureId& textureId, size_t layer = GraphicItemLayer::DEFAULT_LAYER);
+	static [[nodiscard]] MgeImage loadImageFromDefaultFolder(const std::string& name, size_t layer = GraphicItemLayer::DEFAULT_LAYER,
+		const FPoint& newPosition = FPoint(), std::optional<ImgType> imgFileFormat = std::nullopt);
+	static [[nodiscard]] MgeImage loadImageFromDefaultFolder(const std::wstring& name, size_t layer = GraphicItemLayer::DEFAULT_LAYER,
+		const FPoint& newPosition = FPoint(), std::optional<ImgType> imgFileFormat = std::nullopt);
+	static [[nodiscard]] void setDefaultImageFolder(const std::wstring& location);
+	static [[nodiscard]] void setDefaultImageFolder(const std::string& location);
 
 	void setZPosition(int64_t newZPosition) noexcept;
 	[[nodiscard]] int64_t getZPosition() const noexcept;
@@ -53,7 +76,7 @@ protected:
 private:
 	mgeType::Size<int> size;
 	SPRITE_ID imageId = (SPRITE_ID)0;
-	TextureId usedTexture = {};
+	TextureId usedTexture;
 	FPoint absolutePosition;
 	std::weak_ptr<MgeLayerObject>  m_sprite;
 	std::uint8_t m_alpha = 255;

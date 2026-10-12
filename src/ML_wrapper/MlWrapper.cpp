@@ -430,7 +430,7 @@ namespace ML_wrapper
         else
         {
             sf::Texture texture;
-            if (!texture.loadFromFile(textureId.path))
+            if (!texture.loadFromFile(textureId.getPath()))
                 _ASSERT(false); //file not found
             else
             {
@@ -447,7 +447,7 @@ namespace ML_wrapper
     {
         for (const auto& texture : textures)
         {
-            if (texture.first.path == id.path)
+            if (texture.first.getPath() == id.getPath())
             {
                 sf::Vector2u texSize = texture.second.second.getSize();
                 static mgeType::Size<int> size;

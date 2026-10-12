@@ -26,13 +26,19 @@ void MgeTextFrame::setDefaultNewTextSize(unsigned int height_pxls) noexcept
 	m_defaultNewTextSize_pxls = height_pxls;
 }
 
-void MgeTextFrame::addTextLine(std::string text, unsigned int height_pxls, MgeColor color, bool bold) noexcept
+void MgeTextFrame::addTextLine(std::string text_utf8, unsigned int height_pxls, MgeColor color, bool bold) noexcept
 {
 	size_t layer = getLayer();
-	MgeText newText(std::move(text), height_pxls, FPoint(), bold, layer);
+	MgeText newText(std::move(text_utf8), height_pxls, FPoint(), bold, layer);
 	newText.setColor(std::move(color));
 	m_frameTexts.push_back(std::move(newText));
 	redrawTextFrame();
+}
+
+void MgeTextFrame::addTextLine(std::wstring text, unsigned int height_pxls, MgeColor color, bool bold) noexcept
+{
+	std::string text_utf8 = mgeCore::toUTF8(text);
+	addTextLine(std::move(text_utf8), height_pxls, color, bold);
 }
 
 void MgeTextFrame::appendTextToLine(const std::string& text_utf8, size_t lineIndex)
@@ -52,10 +58,13 @@ std::deque<MgeText>& MgeTextFrame::editTextLines()
 	return m_frameTexts;
 }
 
-void MgeTextFrame::setPadding(int leftBorder_pxls, int topBorder_pxls, int betweenTextLine_pxls)
+void MgeTextFrame::setPadding(int leftPadding_pxls, int topPadding_pxls, int rightPadding_pxls,
+	int bottomPadding_pxls, int betweenTextLine_pxls)
 {
-	leftPadding = leftBorder_pxls;
-	topPadding = topBorder_pxls;
+	m_leftPadding = leftPadding_pxls;
+	m_topPadding = topPadding_pxls;
+	m_bottomPadding = bottomPadding_pxls;
+	m_rightPadding = rightPadding_pxls;
 	linePadding_pxls = betweenTextLine_pxls;
 	redrawTextFrame();
 }
@@ -148,7 +157,7 @@ void MgeTextFrame::redrawTextFrame() noexcept
 		case GuiAlign::TopLeft:
 		case GuiAlign::TopCenter:
 		case GuiAlign::TopRight:
-			textBlockY += topPadding;
+			textBlockY += m_topPadding;
 			break;
 
 		case GuiAlign::MiddleLeft:
@@ -160,7 +169,7 @@ void MgeTextFrame::redrawTextFrame() noexcept
 		case GuiAlign::BottomLeft:
 		case GuiAlign::BottomCenter:
 		case GuiAlign::BottomRight:
-			textBlockY += frameSize.height - allTextsHeight - bottomPadding;
+			textBlockY += frameSize.height - allTextsHeight - m_bottomPadding;
 			break;
 
 		default:
@@ -180,7 +189,7 @@ void MgeTextFrame::redrawTextFrame() noexcept
 			case GuiAlign::TopLeft:
 			case GuiAlign::MiddleLeft:
 			case GuiAlign::BottomLeft:
-				actualX += leftPadding;
+				actualX += m_leftPadding;
 				break;
 
 			case GuiAlign::TopCenter:
@@ -192,7 +201,7 @@ void MgeTextFrame::redrawTextFrame() noexcept
 			case GuiAlign::TopRight:
 			case GuiAlign::MiddleRight:
 			case GuiAlign::BottomRight:
-				actualX += frameSize.width - textWidth - rightPadding;
+				actualX += frameSize.width - textWidth - m_rightPadding;
 				break;
 
 			default:

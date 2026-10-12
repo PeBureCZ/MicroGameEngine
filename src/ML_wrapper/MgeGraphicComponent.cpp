@@ -264,6 +264,67 @@ std::optional<FPoint> MgeGraphicComponent::getPosition(size_t index)
 	return std::nullopt;
 }
 
+void MgeGraphicComponent::setZPosition(const int64_t newZPosition, size_t index) noexcept
+{
+	_ASSERT(index < m_graphic.size());
+	if (index >= m_graphic.size())
+		return;
+
+	_ASSERT(m_graphic[index]);
+	if (!m_graphic[index])
+		return;
+
+	if (std::holds_alternative<MgeDrawable>(*m_graphic[index]))
+	{
+		auto& drawableObject = std::get<MgeDrawable>(*m_graphic[index]);
+		drawableObject.setZPosition(newZPosition);
+	}
+	else if (std::holds_alternative<MgeImage>(*m_graphic[index]))
+	{
+		auto& img = std::get<MgeImage>(*m_graphic[index]);
+		img.setZPosition(newZPosition);
+	}
+	else if (std::holds_alternative<MgeText>(*m_graphic[index]))
+	{
+		auto& text = std::get<MgeText>(*m_graphic[index]);
+		text.setZPosition(newZPosition);
+	}
+	else
+	{ //unhandled
+		_ASSERT(false);
+	}
+}
+
+std::optional<int64_t> MgeGraphicComponent::getZPosition(size_t index) noexcept
+{
+	_ASSERT(index < m_graphic.size());
+	if (index >= m_graphic.size())
+		return std::nullopt;
+
+	_ASSERT(m_graphic[index]);
+	if (!m_graphic[index])
+		return std::nullopt;
+
+	if (std::holds_alternative<MgeDrawable>(*m_graphic[index]))
+	{
+		auto& drawableObject = std::get<MgeDrawable>(*m_graphic[index]);
+		return drawableObject.getZPosition();
+	}
+	else if (std::holds_alternative<MgeImage>(*m_graphic[index]))
+	{
+		auto& img = std::get<MgeImage>(*m_graphic[index]);
+		return img.getZPosition();
+	}
+	else if (std::holds_alternative<MgeText>(*m_graphic[index]))
+	{
+		auto& text = std::get<MgeText>(*m_graphic[index]);
+		return text.getZPosition();
+	}
+
+	_ASSERT(false); //unhandled
+	return std::nullopt;
+}
+
 void MgeGraphicComponent::setOrigin(const FPoint& newOrigin, size_t index)
 {
 	_ASSERT(index < m_graphic.size());

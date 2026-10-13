@@ -43,7 +43,7 @@ namespace ML_wrapper
         if (!mainWindow)
         {
             //#define USE_FULLSCREEN //uncomment to enable fullscreen mode in debug (for testing purposes)
-#if defined(NDEBUG) || defined(USE_FULLSCREEN)
+#ifdef USE_FULLSCREEN
             // Fullscreen mode with current desktop resolution
             auto dm = sf::VideoMode::getDesktopMode();
             mainWindow = std::make_shared<sf::RenderWindow>(dm, "Mge Application", sf::Style::Default, sf::State::Fullscreen);

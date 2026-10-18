@@ -91,6 +91,7 @@ private:
 namespace mge
 {
 	bool destroyActor(std::shared_ptr<MgeActor> actor);
+	using Actor = std::shared_ptr<MgeActor>;
 }
 
 

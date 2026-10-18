@@ -195,11 +195,12 @@ namespace mge
 		if (!actor)
 			return removed;
 
-		for (auto& child : actor->editChildren())
+		while (actor->editChildren().size() != 0)
 		{
+			mge::Actor child = actor->editChildren().front();
 			_ASSERT(child);
 			if (child)
-				destroyActor(child);
+				destroyActor(std::move(child));
 		}
 
 		if (auto parent = actor->getParent())

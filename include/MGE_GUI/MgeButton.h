@@ -17,22 +17,16 @@ namespace mge
 {
 	using Button = std::shared_ptr<MgeButton>;
 	Button createButton(const FPoint& position = FPoint(), const ISize& size = ISize(1, 1), GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER);
-	Button createButton(const FPoint& position, MgeImage&& image, GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER);
+	Button createButton(const FPoint& position, MgeImage&& image, const TextureId& idHovered = TextureId(),
+		const TextureId& idClicked = TextureId(), GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER);
 }
 
 class MgeButton : public MgeFrame
 {
 public:
 	MgeButton(const FPoint& newPosition, mgeType::Size<int> newSize, GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER);
-	MgeButton
-		(
-			const FPoint& newPosition,
-			const TextureId& idUnselected,
-			const TextureId& idSelected = TextureId(),
-			const TextureId& idClicked = TextureId()
-		);
-
-	MgeButton(const FPoint& newPosition, MgeImage&& image, GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER);
+	MgeButton(const FPoint& newPosition, MgeImage&& image, const TextureId& idHovered = TextureId(),
+		const TextureId& idClicked = TextureId(), GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER);
 
 	MgeButton(MgeButton&) = delete;
 	MgeButton(MgeButton&&) = delete;
@@ -58,6 +52,7 @@ public:
 		const MgeColor& col = DEFAULT_TEXT_COLOR);
 	void setButtonText(const std::string& butText);
 	std::string getButtonText() const;
+	MgeText& getButtonTextObject();
 
 protected:
 	virtual void onCursorEnterCall() noexcept override;
@@ -70,13 +65,13 @@ private:
 	MgeColor mouseOverTextColor = MOUSE_OVER_TEXT_COLOR;
 
 	TextureId unselectedTexture = TextureId();
-	TextureId selectedTexture = TextureId();
+	TextureId m_hoveredTexture = TextureId();
 	TextureId clickedTexture = TextureId();
 
-	std::unique_ptr<MgeText> buttonText;
+	std::unique_ptr<MgeText> m_buttonText;
 
 	void setBasicCollision();
-	void addTextToButton(const std::string& butText, unsigned int characterSize_pxls, GuiAlign align, const MgeColor& col);
+	void addTextToButton(const std::string& butText, unsigned int characterSize_pxls, GuiAlign align, const MgeColor& col, int64_t zPos = mgeCore::getDefaultZPosition());
 
 	std::function<void()> onLMBClick = nullptr;
 	std::function<void()> onRMBClick = nullptr;

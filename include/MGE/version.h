@@ -6,9 +6,9 @@ namespace mgeVersion
 {
 	constexpr unsigned int MAJOR = 0;
 	constexpr unsigned int MINOR = 1;
-	constexpr unsigned int PATCH = 4;
-	constexpr std::string_view VERSION = "0.1.4";
-	constexpr std::wstring_view VERSION_W = L"0.1.4";
+	constexpr unsigned int PATCH = 5;
+	constexpr std::string_view VERSION = "0.1.5";
+	constexpr std::wstring_view VERSION_W = L"0.1.5";
 
 	inline static std::string getVersion()
 	{

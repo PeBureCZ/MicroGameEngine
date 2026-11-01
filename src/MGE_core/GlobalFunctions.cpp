@@ -10,6 +10,20 @@ static std::atomic<int64_t> defaultZPosition = DEFAULT_Z_POSITION;
 
 namespace mgeCore
 {
+    [[nodiscard]] std::wstring getWExecutablePath(bool includeExeName)
+    {
+        wchar_t buffer[MAX_PATH];
+        GetModuleFileNameW(nullptr, buffer, MAX_PATH);
+		std::wstring path(buffer);
+        if (!includeExeName)
+        {
+            size_t pos = path.find_last_of(L"\\/");
+            if (pos != std::wstring::npos)
+                path = path.substr(0, pos);
+        }
+		return path;
+    }
+
     [[nodiscard]] std::string getExecutablePath(bool includeExeName)
     {
         char buffer[MAX_PATH];

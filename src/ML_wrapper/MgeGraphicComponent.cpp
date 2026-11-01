@@ -48,6 +48,14 @@ void MgeGraphicComponent::setVariant(const MGE_GRAPHIC_PTR& graphicObject, size_
 	m_graphic[index] = graphicObject;
 }
 
+MGE_GRAPHIC_PTR MgeGraphicComponent::getVariant(size_t index)
+{
+	_ASSERT(index < m_graphic.size());
+	if (index >= m_graphic.size())
+		return {};
+	return m_graphic[index];
+}
+
 size_t MgeGraphicComponent::getComponentSize()
 {
 	return m_graphic.size();
@@ -158,7 +166,8 @@ void MgeGraphicComponent::rescaleGraphic(float scaleX, float scaleY, size_t inde
 	}
 	else if (std::holds_alternative<MgeImage>(*m_graphic[index]))
 	{
-		_ASSERT(false); //not yet
+		auto& img = std::get<MgeImage>(*m_graphic[index]);
+		img.rescale(scaleX, scaleY);
 	}
 	else if (std::holds_alternative<MgeText>(*m_graphic[index]))
 	{

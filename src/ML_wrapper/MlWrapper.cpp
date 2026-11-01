@@ -94,6 +94,7 @@ namespace ML_wrapper
             return;
 
         it_layer->m_layerObjects.push_back(newObject);
+        ML_wrapper::getGlobalMlWrapper()->sortLayerByZIndex_delayed(newObject->m_layer);
     }
 
     mgeType::Size<int> MlWrapper::getRenderWindowSize() const noexcept
@@ -406,13 +407,16 @@ namespace ML_wrapper
         std::lock_guard<std::mutex> lock(delayedSortMutex);
         auto it = std::find(delayedSort.begin(), delayedSort.end(), layer.m_layerNumber);
         if (it != delayedSort.end())
-            std::sort(layer.m_layerObjects.begin(), layer.m_layerObjects.end(),
+        {
+            std::stable_sort(layer.m_layerObjects.begin(), layer.m_layerObjects.end(),
                 [](auto& a, const auto& b)
-                    { 
-                        if (a && b)
-                            return a->zPosition < b->zPosition; 
-                        return false;
-                    });
+                {
+                    if (a && b)
+                        return a->zPosition < b->zPosition;
+                    return false;
+                });
+			delayedSort.erase(it);
+        }
     }
 
     const sf::Texture& MlWrapper::appendTexture(const MgeImage& image)

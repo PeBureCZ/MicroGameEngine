@@ -8,6 +8,7 @@
 
 namespace mgeCore
 {
+	[[nodiscard]] std::wstring getWExecutablePath(bool includeExeName = false);
     [[nodiscard]] std::string getExecutablePath(bool includeExeName = false);
 	void setThisThreadAsMain();
 	[[nodiscard]] bool mainThreadIsSet();

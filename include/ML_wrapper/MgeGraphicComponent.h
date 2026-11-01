@@ -40,6 +40,7 @@ public:
 
 	void addGraphicVariant(const MGE_GRAPHIC_PTR& graphicObject);
 	void setVariant(const MGE_GRAPHIC_PTR& graphicObject, size_t index);
+	MGE_GRAPHIC_PTR getVariant(size_t index);
 
 	size_t getComponentSize();
 	void setIsVisible(bool visible);
@@ -51,6 +52,7 @@ public:
 	void setRotation(float rotation, size_t index);
 	void setPosition(const FPoint& position, size_t index);
 	[[nodiscard]] std::optional<FPoint> getPosition(size_t index);
+
 
 	/** * @brief Sets the Z-position of a graphic component within its layer.
 	@param newZPosition The new Z-position determining the drawing order within the layer.

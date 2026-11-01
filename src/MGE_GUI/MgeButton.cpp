@@ -1,5 +1,7 @@
 #include "MgeButton.h"
 
+constexpr MgeColor DEFAULT_IMAGE_COLOR = MgeColor(255, 255, 255);
+
 MgeButton::MgeButton(const FPoint& newPosition, mgeType::Size<int> newSize, GraphicItemLayer layer)
 	: MgeFrame(newPosition, newSize, layer)
 	
@@ -8,22 +10,13 @@ MgeButton::MgeButton(const FPoint& newPosition, mgeType::Size<int> newSize, Grap
 	setBasicCollision();
 }
 
-MgeButton::MgeButton
-	(
-		const FPoint& newPosition,
-		const TextureId& idUnselected,
-		const TextureId& idSelected,
-		const TextureId& idClicked
-	)
-	: MgeFrame(newPosition, idUnselected)
-	, unselectedTexture(idUnselected), selectedTexture(idSelected), clickedTexture(idClicked)
+MgeButton::MgeButton(const FPoint& newPosition, MgeImage&& image, const TextureId& idHovered, const TextureId& idClicked, GraphicItemLayer layer)
+	: m_hoveredTexture(idHovered), clickedTexture(idClicked), MgeFrame(newPosition, ISize(image.getSize()), layer)
 {
-	setBasicCollision();
-}
-
-MgeButton::MgeButton(const FPoint& newPosition, MgeImage&& image, GraphicItemLayer layer)
-	: MgeFrame(newPosition, ISize(image.getSize()), layer)
-{
+	unselectedTexture = image.getTextureID();
+	image.setImgAbsolutePosition(newPosition);
+	defaultColor = DEFAULT_IMAGE_COLOR;
+	mouseOverColor = DEFAULT_IMAGE_COLOR;
 	MgeFrame::setImage(std::move(image));
 }
 
@@ -43,8 +36,8 @@ void MgeButton::setMouseOverButtonColor(const MgeColor& newColor)
 
 void MgeButton::setIsVisible(bool visible) noexcept
 {
-	if (buttonText)
-		buttonText->setIsVisible(visible);
+	if (m_buttonText)
+		m_buttonText->setIsVisible(visible);
 	MgeFrame::setIsVisible(visible);
 }
 
@@ -72,32 +65,33 @@ void MgeButton::onRmbClickCall() noexcept
 
 void MgeButton::layout() noexcept
 {
-	if (buttonText)
+	if (m_buttonText)
 	{
 		auto differencePos = getAbsolutePosition() - lastLayoutAbsolutePosition;
 		const auto sizeChanged = (lastLayoutSize != getSize());
 
 		if (sizeChanged)
-			buttonText->setAbsolutePosition(getAlignedPosition(buttonText->getAlign(), buttonText->getTextSize()));
+			m_buttonText->setAbsolutePosition(getAlignedPosition(m_buttonText->getAlign(), m_buttonText->getTextSize()));
 		else
-			buttonText->setAbsolutePosition(buttonText->getAbsolutePosition() + differencePos.asInt());
+			m_buttonText->setAbsolutePosition(m_buttonText->getAbsolutePosition() + differencePos.asInt());
 	}
 
 	MgeFrame::layout();
 }
 
-void MgeButton::addTextToButton(const std::string& butText, unsigned int characterSize_pxls, GuiAlign align, const MgeColor& col)
+void MgeButton::addTextToButton(const std::string& butText, unsigned int characterSize_pxls, GuiAlign align, const MgeColor& col, int64_t zPos)
 {
-	if (!buttonText)
+	if (!m_buttonText)
 	{
 		size_t layer = GraphicItemLayer::GUI_LAYER;
 		if (auto graphic = getGraphicComponent())
 			layer = graphic->getLayerFromVariant(GraphicType::BASIC_GRAPHIC_INDEX).value_or(GraphicItemLayer::GUI_LAYER);
 
-		buttonText = std::make_unique<MgeText>(butText, characterSize_pxls, FPoint(), false, layer);
-		buttonText->setIsVisible(getIsVisible());
-		buttonText->setColor(col);
-		buttonText->setAbsolutePosition(getAlignedPosition(align, buttonText->getTextSize()));
+		m_buttonText = std::make_unique<MgeText>(butText, characterSize_pxls, FPoint(), false, layer);
+		m_buttonText->setIsVisible(getIsVisible());
+		m_buttonText->setZPosition(zPos);
+		m_buttonText->setColor(col);
+		m_buttonText->setAbsolutePosition(getAlignedPosition(align, m_buttonText->getTextSize()));
 	}
 	else
 	{
@@ -109,25 +103,26 @@ void MgeButton::setButtonTextColors(MgeColor defaultColor, MgeColor mouseOverCol
 {
 	defaultTextColor = defaultColor;
 	mouseOverTextColor = mouseOverColor;
-	if (buttonText)
+	if (m_buttonText)
 	{
 		if (isUnderMouseCursor)
-			buttonText->setColor(mouseOverTextColor);
+			m_buttonText->setColor(mouseOverTextColor);
 		else
-			buttonText->setColor(defaultTextColor);
+			m_buttonText->setColor(defaultTextColor);
 	}
 }
 
 void MgeButton::setButtonText(const std::string& butText, unsigned int characterSize_pxls, GuiAlign align, const MgeColor& col)
 {
-	buttonText.reset();
-	addTextToButton(butText, characterSize_pxls, align, col);
+	int64_t zPos = m_buttonText ? m_buttonText->getZPosition() : mgeCore::getDefaultZPosition();
+	m_buttonText.reset();
+	addTextToButton(butText, characterSize_pxls, align, col, zPos);
 }
 
 void MgeButton::setButtonText(const std::string& butText)
 {
-	if (buttonText)
-		buttonText->setText(butText);
+	if (m_buttonText)
+		m_buttonText->setText(butText);
 	else
 	{
 		_ASSERT(false);
@@ -136,13 +131,20 @@ void MgeButton::setButtonText(const std::string& butText)
 
 std::string MgeButton::getButtonText() const
 {
-	if (buttonText)
-		return buttonText->getText();
+	if (m_buttonText)
+		return m_buttonText->getText();
 	else
 	{
 		_ASSERT(false);
 		return {};
 	}
+}
+
+MgeText& MgeButton::getButtonTextObject()
+{
+	if (!m_buttonText)
+		addTextToButton("", 12, GuiAlign::MiddleCenter, MgeColor());
+	return *m_buttonText;
 }
 
 void MgeButton::onCursorEnterCall() noexcept
@@ -151,8 +153,20 @@ void MgeButton::onCursorEnterCall() noexcept
 	{
 		setColor(mouseOverColor);
 
-		if (buttonText)
-			buttonText->setColor(mouseOverTextColor);
+		if (m_buttonText)
+			m_buttonText->setColor(mouseOverTextColor);
+
+		if (auto graphic = getGraphicComponent())
+		{
+			auto graphicVariant = graphic->getVariant(GraphicType::BASIC_GRAPHIC_INDEX);
+			if (graphicVariant && std::holds_alternative<MgeImage>(*graphicVariant))
+			{
+				auto& img = std::get<MgeImage>(*graphicVariant);
+				if (m_hoveredTexture != TextureId() && !m_hoveredTexture.getPath().empty())
+					img.setTexture(m_hoveredTexture);
+			}
+		}
+
 		MgeFrame::onCursorEnterCall();
 	}
 	catch (...)
@@ -167,8 +181,20 @@ void MgeButton::onCursorLeaveCall() noexcept
 	{
 		setColor(defaultColor);
 			
-		if (buttonText)
-			buttonText->setColor(defaultTextColor);
+		if (m_buttonText)
+			m_buttonText->setColor(defaultTextColor);
+
+		if (auto graphic = getGraphicComponent())
+		{
+			auto graphicVariant = graphic->getVariant(GraphicType::BASIC_GRAPHIC_INDEX);
+			if (graphicVariant && std::holds_alternative<MgeImage>(*graphicVariant))
+			{
+				auto& img = std::get<MgeImage>(*graphicVariant);
+				if (unselectedTexture != TextureId() && !unselectedTexture.getPath().empty())
+					img.setTexture(unselectedTexture);
+			}
+		}
+
 		MgeFrame::onCursorLeaveCall();
 	}
 	catch (...)
@@ -192,9 +218,9 @@ namespace mge
 		return newButton;
 	}
 
-	Button createButton(const FPoint& position, MgeImage&& image, GraphicItemLayer layer)
+	Button createButton(const FPoint& position, MgeImage&& image, const TextureId& idHovered, const TextureId& idClicked, GraphicItemLayer layer)
 	{
-		auto newButton = std::make_shared<MgeButton>(position, std::move(image), layer);
+		auto newButton = std::make_shared<MgeButton>(position, std::move(image), idHovered, idClicked, layer);
 		newButton->initializeSelf(newButton);
 		return newButton;
 	}

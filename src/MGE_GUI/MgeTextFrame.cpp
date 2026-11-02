@@ -94,6 +94,12 @@ void MgeTextFrame::removeLastLine() noexcept
 		m_frameTexts.pop_back();
 }
 
+void  MgeTextFrame::clear() noexcept
+{
+	m_frameTexts.clear();
+}
+
+
 void MgeTextFrame::layout() noexcept
 {
 	if (m_frameTexts.size() > 0)

@@ -9,14 +9,32 @@
 namespace mgeCore
 {
 	[[nodiscard]] std::wstring getWExecutablePath(bool includeExeName = false);
-    [[nodiscard]] std::string getExecutablePath(bool includeExeName = false);
+	[[nodiscard]] std::string getExecutablePath(bool includeExeName = false);
 	void setThisThreadAsMain();
 	[[nodiscard]] bool mainThreadIsSet();
 	[[nodiscard]] bool isMainThread();
     [[nodiscard]] std::string toUTF8(const std::wstring& wstr);
 	[[nodiscard]] std::wstring fromUTF8(const std::string& str);
 	void setDefaultZPosition(int64_t newDefaultValue);
-	[[nodiscard]] int64_t getDefaultZPosition();
+
+	enum ZPositionAdditionMode : int64_t
+	{
+		Decrease = -100,
+		None = 0,
+		Text = 100,
+	};
+
+	[[nodiscard]] int64_t getDefaultZPosition(ZPositionAdditionMode additionMode = ZPositionAdditionMode::None);
+
+	enum class DecimalSeparator
+	{
+		Dot,
+		Comma,
+		DotAndComma
+	};
+	[[nodiscard]] std::string formatNumber(double value, DecimalSeparator separator, size_t maxDecimals = 4) noexcept;
+
+	[[nodiscard]] double fromStringToDouble(const std::string& text, DecimalSeparator allowSeparator) noexcept;
 }
 
 

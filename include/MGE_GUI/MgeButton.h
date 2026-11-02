@@ -48,8 +48,7 @@ public:
 	void layout() noexcept override;
 
 	void setButtonTextColors(MgeColor defaultColor, MgeColor mouseOverColor);
-	void setButtonText(const std::string& butText, unsigned int characterSize_pxls, GuiAlign align,
-		const MgeColor& col = DEFAULT_TEXT_COLOR);
+	void setButtonText(const std::string& butText, unsigned int characterSize_pxls, GuiAlign align);
 	void setButtonText(const std::string& butText);
 	std::string getButtonText() const;
 	MgeText& getButtonTextObject();
@@ -61,8 +60,8 @@ protected:
 private:
 	MgeColor defaultColor = DEFAULT_BUTTON_COLOR;
 	MgeColor mouseOverColor = MOUSE_OVER_FRAME_COLOR;
-	MgeColor defaultTextColor = DEFAULT_TEXT_COLOR;
-	MgeColor mouseOverTextColor = MOUSE_OVER_TEXT_COLOR;
+	MgeColor m_defaultTextColor = DEFAULT_TEXT_COLOR;
+	MgeColor m_mouseOverTextColor = MOUSE_OVER_TEXT_COLOR;
 
 	TextureId unselectedTexture = TextureId();
 	TextureId m_hoveredTexture = TextureId();
@@ -71,7 +70,7 @@ private:
 	std::unique_ptr<MgeText> m_buttonText;
 
 	void setBasicCollision();
-	void addTextToButton(const std::string& butText, unsigned int characterSize_pxls, GuiAlign align, const MgeColor& col, int64_t zPos = mgeCore::getDefaultZPosition());
+	void addTextToButton(const std::string& butText, unsigned int characterSize_pxls, GuiAlign align, const MgeColor& col, int64_t zPos = mgeCore::getDefaultZPosition(mgeCore::ZPositionAdditionMode::Text));
 
 	std::function<void()> onLMBClick = nullptr;
 	std::function<void()> onRMBClick = nullptr;

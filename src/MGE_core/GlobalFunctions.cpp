@@ -2,6 +2,10 @@
 
 #include <deque>
 #include <atomic>
+#include <cmath>
+#include <string>
+#include <system_error>
+#include <charconv>
 
 static bool mainThreadRun = false;
 static std::thread::id mainThreadId;
@@ -142,8 +146,115 @@ namespace mgeCore
         defaultZPosition.store(newDefaultValue);
     }
 
-    int64_t getDefaultZPosition()
+    int64_t getDefaultZPosition(ZPositionAdditionMode additionMode)
     {
-        return defaultZPosition.load();
+        return defaultZPosition.load() + static_cast<int64_t>(additionMode);
     }
+
+    [[nodiscard]] std::string formatNumber(double value, DecimalSeparator separator, size_t maxDecimals ) noexcept
+    {
+        _ASSERT(separator != DecimalSeparator::DotAndComma);
+        try
+        {
+            if (!std::isfinite(value))
+            {
+                if (std::isnan(value))
+                    return "nan";
+
+                return std::signbit(value) ? "-inf" : "inf";
+            }
+
+            char buffer[128];
+
+            const auto [ptr, ec] = std::to_chars(std::begin(buffer), std::end(buffer), value,
+                std::chars_format::fixed,
+                static_cast<int>((std::min)(maxDecimals, size_t{ 100 })));
+
+            if (ec != std::errc{})
+                return {};
+
+            std::string result(buffer, ptr);
+
+            const auto dotPos = result.find('.');
+
+            if (dotPos != std::string::npos)
+            {
+                while (!result.empty() && result.back() == '0')
+                    result.pop_back();
+
+                if (!result.empty() && result.back() == '.')
+                    result.pop_back();
+            }
+
+            if (separator == DecimalSeparator::Comma)
+            {
+                const auto pos = result.find('.');
+                if (pos != std::string::npos)
+                    result[pos] = ',';
+            }
+
+            return result;
+        }
+        catch (...)
+        {
+            return {};
+        }
+    }
+
+    [[nodiscard]] double fromStringToDouble(const std::string& text, DecimalSeparator allowSeparator) noexcept
+    {
+        if (text.empty())
+            return 0.0;
+
+        std::string normalized;
+        normalized.reserve(text.size());
+
+        bool hasDot = false;
+        bool hasComma = false;
+
+        for (const char c : text)
+        {
+            if (c == '.')
+            {
+                if (allowSeparator == DecimalSeparator::Comma)
+                    return 0.0;
+
+                if (hasDot)
+                    return 0.0;
+
+                hasDot = true;
+                normalized.push_back('.');
+            }
+            else if (c == ',')
+            {
+                if (allowSeparator == DecimalSeparator::Dot)
+                    return 0.0;
+
+                if (hasComma)
+                    return 0.0;
+
+                hasComma = true;
+                normalized.push_back('.');
+            }
+            else
+                normalized.push_back(c);
+        }
+
+        // A number cannot contain both decimal separators.
+        if (hasDot && hasComma)
+            return 0.0;
+
+        double value = 0.0;
+
+        const char* begin = normalized.data();
+        const char* end = begin + normalized.size();
+
+        const auto [ptr, ec] = std::from_chars(begin, end, value);
+
+        if (ec != std::errc{} || ptr != end || !std::isfinite(value))
+            return 0.0;
+
+        return value;
+    }
+
 }

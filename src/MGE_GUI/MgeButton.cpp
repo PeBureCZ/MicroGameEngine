@@ -101,22 +101,23 @@ void MgeButton::addTextToButton(const std::string& butText, unsigned int charact
 
 void MgeButton::setButtonTextColors(MgeColor defaultColor, MgeColor mouseOverColor)
 {
-	defaultTextColor = defaultColor;
-	mouseOverTextColor = mouseOverColor;
+	m_defaultTextColor = defaultColor;
+	m_mouseOverTextColor = mouseOverColor;
 	if (m_buttonText)
 	{
-		if (isUnderMouseCursor)
-			m_buttonText->setColor(mouseOverTextColor);
+		if (m_isUnderMouseCursor)
+			m_buttonText->setColor(m_mouseOverTextColor);
 		else
-			m_buttonText->setColor(defaultTextColor);
+			m_buttonText->setColor(m_defaultTextColor);
 	}
 }
 
-void MgeButton::setButtonText(const std::string& butText, unsigned int characterSize_pxls, GuiAlign align, const MgeColor& col)
+void MgeButton::setButtonText(const std::string& butText, unsigned int characterSize_pxls, GuiAlign align)
 {
-	int64_t zPos = m_buttonText ? m_buttonText->getZPosition() : mgeCore::getDefaultZPosition();
+	int64_t zPos = m_buttonText ? m_buttonText->getZPosition() : mgeCore::getDefaultZPosition(mgeCore::ZPositionAdditionMode::Text);
 	m_buttonText.reset();
-	addTextToButton(butText, characterSize_pxls, align, col, zPos);
+
+	addTextToButton(butText, characterSize_pxls, align, m_isUnderMouseCursor ? m_mouseOverTextColor : m_defaultTextColor, zPos);
 }
 
 void MgeButton::setButtonText(const std::string& butText)
@@ -154,7 +155,7 @@ void MgeButton::onCursorEnterCall() noexcept
 		setColor(mouseOverColor);
 
 		if (m_buttonText)
-			m_buttonText->setColor(mouseOverTextColor);
+			m_buttonText->setColor(m_mouseOverTextColor);
 
 		if (auto graphic = getGraphicComponent())
 		{
@@ -182,7 +183,7 @@ void MgeButton::onCursorLeaveCall() noexcept
 		setColor(defaultColor);
 			
 		if (m_buttonText)
-			m_buttonText->setColor(defaultTextColor);
+			m_buttonText->setColor(m_defaultTextColor);
 
 		if (auto graphic = getGraphicComponent())
 		{

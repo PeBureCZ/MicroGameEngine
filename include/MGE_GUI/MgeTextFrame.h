@@ -46,6 +46,7 @@ public:
 	void removeLine(size_t index) noexcept;
 	void removeFirstLine() noexcept;
 	void removeLastLine() noexcept;
+	void clear() noexcept;
 
 	void layout() noexcept override;
 

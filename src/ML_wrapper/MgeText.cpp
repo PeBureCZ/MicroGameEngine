@@ -29,7 +29,7 @@ MgeText::MgeText(std::string newText, unsigned int characterSize_pxls, const FPo
 		firstTimeOpen = false;
 	}
 
-	auto newMgeText = std::make_shared<MgeLayerObject>(MgeLayerObject{ mgeCore::getDefaultZPosition(),
+	auto newMgeText = std::make_shared<MgeLayerObject>(MgeLayerObject{ mgeCore::getDefaultZPosition(mgeCore::ZPositionAdditionMode::Text),
 		layer, sf::Text{font, sf::String::fromUtf8(newText.begin(), newText.end()), characterSize_pxls} });
 	m_text = newMgeText;
 	auto& sfText = std::get<sf::Text>(newMgeText->data);

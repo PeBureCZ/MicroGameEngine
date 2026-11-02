@@ -83,7 +83,7 @@ protected:
 	virtual void onCursorEnterCall() noexcept;
 	//to call specific defined function (eg. from another widget)
 	virtual void onCursorLeaveCall() noexcept;
-	bool isUnderMouseCursor = false;
+	bool m_isUnderMouseCursor = false;
 
 private:
 	std::vector<Trigger<int>> collisions;

@@ -225,11 +225,11 @@ void MgeFrame::layout() noexcept
 
 void MgeFrame::setUnderMouseCursor(bool isUnderMouse)
 {
-	if (!isUnderMouseCursor && isUnderMouse)
+	if (!m_isUnderMouseCursor && isUnderMouse)
 		onCursorEnterCall();
-	else if (isUnderMouseCursor && !isUnderMouse)
+	else if (m_isUnderMouseCursor && !isUnderMouse)
 		onCursorLeaveCall();
-	isUnderMouseCursor = isUnderMouse;
+	m_isUnderMouseCursor = isUnderMouse;
 }
 
 MGE_GRAPHIC MgeFrame::getGraphicComponent()
@@ -241,7 +241,7 @@ MGE_GRAPHIC MgeFrame::getGraphicComponent()
 
 bool MgeFrame::isUnderCursor() const noexcept
 {
-	return isUnderMouseCursor;
+	return m_isUnderMouseCursor;
 }
 
 IPoint MgeFrame::getAlignedPosition(GuiAlign align, mgeType::Size<int> objectSize)

@@ -126,7 +126,7 @@ void MgeImage::createNewSprite(size_t usedLayer, int64_t zPosition, const DSize&
 	if (newSprite && std::holds_alternative<sf::Sprite>(newSprite->data))
 	{
 		auto& sfSprite = std::get<sf::Sprite>(newSprite->data);
-		sfSprite.setScale(sf::Vector2f(currentScale.width, currentScale.height));
+		sfSprite.setScale(sf::Vector2f((float)currentScale.width, (float)currentScale.height));
 		sfSprite.setColor(sf::Color(currentColor.r, currentColor.g, currentColor.b, m_isVisible ? currentColor.a : 0));
 		sfSprite.setPosition(sf::Vector2f(absolutePosition.x, absolutePosition.y));
 	}

@@ -29,7 +29,7 @@ MgeFrame::MgeFrame(const FPoint& newPosition, const TextureId& textureId, Graphi
 
 void MgeFrame::setImage(TextureId textureId)
 {
-	auto image = MgeImage(std::move(textureId), GraphicItemLayer::GUI_LAYER, getAbsolutePosition().asFloat());
+	auto image = MgeImage(std::move(textureId), getLayer(), getAbsolutePosition().asFloat());
 	setSize(image.getSize());
 	auto newImageVariant = std::make_shared<MGE_GRAPHIC_VARIANT>(std::move(image));
 	setGraphicObject(newImageVariant);

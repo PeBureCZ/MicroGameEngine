@@ -1,6 +1,7 @@
 #pragma once
 #include <memory> 
 #include <vector>
+#include <limits>
 
 #include "BasicShapes.h"
 #include "BasicTypes.h"
@@ -39,7 +40,6 @@ public:
 	MgeGui operator=(MgeGui&&) = delete;
 
 	void TickScreen(MgeScreen& screen, double delta);
-	//SCREEN_EVENTS& getScreenEventQue();
 
 	void sendLmbEventToGui(const IPoint& clickPos, bool clicked);
 	void sendRmbEventToGui(const IPoint& clickPos, bool clicked);
@@ -48,7 +48,22 @@ public:
 private:
 	std::shared_ptr<ML_wrapper::MlWrapper> sharedMlWrapper;
 	std::vector<mge::Widget> guiWidgets;
-	mge::Widget actualBlockWidget;
+
+	struct ActualBlockWidget
+	{
+		mge::Widget m_widget;
+		int64_t m_zPosition = (std::numeric_limits<int64_t>::min)();
+		size_t m_layer = 0;
+
+		void reset()
+		{
+			m_widget.reset();
+			m_zPosition = (std::numeric_limits<int64_t>::min)();
+			m_layer = 0;
+		}
+	};
+
+	ActualBlockWidget m_actualBlockWidget;
 	bool m_clickEventActive = false;
 	FPoint m_lastGuiMovePos; //used for moving MgeWindows
 

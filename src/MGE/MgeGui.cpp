@@ -1,4 +1,5 @@
 #include "MgeGui.h"
+
 #include "MgeFrame.h"
 #include "MgeButton.h"
 #include "MgeWidget.h"
@@ -44,10 +45,22 @@ void MgeGui::tickWidgets(const std::vector<std::shared_ptr<MgeActor>>& widgets)
         if (!widget || !widget->getIsVisible())
             continue;
 
-        if (const auto& frame = std::dynamic_pointer_cast<MgeFrame>(widget))
+        const auto& frame = std::dynamic_pointer_cast<MgeFrame>(widget);
+        if (frame && checkWidgetBlocking(*frame))
         {
-            if (checkWidgetBlocking(*frame))
-                actualBlockWidget = frame; //could be replaced by another widget above this one if multiple widgets are under cursor, but this is expected behavior
+            if (auto graphic = frame->getGraphicComponent())
+            {
+                size_t frameLayer = frame->getLayer();
+                auto frameZPosition_opt = graphic->getZPosition(GraphicType::BASIC_GRAPHIC_INDEX);
+
+                bool biggerLayer = frameLayer > m_actualBlockWidget.m_layer && frameZPosition_opt.has_value();
+                if (biggerLayer || (frameLayer == m_actualBlockWidget.m_layer && frameZPosition_opt.has_value() && frameZPosition_opt.value() >= m_actualBlockWidget.m_zPosition))
+                {
+                    m_actualBlockWidget.m_layer = frameLayer;
+                    m_actualBlockWidget.m_zPosition = frameZPosition_opt.value();
+                    m_actualBlockWidget.m_widget = frame;
+                }
+            }
         }
 
         tickWidgets(widget->getChildren());
@@ -57,10 +70,10 @@ void MgeGui::tickWidgets(const std::vector<std::shared_ptr<MgeActor>>& widgets)
 void MgeGui::sendLmbEventToGui(const IPoint& clickPos, bool clicked)
 {
     m_clickEventActive = clicked;
-    if (clicked && actualBlockWidget)
+    if (clicked && m_actualBlockWidget.m_widget)
     {
         m_lastGuiMovePos = clickPos;
-        if (const auto& button = std::dynamic_pointer_cast<MgeButton>(actualBlockWidget))
+        if (const auto& button = std::dynamic_pointer_cast<MgeButton>(m_actualBlockWidget.m_widget))
 			button->onLmbClickCall();
     }
     //else -> release not yet
@@ -68,9 +81,9 @@ void MgeGui::sendLmbEventToGui(const IPoint& clickPos, bool clicked)
 
 void MgeGui::sendRmbEventToGui(const IPoint& cursorPos, bool clicked)
 {
-    if (clicked && actualBlockWidget)
+    if (clicked && m_actualBlockWidget.m_widget)
     {
-        if (const auto& button = std::dynamic_pointer_cast<MgeButton>(actualBlockWidget))
+        if (const auto& button = std::dynamic_pointer_cast<MgeButton>(m_actualBlockWidget.m_widget))
             button->onRmbClickCall();
     }
     //else -> release not yet
@@ -78,26 +91,26 @@ void MgeGui::sendRmbEventToGui(const IPoint& cursorPos, bool clicked)
 
 bool MgeGui::isCursorBlockedByGui() const noexcept
 {
-    return (actualBlockWidget.use_count() != 0);
+    return (m_actualBlockWidget.m_widget.use_count() != 0);
 }
 
 void MgeGui::tickScreenChildren(const MgeScreen& screen)
 {
-    const mge::Widget lastBlockWidget = actualBlockWidget;
-	actualBlockWidget.reset(); //will be set again if any widget is under cursor
+    const mge::Widget lastBlockWidget = m_actualBlockWidget.m_widget;
+	m_actualBlockWidget.reset();
     tickWidgets(screen.getChildren());
 
-    if (lastBlockWidget != actualBlockWidget && lastBlockWidget)
-	{ //if lastBlockWidget is not null and is different from actualBlockWidget, it means cursor left the last widget
+    if (lastBlockWidget != m_actualBlockWidget.m_widget && lastBlockWidget)
+	{ //if lastBlockWidget is not null and is different from m_actualBlockWidget, it means cursor left the last widget
         if (const auto& releasedFrame = std::dynamic_pointer_cast<MgeFrame>(lastBlockWidget))
             releasedFrame->setUnderMouseCursor(false);
     }
 
-    if (actualBlockWidget)
+    if (m_actualBlockWidget.m_widget)
 	{ //if actualBlockWidget is not null, it means cursor is over the widget
         if (m_clickEventActive)
         {
-            if (const auto& window = std::dynamic_pointer_cast<MgeWindow>(actualBlockWidget))
+            if (const auto& window = std::dynamic_pointer_cast<MgeWindow>(m_actualBlockWidget.m_widget))
             { //move window
                 const auto& actualCursorPos = ML_wrapper::getGlobalMlWrapper()->getCursorWorldPosition();
                 auto dif = actualCursorPos - m_lastGuiMovePos;
@@ -107,7 +120,7 @@ void MgeGui::tickScreenChildren(const MgeScreen& screen)
             }
         }
 
-        if (const auto& frame = std::dynamic_pointer_cast<MgeFrame>(actualBlockWidget))
+        if (const auto& frame = std::dynamic_pointer_cast<MgeFrame>(m_actualBlockWidget.m_widget))
             frame->setUnderMouseCursor(true);
     }
 }

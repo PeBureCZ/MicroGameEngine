@@ -159,6 +159,11 @@ float MgeDrawable::getRotation() const noexcept
     return m_rotation;
 }
 
+[[nodiscard]] bool MgeDrawable::isValid() const noexcept
+{
+    return !m_vertices.expired();
+}
+
 void MgeDrawable::setPosition(const FPoint& newPosition)
 {
     MAIN_THREAD_GUARD;

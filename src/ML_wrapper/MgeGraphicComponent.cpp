@@ -118,6 +118,39 @@ std::optional<size_t> MgeGraphicComponent::getLayerFromVariant(size_t index)
 	return std::nullopt;
 }
 
+bool MgeGraphicComponent::setLayerToVariant(size_t index, GraphicItemLayer newLayer)
+{
+	_ASSERT(index < m_graphic.size());
+	if (index >= m_graphic.size())
+		return false;
+	_ASSERT(m_graphic[index]);
+	if (!m_graphic[index])
+		return false;
+
+	if (std::holds_alternative<MgeDrawable>(*m_graphic[index]))
+	{
+		auto& drawableObject = std::get<MgeDrawable>(*m_graphic[index]);
+		if (!drawableObject.isValid())
+			return false;
+		drawableObject.setLayer(newLayer);
+	}
+	else if (std::holds_alternative<MgeImage>(*m_graphic[index]))
+	{
+		auto& img = std::get<MgeImage>(*m_graphic[index]);
+		if (!img.isValid())
+			return false;
+		img.setLayer(newLayer);
+	}
+	else if (std::holds_alternative<MgeText>(*m_graphic[index]))
+	{
+		auto& text = std::get<MgeText>(*m_graphic[index]);
+		if (!text.isValid())
+			return false;
+		text.setLayer(newLayer);
+	}
+	return true;
+}
+
 void MgeGraphicComponent::setColor(const MgeColor& newColor, size_t index)
 {
 	_ASSERT(index < m_graphic.size());

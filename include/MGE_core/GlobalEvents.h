@@ -3,6 +3,7 @@
 #include "EventSystem.h"
 
 #include <string>
+#include <memory>
 
 #include "MgeObject.h"
 
@@ -18,6 +19,7 @@ enum MgeEventType : uint64_t
     KeyboardPressEvent,
     KeyboardReleaseEvent,
 	TextKeyEvent,
+    FocusWidgetRequest,
     //add new event types here...
 
     STATIC_CHECKER,
@@ -155,4 +157,12 @@ struct TextKeyEnteredEvent
 {
     MGE_EVENT_TYPE = MgeEventType::TextKeyEvent;
     std::string m_textAsUtf8;
+};
+
+class MgeWidget;
+struct FocusWidgetEvent
+{
+    MGE_EVENT_TYPE = MgeEventType::FocusWidgetRequest;
+    std::weak_ptr<MgeWidget> m_widget; // empty = clear focus
+    bool m_focus = true;               // false = release (only if m_widget is focused)
 };

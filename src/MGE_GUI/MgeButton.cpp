@@ -66,15 +66,7 @@ void MgeButton::onRmbClickCall() noexcept
 void MgeButton::layout() noexcept
 {
 	if (m_buttonText)
-	{
-		auto differencePos = getAbsolutePosition() - lastLayoutAbsolutePosition;
-		const auto sizeChanged = (lastLayoutSize != getSize());
-
-		if (sizeChanged)
-			m_buttonText->setAbsolutePosition(getAlignedPosition(m_buttonText->getAlign(), m_buttonText->getTextSize()));
-		else
-			m_buttonText->setAbsolutePosition(m_buttonText->getAbsolutePosition() + differencePos.asInt());
-	}
+		m_buttonText->setAbsolutePosition(getAlignedPosition(m_buttonText->getAlign(), m_buttonText->getTextSize()));
 
 	MgeFrame::layout();
 }
@@ -88,6 +80,7 @@ void MgeButton::addTextToButton(const std::string& butText, unsigned int charact
 			layer = graphic->getLayerFromVariant(GraphicType::BASIC_GRAPHIC_INDEX).value_or(GraphicItemLayer::GUI_LAYER);
 
 		m_buttonText = std::make_unique<MgeText>(butText, characterSize_pxls, FPoint(), false, layer);
+		m_buttonText->setAlign(align);
 		m_buttonText->setIsVisible(getIsVisible());
 		m_buttonText->setZPosition(zPos);
 		m_buttonText->setColor(col);
@@ -123,7 +116,10 @@ void MgeButton::setButtonText(const std::string& butText, unsigned int character
 void MgeButton::setButtonText(const std::string& butText)
 {
 	if (m_buttonText)
+	{
 		m_buttonText->setText(butText);
+		m_buttonText->setAbsolutePosition(getAlignedPosition(m_buttonText->getAlign(), m_buttonText->getTextSize()));
+	}
 	else
 	{
 		_ASSERT(false);
@@ -202,12 +198,6 @@ void MgeButton::onCursorLeaveCall() noexcept
 	{
 		_ASSERT(false);
 	}
-}
-
-void MgeButton::setBasicCollision()
-{
-	editCollisions().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition().asInt(), getSize())));
-	_ASSERT(editCollisions().size() == 1);
 }
 
 namespace mge

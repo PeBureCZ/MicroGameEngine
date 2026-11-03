@@ -48,12 +48,15 @@ public:
 	void setText(const std::wstring& newText);
 	void appendText(const std::string& newText);
 	void appendText(const std::wstring& newText);
+	void removeLastCharacter();
+
 	void setFontSize(unsigned int newSize);
 	unsigned int getFontSize() const;
 	[[nodiscard]] std::string getText() const;
 	[[nodiscard]] MgeColor getColor() const noexcept;
 	[[nodiscard]] bool isVisible() const noexcept;
 	[[nodiscard]] bool isBold() const noexcept;
+	[[nodiscard]] bool isValid() const noexcept;
 	void setBold(bool setBold);
 	[[nodiscard]] GuiAlign getAlign() const noexcept;
 	void setAlign(GuiAlign align) noexcept;
@@ -61,6 +64,7 @@ public:
 	[[nodiscard]] mgeType::Size<int> getTextSize() const;
 	[[nodiscard]] std::shared_ptr<MgeLayerObject> getTextObject() const noexcept;
 	[[nodiscard]] size_t getLayer() const noexcept;
+	void setLayer(size_t newLayer);
 	void setZPosition(int64_t newZPosition) noexcept;
 	[[nodiscard]] int64_t getZPosition() const noexcept;
 

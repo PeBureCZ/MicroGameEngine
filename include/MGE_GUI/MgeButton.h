@@ -69,7 +69,6 @@ private:
 
 	std::unique_ptr<MgeText> m_buttonText;
 
-	void setBasicCollision();
 	void addTextToButton(const std::string& butText, unsigned int characterSize_pxls, GuiAlign align, const MgeColor& col, int64_t zPos = mgeCore::getDefaultZPosition(mgeCore::ZPositionAdditionMode::Text));
 
 	std::function<void()> onLMBClick = nullptr;

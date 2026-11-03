@@ -45,6 +45,7 @@ public:
 	size_t getComponentSize();
 	void setIsVisible(bool visible);
 	std::optional<size_t> getLayerFromVariant(size_t index);
+	bool setLayerToVariant(size_t index, GraphicItemLayer newLayer);
 
 	void setColor(const MgeColor& newColor, size_t index);
 

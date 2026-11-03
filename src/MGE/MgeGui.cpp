@@ -6,6 +6,7 @@
 #include "MgeRollMenu.h"
 #include "MgeScreen.h"
 #include "MgeWindow.h"
+#include "MgeTextFrame.h"
 
 #include "MlWrapper.h"
 #include "BasicTypes.h"
@@ -70,11 +71,15 @@ void MgeGui::tickWidgets(const std::vector<std::shared_ptr<MgeActor>>& widgets)
 void MgeGui::sendLmbEventToGui(const IPoint& clickPos, bool clicked)
 {
     m_clickEventActive = clicked;
+
+    if (clicked)
+        setFocusedWidget(m_actualBlockWidget.m_widget); //non-focusable or empty click -> clears focus
+
     if (clicked && m_actualBlockWidget.m_widget)
     {
         m_lastGuiMovePos = clickPos;
         if (const auto& button = std::dynamic_pointer_cast<MgeButton>(m_actualBlockWidget.m_widget))
-			button->onLmbClickCall();
+            button->onLmbClickCall();
     }
     //else -> release not yet
 }
@@ -94,10 +99,48 @@ bool MgeGui::isCursorBlockedByGui() const noexcept
     return (m_actualBlockWidget.m_widget.use_count() != 0);
 }
 
+void MgeGui::setFocusedWidget(const mge::Widget& widget)
+{
+    const mge::Widget newFocus = (widget && widget->getIsFocusable() && widget->getIsVisible()) ? widget : nullptr;
+    const mge::Widget oldFocus = m_focusedWidget.lock();
+    if (oldFocus == newFocus)
+        return; //no change -> no double onFocusGet / double bindings
+
+    if (oldFocus)
+        oldFocus->onFocusLost();
+    m_focusedWidget = newFocus;
+    if (newFocus)
+        newFocus->onFocusGet();
+}
+
+void MgeGui::releaseFocus(const mge::Widget& widget)
+{
+    auto actualWidget = m_focusedWidget.lock();
+    if (actualWidget && widget == actualWidget)
+    {
+        actualWidget->onFocusLost();
+        m_focusedWidget.reset();
+    }
+}
+
+mge::Widget MgeGui::getFocusedWidget() const noexcept
+{
+    return m_focusedWidget.lock();
+}
+
 void MgeGui::tickScreenChildren(const MgeScreen& screen)
 {
     const mge::Widget lastBlockWidget = m_actualBlockWidget.m_widget;
 	m_actualBlockWidget.reset();
+    if (!m_focusedWidget.expired())
+    {
+		auto focusedWidget = m_focusedWidget.lock();
+        if (!focusedWidget->getIsVisible())
+        {
+            focusedWidget->onFocusLost();
+			m_focusedWidget.reset();
+        }
+    }
     tickWidgets(screen.getChildren());
 
     if (lastBlockWidget != m_actualBlockWidget.m_widget && lastBlockWidget)

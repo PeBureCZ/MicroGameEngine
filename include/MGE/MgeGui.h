@@ -14,6 +14,7 @@ namespace ML_wrapper
 }
 
 class MgeActor;
+class MgeWindow;
 
 namespace tsmType
 {
@@ -45,9 +46,15 @@ public:
 	void sendRmbEventToGui(const IPoint& clickPos, bool clicked);
 	[[nodiscard]] bool isCursorBlockedByGui() const noexcept;
 
+	void setFocusedWidget(const mge::Widget& widget);   // nullptr = clear
+	void releaseFocus(const mge::Widget& widget);       // clears only if widget is focused
+	[[nodiscard]] mge::Widget getFocusedWidget() const noexcept;
+
 private:
 	std::shared_ptr<ML_wrapper::MlWrapper> sharedMlWrapper;
 	std::vector<mge::Widget> guiWidgets;
+	std::weak_ptr<MgeWidget> m_focusedWidget;
+	std::weak_ptr<MgeWindow> m_activeWindow; // todo: not implemented yet
 
 	struct ActualBlockWidget
 	{

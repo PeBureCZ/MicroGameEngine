@@ -33,8 +33,7 @@ void MgeFrame::setImage(TextureId textureId)
 	setSize(image.getSize());
 	auto newImageVariant = std::make_shared<MGE_GRAPHIC_VARIANT>(std::move(image));
 	setGraphicObject(newImageVariant);
-	editCollisions().clear();
-	editCollisions().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition().asInt(), getSize())));
+	setBasicCollision();
 }
 
 void MgeFrame::setImage(MgeImage&& image)
@@ -45,8 +44,7 @@ void MgeFrame::setImage(MgeImage&& image)
 	setSize(image.getSize());
 	auto newImageVariant = std::make_shared<MGE_GRAPHIC_VARIANT>(std::move(image));
 	setGraphicObject(newImageVariant);
-	editCollisions().clear();
-	editCollisions().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition().asInt(), getSize())));
+	setBasicCollision();
 }
 
 void MgeFrame::setVertices(MgeDrawable&& newVertices) noexcept
@@ -164,6 +162,25 @@ size_t MgeFrame::getLayer()
 	if (graphicComponent)
 		layer = graphicComponent->getLayerFromVariant(0).value_or(GraphicItemLayer::GUI_LAYER);
 	return layer;
+}
+
+void MgeFrame::setLayerToAll(GraphicItemLayer newLayer)
+{
+	auto graphicComponent = getGraphicComponent();
+	if (graphicComponent)
+	{
+		for (size_t i = 0; i < graphicComponent->getComponentSize(); ++i)
+			graphicComponent->setLayerToVariant(i, newLayer);
+	}
+
+	if (borderObject.isValid())
+		borderObject.setLayer(newLayer);
+
+	for (auto& child : editChildren())
+	{
+		if (auto frame = std::dynamic_pointer_cast<MgeFrame>(child))
+			frame->setLayerToAll(newLayer);
+	}
 }
 
 void MgeFrame::layout() noexcept

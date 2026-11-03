@@ -79,6 +79,10 @@ protected:
 		eventsLifeTimeObserver.addToken<Event>(std::forward<Function>(fce));
 	}
 
+	[[nodiscard]] size_t getEventBindingsCount() const;
+	void removeAllEventBindings();
+	void removeEventBinding(ObserverTokenId id);
+
 private:
 	void createMgeDefaultComponent();
 

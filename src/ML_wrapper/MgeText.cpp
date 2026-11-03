@@ -120,10 +120,7 @@ void MgeText::setText(const std::string& newText)
 			auto& sfText = std::get<sf::Text>(text->data);
 			const auto oldBounds = sfText.getLocalBounds();
 			sfText.setString(sfString);
-
-			const auto newBounds = sfText.getLocalBounds();
-			const int horizontalOffset = static_cast<int>((newBounds.size.x - oldBounds.size.x) * 0.5f);
-			setAbsolutePosition(IPoint(getAbsolutePos.x - horizontalOffset, getAbsolutePos.y));
+			normalizeTextOrigin(sfText);
 		}
 		else
 		{
@@ -156,9 +153,8 @@ void MgeText::appendText(const std::string& newText)
 			_ASSERT(actualText.getSize() < 1000); //actually performs an unnecessary copy! Needs reworking if used with longer texts
 			const auto oldBounds = sfText.getLocalBounds();
 			sfText.setString(actualText + sfString);
+			normalizeTextOrigin(sfText);
 			const auto newBounds = sfText.getLocalBounds();
-			const int horizontalOffset = static_cast<int>((newBounds.size.x - oldBounds.size.x) * 0.5f);
-			setAbsolutePosition(IPoint(getAbsolutePos.x - horizontalOffset, getAbsolutePos.y));
 		}
 		else
 		{
@@ -174,6 +170,34 @@ void MgeText::appendText(const std::string& newText)
 void MgeText::appendText(const std::wstring& newText)
 {
 	appendText(mgeCore::toUTF8(newText));
+}
+
+void MgeText::removeLastCharacter()
+{
+	_ASSERT(!m_text.expired());
+	if (auto text = m_text.lock())
+	{
+		if (std::holds_alternative<sf::Text>(text->data))
+		{
+			const auto getAbsolutePos = getAbsolutePosition();
+			auto& sfText = std::get<sf::Text>(text->data);
+			auto& actualText = sfText.getString();
+			if (actualText.getSize() > 0)
+			{
+				const auto oldBounds = sfText.getLocalBounds();
+				sfText.setString(actualText.substring(0, actualText.getSize() - 1));
+				normalizeTextOrigin(sfText);
+			}
+		}
+		else
+		{
+			_ASSERT(false); //wrong type
+		}
+	}
+	else
+	{
+		_ASSERT(false);
+	}
 }
 
 void MgeText::setFontSize(unsigned int newSize)
@@ -264,6 +288,11 @@ bool MgeText::isBold() const noexcept
 	}
 }
 
+bool MgeText::isValid() const noexcept
+{
+	return !m_text.expired();
+}
+
 void MgeText::setBold(bool setBold)
 {
 	_ASSERT(!m_text.expired());
@@ -335,6 +364,14 @@ std::shared_ptr<MgeLayerObject> MgeText::getTextObject() const noexcept
 		return text->m_layer;
 	else
 		return 0;
+}
+
+void MgeText::setLayer(size_t newLayer)
+{
+	MAIN_THREAD_GUARD;
+	_ASSERT(!m_text.expired());
+	if (auto text = m_text.lock())
+		ML_wrapper::getGlobalMlWrapper()->changeLayerOfMgeObject(text, newLayer);
 }
 
 void MgeText::setZPosition(const int64_t newZPosition) noexcept

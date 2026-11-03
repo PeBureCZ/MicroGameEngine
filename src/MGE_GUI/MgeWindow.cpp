@@ -13,8 +13,7 @@ MgeWindow::MgeWindow(const FPoint& newPosition, const ISize& size, GraphicItemLa
 		setSize(newSize);
 	}
 
-	editCollisions().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition().asInt(), getSize())));
-	_ASSERT(editCollisions().size() == 1);
+	setBasicCollision();
 }
 
 void MgeWindow::moveWindowContent(std::shared_ptr<MgeSizer>&& sizerWithContent)

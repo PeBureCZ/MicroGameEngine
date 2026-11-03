@@ -68,7 +68,15 @@ public:
 	virtual void layout() noexcept;
 	virtual void initialize() noexcept; //to be called after adding to parent or to GUI
 
+	virtual void onFocusGet() noexcept;
+	virtual void onFocusLost() noexcept;
+	void requestFocus();
+	void releaseFocus();
+
 	void addWidget(mge::Widget child, std::optional<size_t> toIndex = std::nullopt);
+
+	[[nodiscard]] bool getIsFocusable() const noexcept;
+	void setIsFocusable(bool focusable) noexcept;
 
 	virtual ~MgeWidget() = default;
 
@@ -83,15 +91,19 @@ protected:
 	virtual void onCursorEnterCall() noexcept;
 	//to call specific defined function (eg. from another widget)
 	virtual void onCursorLeaveCall() noexcept;
+
+	void setBasicCollision();
+
 	bool m_isUnderMouseCursor = false;
 
 private:
-	std::vector<Trigger<int>> collisions;
+	std::vector<Trigger<int>> m_collisions;
 
 	GuiAlign m_alignment = GuiAlign::TopLeft;
 
 	std::weak_ptr<MgeWidget> m_selfPtr;
 	bool m_isVisible = true;
+	bool m_isFocusable = false;
 	ISize m_minSize = ISize(1, 1);
 	ISize m_maxSize = ISize(7680, 4320);
 	float m_autoSizeFactor = 1.0f; //default value, can be changed by user

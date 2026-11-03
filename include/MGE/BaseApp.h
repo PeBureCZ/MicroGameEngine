@@ -53,9 +53,9 @@ protected:
 	}
 
 	template <typename Event, typename Function>
-	void bindEvent(Function&& fce)
+	ObserverTokenId bindEvent(Function&& fce)
 	{
-		eventsLifeTimeObserver.addToken<Event>(std::forward<Function>(fce));
+		return eventsLifeTimeObserver.addToken<Event>(std::forward<Function>(fce));
 	}
 
 	MgeGui gui;

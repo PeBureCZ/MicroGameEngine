@@ -28,6 +28,7 @@ public:
     [[nodiscard]] VerticesId getUniqueId() const noexcept;
     void setRotation(float newRotation) noexcept;
     [[nodiscard]] float getRotation() const noexcept;
+    [[nodiscard]] bool isValid() const noexcept;
 
     void setPosition(const FPoint& newPosition); //absolute coordination
     [[nodiscard]] FPoint getPosition() const noexcept; //absolute coordination

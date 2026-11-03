@@ -15,6 +15,8 @@ BaseApp::BaseApp()
     bindEvent<TerminateApp>([this](const TerminateApp& wheelEvent) { terminateApplication(); });
     bindEvent<ResizeWindowEvent>([this](const ResizeWindowEvent& wheelEvent) { processResizeEvent(); });
     bindEvent<CloseMgeWindowEvent>([this](const CloseMgeWindowEvent& winEvent) { processCloseWindowEvent(winEvent); });
+    bindEvent<FocusWidgetEvent>([this](const FocusWidgetEvent& e)
+        { e.m_focus ? gui.setFocusedWidget(e.m_widget.lock()) : gui.releaseFocus(e.m_widget.lock());});
 }
 
 void BaseApp::onAppTick(double deltaTime)

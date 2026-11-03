@@ -74,6 +74,8 @@ public:
 	
 	void setBorder(BorderSide sides, unsigned int width_pxls, const MgeColor& color = MgeColor());
 	[[nodiscard]] size_t getLayer();
+	//** set layer to all graphic components of the frame, including border and children
+	void setLayerToAll(GraphicItemLayer newLayer);
 
 	//function is called automatically from GUI
 	void setUnderMouseCursor(bool isUnderMouse);

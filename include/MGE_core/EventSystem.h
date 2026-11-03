@@ -12,6 +12,8 @@
 
 #include "GlobalFunctions.h"
 
+using ObserverTokenId = uint64_t;
+
 class EventDataHandler
 {
 public:
@@ -269,7 +271,7 @@ public:
     ObserverTokens() = default;
 
     template<typename Event, typename Function>
-    void addToken(Function&& f)
+    ObserverTokenId addToken(Function&& f)
     {
         Callback cb =
             [func = std::forward<Function>(f)](const EventDataHandler& e)
@@ -280,17 +282,31 @@ public:
         auto lifetime = std::make_shared<ObserverLifetime>();
         LifetimeToken observer{ lifetime->alive };
 
+        const ObserverTokenId id = m_nextId++;
         getEventSystem().addEventSystemCallback<Event>(observer, std::move(cb));
-        m_lifetimes.push_back(std::move(lifetime));
+        m_lifetimes.emplace(id, std::move(lifetime));
+        return id;
     }
 
-    void removeToken()
+    [[nodiscard]] size_t getTokenCount() const
     {
-        _ASSERT(false);
-        //not yet...
+        MAIN_THREAD_GUARD;
+        return m_lifetimes.size();
+	}
+
+    void removeAllTokens()
+    {
+        MAIN_THREAD_GUARD;
+        m_lifetimes.clear();
+    }
+
+    bool removeToken(ObserverTokenId id)
+    {
+        MAIN_THREAD_GUARD;
+        return m_lifetimes.erase(id) > 0; // weak_ptr expires -> skipped in publishEvent, collected by GC
     }
 
 private:
-    //todo: add observerUniqueId to distinguish lifetimes in case an observer is removed from the vector
-    std::vector<std::shared_ptr<ObserverLifetime>> m_lifetimes;
+    std::unordered_map<ObserverTokenId, std::shared_ptr<ObserverLifetime>> m_lifetimes;
+    ObserverTokenId m_nextId = 1;
 };

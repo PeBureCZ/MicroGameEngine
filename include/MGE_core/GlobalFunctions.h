@@ -35,6 +35,9 @@ namespace mgeCore
 	[[nodiscard]] std::string formatNumber(double value, DecimalSeparator separator, size_t maxDecimals = 4) noexcept;
 
 	[[nodiscard]] double fromStringToDouble(const std::string& text, DecimalSeparator allowSeparator) noexcept;
+
+	// true for C0 controls (\0..\x1F: \b, \t, \n, \r, Esc, ...) and DEL (\x7F, Ctrl+Backspace)
+	[[nodiscard]] bool isControlCharacter(std::string_view utf8Char) noexcept;
 }
 
 

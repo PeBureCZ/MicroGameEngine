@@ -179,6 +179,21 @@ void MgeActor::setAbsoluteRotation(float rotation)
 	editMgeDefaultComponent().setAbsoluteRotation(rotation);
 }
 
+size_t MgeActor::getEventBindingsCount() const
+{
+	return eventsLifeTimeObserver.getTokenCount();
+}
+
+void MgeActor::removeAllEventBindings()
+{
+	eventsLifeTimeObserver.removeAllTokens();
+}
+
+void MgeActor::removeEventBinding(ObserverTokenId id)
+{
+	eventsLifeTimeObserver.removeToken(id);
+}
+
 void MgeActor::createMgeDefaultComponent()
 {
 	defaultActorData = std::make_shared<MgeDefaultComponent>();

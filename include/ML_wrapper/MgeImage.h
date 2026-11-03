@@ -55,6 +55,7 @@ public:
 
 	void rescale(float scaleX, float scaleY) const;
 	[[nodiscard]] DSize getScale() const;
+	[[nodiscard]] bool isValid() const noexcept;
 
 	static [[nodiscard]] MgeImage loadTexture(const std::string& path, size_t layer = GraphicItemLayer::DEFAULT_LAYER);
 	static [[nodiscard]] MgeImage loadTexture(const std::wstring& path, size_t layer = GraphicItemLayer::DEFAULT_LAYER);

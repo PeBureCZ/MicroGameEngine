@@ -118,19 +118,19 @@ FPoint MgeWidget::getAlignmentOffset() const noexcept
 
 std::vector<Trigger<int>>& MgeWidget::editCollisions() noexcept
 {
-	return collisions;
+	return m_collisions;
 }
 
 const std::vector<Trigger<int>>& MgeWidget::getCollisions() const noexcept
 {
-	return collisions;
+	return m_collisions;
 }
 
 void MgeWidget::addCollision(Trigger<int> addedCollision)
 {
 	auto difPos_pxl = (getParent()) ? getRelativePosition() : getAbsolutePosition();
 	addedCollision.setAbsolutePosition(addedCollision.getAbsolutePosition() + difPos_pxl.asInt());
-	collisions.push_back(std::move(addedCollision));
+	m_collisions.push_back(std::move(addedCollision));
 }
 
 
@@ -144,6 +144,12 @@ void MgeWidget::onCursorLeaveCall() noexcept
 {
 	if (onCursorLeave)
 		onCursorLeave();
+}
+
+void MgeWidget::setBasicCollision()
+{
+	m_collisions.clear();
+	editCollisions().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition().asInt(), getSize())));
 }
 
 void MgeWidget::setOnCursorOver(Callback_deprecated cursorEnterFunction, Callback_deprecated cursorLeaveFunction)
@@ -261,6 +267,36 @@ void MgeWidget::addWidget(mge::Widget child, std::optional<size_t> toIndex)
 		if (child->getAlignment() != GuiAlign::TopLeft)
 			child->setAlignment(child->getAlignment()); //re-align offset due to new parent
 	}
+}
+
+bool MgeWidget::getIsFocusable() const noexcept
+{
+	return m_isFocusable;
+}
+
+void MgeWidget::setIsFocusable(bool focusable) noexcept
+{
+	m_isFocusable = focusable;
+}
+
+void MgeWidget::onFocusGet() noexcept
+{
+	// can be overridden in derived classes to handle focus gain events
+}
+
+void MgeWidget::onFocusLost() noexcept
+{
+	// can be overridden in derived classes to handle focus gain events
+}
+
+void MgeWidget::requestFocus()
+{
+	sendEvent(FocusWidgetEvent{ getSelfPtr(), true });
+}
+
+void MgeWidget::releaseFocus()
+{
+	sendEvent(FocusWidgetEvent{ getSelfPtr(), false });
 }
 
 WidgetId MgeWidget::getWidgetId() const noexcept

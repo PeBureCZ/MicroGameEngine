@@ -4,6 +4,7 @@
 #include <atomic>
 #include <cmath>
 #include <string>
+#include <string_view>
 #include <system_error>
 #include <charconv>
 
@@ -255,6 +256,14 @@ namespace mgeCore
             return 0.0;
 
         return value;
+    }
+
+    bool isControlCharacter(std::string_view utf8Char) noexcept
+    {
+        if (utf8Char.empty())
+            return true;
+        const auto firstByte = static_cast<unsigned char>(utf8Char.front());
+        return firstByte < 0x20 || firstByte == 0x7F;
     }
 
 }

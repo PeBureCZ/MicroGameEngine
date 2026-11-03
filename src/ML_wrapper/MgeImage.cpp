@@ -296,6 +296,11 @@ DSize MgeImage::getScale() const
 	return DSize(1.f, 1.f);
 }
 
+bool MgeImage::isValid() const noexcept
+{
+	return !m_sprite.expired() && !m_usedTexture.getPath().empty() && m_usedTexture.getPath() != UNDEFINED_TEXTURE_PATH;
+}
+
 void  MgeImage::setImgAbsolutePosition(FPoint newPosition)
 {
 	_ASSERT(!m_sprite.expired());

@@ -12,6 +12,7 @@
 
 class MgeText;
 class MgeTextFrame;
+class MgeTextValidator;
 
 constexpr MgeColor INVISIBLE_COLOR = MgeColor(0, 0, 0, 0);
 constexpr MgeColor DEFAULT_TEXT_FRAME_COLOR = MgeColor(160, 160, 160);
@@ -67,6 +68,13 @@ public:
 	@see setEditable()*/
 	void setUnderEditColors(const MgeColor& nonEditColor, const MgeColor& underEditColor);
 
+	/**@brief Sets the strategy that filters characters typed by the user into the last (edited) line.
+	@param newValidator nullptr = no filtering (default)
+	@note Only typed characters are filtered. addTextLine(), appendTextToLine(), Enter (new line) and Backspace are not validated.
+	@see MgeTextValidator, mge::createNumberValidator(), mge::createCharacterSetValidator(), mge::createMaxLengthValidator()*/
+	void setValidator(std::shared_ptr<const MgeTextValidator> newValidator) noexcept;
+	[[nodiscard]] const std::shared_ptr<const MgeTextValidator>& getValidator() const noexcept;
+
 	void removeLine(size_t index) noexcept;
 	void removeFirstLine() noexcept;
 	void removeLastLine() noexcept;
@@ -93,6 +101,7 @@ private:
 	MgeColor m_defaultTextColor = DEFAULT_TEXT_COLOR;
 	GuiAlign usedAlign = GuiAlign::TopLeft;
 	std::deque<MgeText> m_frameTexts;
+	std::shared_ptr<const MgeTextValidator> m_validator;
 
 	unsigned int m_defaultNewTextSize_pxls = DEFAULT_TEXT_SIZE_PXLS;
 
@@ -100,4 +109,5 @@ private:
 	void redrawTextFrame() noexcept;
 	void processKeyPressEvent(const KeyPressEvent& eventData);
 	void processTextKeyEnteredEvent(const TextKeyEnteredEvent& eventData);
+	[[nodiscard]] bool isTypedTextAllowed(const std::string& typedText_utf8) const noexcept;
 };

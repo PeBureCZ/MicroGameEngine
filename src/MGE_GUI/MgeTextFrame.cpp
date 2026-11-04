@@ -3,6 +3,7 @@
 #include "MlWrapper.h"
 #include "GlobalFunctions.h"
 #include "GraphicDependencies.h"
+#include "MgeTextValidator.h"
 
 MgeTextFrame::MgeTextFrame(const FPoint& newPosition, const ISize& size, std::string text, unsigned int characterSize_pxls,
 	GraphicItemLayer layer, MgeColor textColor, MgeColor frameColor, bool editable)
@@ -166,6 +167,16 @@ void MgeTextFrame::setUnderEditColors(const MgeColor& nonEditColor, const MgeCol
 	m_underEditColor = underEditColor;
 }
 
+void MgeTextFrame::setValidator(std::shared_ptr<const MgeTextValidator> newValidator) noexcept
+{
+	m_validator = std::move(newValidator);
+}
+
+const std::shared_ptr<const MgeTextValidator>& MgeTextFrame::getValidator() const noexcept
+{
+	return m_validator;
+}
+
 void MgeTextFrame::onFocusGet() noexcept
 {
 	m_isUnderEdit = true;
@@ -316,6 +327,9 @@ void MgeTextFrame::processTextKeyEnteredEvent(const TextKeyEnteredEvent& eventDa
 	if (mgeCore::isControlCharacter(eventData.m_textAsUtf8))
 		return;
 
+	if (!isTypedTextAllowed(eventData.m_textAsUtf8))
+		return;
+
 	auto& textLines = editTextLines();
 	if (textLines.size() == 0)
 		addTextLine(eventData.m_textAsUtf8, getDefaultNewTextSize(), m_defaultTextColor);
@@ -323,6 +337,23 @@ void MgeTextFrame::processTextKeyEnteredEvent(const TextKeyEnteredEvent& eventDa
 		textLines.back().appendText(eventData.m_textAsUtf8);
 
 	redrawTextFrame();
+}
+
+bool MgeTextFrame::isTypedTextAllowed(const std::string& typedText_utf8) const noexcept
+{
+	if (!m_validator)
+		return true;
+
+	try
+	{
+		const std::string editedLine_utf8 = (m_frameTexts.empty()) ? std::string() : m_frameTexts.back().getText();
+		return m_validator->isAllowed(typedText_utf8, editedLine_utf8);
+	}
+	catch (...)
+	{
+		_ASSERT(false); //allocation failed
+		return false;
+	}
 }
 
 namespace mge

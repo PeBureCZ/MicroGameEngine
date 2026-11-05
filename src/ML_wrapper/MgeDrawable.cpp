@@ -255,27 +255,35 @@ void MgeDrawable::rescale(float scaleX, float scaleY) noexcept
 	}
 }
 
-void MgeDrawable::setVerticesColor()
+void MgeDrawable::setVerticesColor() noexcept
 {
     MAIN_THREAD_GUARD;
     _ASSERT(!m_vertices.expired());
-    if (auto vertices = m_vertices.lock())
-    {
-        if (std::holds_alternative<MlVerticesObject>(vertices->data))
-        {
-            auto& mlVertices = std::get<MlVerticesObject>(vertices->data);
-            auto currentColor = getColor();
-            currentColor.a = (m_isVisible) ? m_alpha : 0;
-            sf::Color color(currentColor.r, currentColor.g, currentColor.b, currentColor.a);
 
-            for (size_t i = 0; i < mlVertices.m_batch.getVertexCount(); ++i)
-                mlVertices.m_batch[i].color = color;
-        }
-        else
+    try
+    {
+        if (auto vertices = m_vertices.lock())
         {
-            _ASSERT(false);
+            if (std::holds_alternative<MlVerticesObject>(vertices->data))
+            {
+                auto& mlVertices = std::get<MlVerticesObject>(vertices->data);
+                auto currentColor = getColor();
+                currentColor.a = (m_isVisible) ? m_alpha : 0;
+                sf::Color color(currentColor.r, currentColor.g, currentColor.b, currentColor.a);
+
+                for (size_t i = 0; i < mlVertices.m_batch.getVertexCount(); ++i)
+                    mlVertices.m_batch[i].color = color;
+            }
+            else
+            {
+                _ASSERT(false);
+            }
         }
     }
+    catch (...)
+    {
+        _ASSERT(false);
+	}
 }
 
 void MgeDrawable::removeVertices() noexcept
@@ -317,10 +325,17 @@ void MgeDrawable::setZPosition(const int64_t newZPosition) noexcept
 {
     MAIN_THREAD_GUARD;
     _ASSERT(!m_vertices.expired());
-    if (auto vertices = m_vertices.lock())
+    try
     {
-        vertices->zPosition = newZPosition;
-        ML_wrapper::getGlobalMlWrapper()->sortLayerByZIndex_delayed(getLayer());
+        if (auto vertices = m_vertices.lock())
+        {
+            vertices->zPosition = newZPosition;
+            ML_wrapper::getGlobalMlWrapper()->sortLayerByZIndex_delayed(getLayer());
+        }
+    }
+    catch (...)
+    {
+        _ASSERT(false);
     }
 }
 

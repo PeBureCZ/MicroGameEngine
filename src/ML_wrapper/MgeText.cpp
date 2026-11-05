@@ -336,18 +336,24 @@ IPoint MgeText::getAbsolutePosition()
 	return IPoint();
 }
 
-mgeType::Size<int> MgeText::getTextSize() const
+mgeType::Size<int> MgeText::getTextSize() const noexcept
 {
-	if (auto text = m_text.lock())
+	try
 	{
-		if (std::holds_alternative<sf::Text>(text->data))
+		if (auto text = m_text.lock())
 		{
-			auto& sfText = std::get<sf::Text>(text->data);
-			auto charSize = sfText.getCharacterSize();
-			auto bounds = sfText.getLocalBounds();
-			return mgeType::Size<int>(static_cast<int>(bounds.size.x), static_cast<int>(charSize));
+			if (std::holds_alternative<sf::Text>(text->data))
+			{
+				auto& sfText = std::get<sf::Text>(text->data);
+				auto charSize = sfText.getCharacterSize();
+				auto bounds = sfText.getLocalBounds();
+				return mgeType::Size<int>(static_cast<int>(bounds.size.x), static_cast<int>(charSize));
+			}
 		}
 	}
+	catch (...)
+	{}
+
 	_ASSERT(false);
 	return mgeType::Size<int>(0, 0);
 }

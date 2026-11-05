@@ -39,8 +39,8 @@ public:
 	void setMouseOverButtonColor(const MgeColor& newColor = MOUSE_OVER_FRAME_COLOR);
 	void setIsVisible(bool visible) noexcept override;
 
-	void setOnLMBClick(Callback_deprecated clickFunction) noexcept;
-	void setOnRMBClick(Callback_deprecated clickFunction) noexcept;
+	void setOnLMBClick(VoidCallback clickFunction) noexcept;
+	void setOnRMBClick(VoidCallback clickFunction) noexcept;
 
 	void onLmbClickCall() noexcept;
 	void onRmbClickCall() noexcept;

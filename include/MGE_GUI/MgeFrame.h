@@ -61,10 +61,10 @@ public:
 
 	void setImage(TextureId textureId);
 	void setImage(MgeImage&& image);
-	void setVertices(MgeDrawable&& newVertices) noexcept;
+	void setVertices(MgeDrawable&& newVertices);
 
 	void setColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);
-	void setColor(const MgeColor& newColor);
+	void setColor(const MgeColor& newColor) noexcept;
 
 	void setIsVisible(bool visible) noexcept override;
 

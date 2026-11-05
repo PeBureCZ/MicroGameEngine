@@ -56,9 +56,17 @@ public:
 
 	[[nodiscard]] std::vector<std::shared_ptr<CollisionComponent<T>>> copyElementsFromCell(CellId id) const noexcept
 	{
-		if (cellsOfCollisions.find(id) == cellsOfCollisions.end())
-			return {};
-		return cellsOfCollisions.at(id);
+		try
+		{
+			if (cellsOfCollisions.find(id) == cellsOfCollisions.end())
+				return {};
+			return cellsOfCollisions.at(id);
+		}
+		catch (...)
+		{
+			_ASSERT(false); //unexpected exception
+		}
+		return {};
 	}
 
 	[[nodiscard]] const std::unordered_map<CellId, std::vector<std::shared_ptr<CollisionComponent<T>>>>& getElements() const noexcept
@@ -83,33 +91,41 @@ public:
 
 		std::vector<CellId> cellIds;
 
-		CellId centralCell = CollisionSystem::getCellIdForPosition(position);
-		auto it = cellsOfCollisions.find(centralCell);
-		if (it == cellsOfCollisions.end())
-			return {};
-		else
-			cellIds.push_back(centralCell);
+		try
+		{
+			CellId centralCell = CollisionSystem::getCellIdForPosition(position);
+			auto it = cellsOfCollisions.find(centralCell);
+			if (it == cellsOfCollisions.end())
+				return {};
+			else
+				cellIds.push_back(centralCell);
 
-		auto cellSize = CollisionSystem::getCellSize();
-		if (boundRadius < cellSize.width && boundRadius < cellSize.height)
-		{
-			CellId leftUpCell = CollisionSystem::getCellIdForPosition(position - FPoint(boundRadius, boundRadius));
-			if (leftUpCell != centralCell)
-				cellIds.push_back(leftUpCell);
-			CellId rightUpCell = CollisionSystem::getCellIdForPosition(position + FPoint(boundRadius, -boundRadius));
-			if (rightUpCell != centralCell)
-				cellIds.push_back(rightUpCell);
-			CellId leftDownCell = CollisionSystem::getCellIdForPosition(position + FPoint(-boundRadius, boundRadius));
-			if (leftDownCell != centralCell)
-				cellIds.push_back(leftDownCell);
-			CellId rightDownCell = CollisionSystem::getCellIdForPosition(position + FPoint(boundRadius, boundRadius));
-			if (rightDownCell != centralCell)
-				cellIds.push_back(rightDownCell);
+			auto cellSize = CollisionSystem::getCellSize();
+			if (boundRadius < cellSize.width && boundRadius < cellSize.height)
+			{
+				CellId leftUpCell = CollisionSystem::getCellIdForPosition(position - FPoint(boundRadius, boundRadius));
+				if (leftUpCell != centralCell)
+					cellIds.push_back(leftUpCell);
+				CellId rightUpCell = CollisionSystem::getCellIdForPosition(position + FPoint(boundRadius, -boundRadius));
+				if (rightUpCell != centralCell)
+					cellIds.push_back(rightUpCell);
+				CellId leftDownCell = CollisionSystem::getCellIdForPosition(position + FPoint(-boundRadius, boundRadius));
+				if (leftDownCell != centralCell)
+					cellIds.push_back(leftDownCell);
+				CellId rightDownCell = CollisionSystem::getCellIdForPosition(position + FPoint(boundRadius, boundRadius));
+				if (rightDownCell != centralCell)
+					cellIds.push_back(rightDownCell);
+			}
+			else
+			{
+				_ASSERT(false); //not supported yet, would require checking multiple cells around the position
+			}
 		}
-		else
+		catch (...)
 		{
-			_ASSERT(false); //not supported yet, would require checking multiple cells around the position
+			_ASSERT(false); //unexpected exception
 		}
+
 		return cellIds;
 	}
 

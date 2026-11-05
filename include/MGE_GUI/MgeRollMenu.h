@@ -12,7 +12,7 @@ class MgeRollMenu : public MgeFrame
 public: 
 	MgeRollMenu(const FPoint& newPosition, ISize newSize = ISize(100,60), std::string_view text = "");
 
-	mge::Button addRollButton(const std::string& butText, Callback_deprecated onLMBClickFunc = nullptr, Callback_deprecated onRMBClickFunc = nullptr);
+	mge::Button addRollButton(const std::string& butText, VoidCallback onLMBClickFunc = nullptr, VoidCallback onRMBClickFunc = nullptr);
 	mge::Button getMainButton();
 
 	void setAutoOpen(bool newAutoOpen) noexcept;

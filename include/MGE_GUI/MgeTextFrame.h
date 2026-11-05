@@ -58,7 +58,7 @@ public:
 	@param defaultFrameColoring If true, automatically changes the frame color when editing starts or ends.
 	@note Calling setColor() can override the automatic under-edit coloring until the next focus change.
 	@see setUnderEditColors()*/
-	void setEditable(bool editable, bool defaultFrameColoring = true) noexcept;
+	void setEditable(bool editable, bool defaultFrameColoring = true);
 
 	/**@brief Sets the frame colors used when editing starts and ends.
 	@param nonEditColor The frame color used when the frame is not being edited

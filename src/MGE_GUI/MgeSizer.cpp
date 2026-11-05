@@ -18,25 +18,35 @@ void MgeSizer::layout() noexcept
 	if (id > 0)
 		id = id;
 #endif
-	if (auto parent = std::dynamic_pointer_cast<MgeWidget>(getParent()))
+	try
 	{
-		// Set the size to the parent's size if the parent is not a sizer.
-		// Otherwise, set the sizer's size like other elements.
-		if (parent->getSize() != getSize() && !std::dynamic_pointer_cast<MgeSizer>(parent))
-			setSize(parent->getSize());
+		if (auto parent = std::dynamic_pointer_cast<MgeWidget>(getParent()))
+		{
+			// Set the size to the parent's size if the parent is not a sizer.
+			// Otherwise, set the sizer's size like other elements.
+			if (parent->getSize() != getSize() && !std::dynamic_pointer_cast<MgeSizer>(parent))
+				setSize(parent->getSize());
+		}
+		else
+		{
+			_ASSERT(false); //Sizer must be a child, in other case, it will not be able to resize its children properly
+		}
+		resizeChildren();
 	}
-	else
+	catch ([[maybe_unused]] std::exception& e)
 	{
-		_ASSERT(false); //Sizer must be a child, in other case, it will not be able to resize its children properly
+		_ASSERT(false);
 	}
-	resizeChildren();
+	catch (...)
+	{
+		_ASSERT(false);
+	}
 	MgeWidget::layout();
 }
 
-void MgeSizer::resizeChildren() noexcept
+void MgeSizer::resizeChildren() 
 {
 	MAIN_THREAD_GUARD;
-
 	const bool isVerticalOrientation = (m_orientation == SizerType::VERTICAL);
 
 	const int requiredSizerDimension = isVerticalOrientation

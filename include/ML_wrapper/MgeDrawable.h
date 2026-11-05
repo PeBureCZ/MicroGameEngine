@@ -55,7 +55,7 @@ private:
     std::uint8_t m_alpha = 255;
     bool m_isVisible = true;
 
-    void setVerticesColor();
+    void setVerticesColor() noexcept;
     void removeVertices() noexcept;
 };
 

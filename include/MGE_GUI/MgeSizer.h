@@ -26,7 +26,7 @@ public:
 private:
 	SizerType m_orientation = SizerType::VERTICAL;
 
-	void resizeChildren() noexcept;
+	void resizeChildren();
 };
 
 

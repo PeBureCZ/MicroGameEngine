@@ -56,12 +56,12 @@ namespace mgeCore
 #endif // _DEBUG
     }
 
-    [[nodiscard]] bool mainThreadIsSet()
+    [[nodiscard]] bool mainThreadIsSet() noexcept
     {
         return mainThreadRun;
     }
 
-    [[nodiscard]] bool isMainThread()
+    [[nodiscard]] bool isMainThread() noexcept
     {
         return std::this_thread::get_id() == mainThreadId;
     }
@@ -207,53 +207,62 @@ namespace mgeCore
         if (text.empty())
             return 0.0;
 
-        std::string normalized;
-        normalized.reserve(text.size());
-
-        bool hasDot = false;
-        bool hasComma = false;
-
-        for (const char c : text)
-        {
-            if (c == '.')
-            {
-                if (allowSeparator == DecimalSeparator::Comma)
-                    return 0.0;
-
-                if (hasDot)
-                    return 0.0;
-
-                hasDot = true;
-                normalized.push_back('.');
-            }
-            else if (c == ',')
-            {
-                if (allowSeparator == DecimalSeparator::Dot)
-                    return 0.0;
-
-                if (hasComma)
-                    return 0.0;
-
-                hasComma = true;
-                normalized.push_back('.');
-            }
-            else
-                normalized.push_back(c);
-        }
-
-        // A number cannot contain both decimal separators.
-        if (hasDot && hasComma)
-            return 0.0;
-
         double value = 0.0;
 
-        const char* begin = normalized.data();
-        const char* end = begin + normalized.size();
 
-        const auto [ptr, ec] = std::from_chars(begin, end, value);
+        try
+        {
+            std::string normalized;
+            normalized.reserve(text.size());
 
-        if (ec != std::errc{} || ptr != end || !std::isfinite(value))
-            return 0.0;
+            bool hasDot = false;
+            bool hasComma = false;
+
+            for (const char c : text)
+            {
+                if (c == '.')
+                {
+                    if (allowSeparator == DecimalSeparator::Comma)
+                        return 0.0;
+
+                    if (hasDot)
+                        return 0.0;
+
+                    hasDot = true;
+                    normalized.push_back('.');
+                }
+                else if (c == ',')
+                {
+                    if (allowSeparator == DecimalSeparator::Dot)
+                        return 0.0;
+
+                    if (hasComma)
+                        return 0.0;
+
+                    hasComma = true;
+                    normalized.push_back('.');
+                }
+                else
+                    normalized.push_back(c);
+            }
+
+            // A number cannot contain both decimal separators.
+            if (hasDot && hasComma)
+                return 0.0;
+
+
+            const char* begin = normalized.data();
+            const char* end = begin + normalized.size();
+
+            const auto [ptr, ec] = std::from_chars(begin, end, value);
+
+            if (ec != std::errc{} || ptr != end || !std::isfinite(value))
+                return 0.0;
+        }
+        catch (...)
+        {
+            _ASSERT(false); // unexpected exception
+        }
 
         return value;
     }

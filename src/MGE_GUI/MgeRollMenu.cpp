@@ -6,7 +6,7 @@ MgeRollMenu::MgeRollMenu(const FPoint& newPosition, ISize newSize, std::string_v
 	mainButtonText = text;
 }
 
-mge::Button MgeRollMenu::addRollButton(const std::string& butText, Callback_deprecated onLMBClickFunc, Callback_deprecated onRMBClickFunc)
+mge::Button MgeRollMenu::addRollButton(const std::string& butText, VoidCallback onLMBClickFunc, VoidCallback onRMBClickFunc)
 {
 	getMainButton(); //generate main but if not exist
 

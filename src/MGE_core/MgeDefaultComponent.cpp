@@ -6,22 +6,29 @@ static MgeDefaultComponent ERROR_STATE_COMPONENT;
 
 void MgeDefaultComponent::addChild(const std::shared_ptr<MgeActor>& child, std::optional<size_t> toIndex) noexcept
 {
-	_ASSERT(child);
-	if (!child)
-		return;
+	try
+	{
+		_ASSERT(child);
+		if (!child)
+			return;
 
-	if (toIndex.has_value())
-	{
-		auto index = toIndex.value();
-		_ASSERT(index <= m_children.size());
-		if (index >= m_children.size())
-			m_children.push_back(child);
+		if (toIndex.has_value())
+		{
+			auto index = toIndex.value();
+			_ASSERT(index <= m_children.size());
+			if (index >= m_children.size())
+				m_children.push_back(child);
+			else
+				m_children.insert(m_children.begin() + index, child);
+		}
 		else
-			m_children.insert(m_children.begin() + index, child);
+		{
+			m_children.push_back(child);
+		}
 	}
-	else
+	catch (...)
 	{
-		m_children.push_back(child);
+		_ASSERT(false); //unexpected exception
 	}
 }
 

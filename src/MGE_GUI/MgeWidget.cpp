@@ -136,14 +136,28 @@ void MgeWidget::addCollision(Trigger<int> addedCollision)
 
 void MgeWidget::onCursorEnterCall() noexcept
 {
-	if (onCursorEnter)
-		onCursorEnter();
+	try
+	{
+		if (onCursorEnter)
+			onCursorEnter();
+	}
+	catch (...)
+	{
+		_ASSERT(false); //unexpected exception
+	}
 }
 
 void MgeWidget::onCursorLeaveCall() noexcept
 {
-	if (onCursorLeave)
-		onCursorLeave();
+	try
+	{
+		if (onCursorLeave)
+			onCursorLeave();
+	}
+	catch (const std::exception&)
+	{
+
+	}
 }
 
 void MgeWidget::setBasicCollision()
@@ -152,7 +166,7 @@ void MgeWidget::setBasicCollision()
 	editCollisions().push_back(Trigger<int>(true, mgeShape::Rectangle<int>(getAbsolutePosition().asInt(), getSize())));
 }
 
-void MgeWidget::setOnCursorOver(Callback_deprecated cursorEnterFunction, Callback_deprecated cursorLeaveFunction)
+void MgeWidget::setOnCursorOver(VoidCallback cursorEnterFunction, VoidCallback cursorLeaveFunction)
 {
 	onCursorEnter = std::move(cursorEnterFunction);
 	onCursorLeave = std::move(cursorLeaveFunction);

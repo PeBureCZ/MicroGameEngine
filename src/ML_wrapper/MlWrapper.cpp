@@ -486,7 +486,14 @@ namespace ML_wrapper
 
 FPoint ml::getCursorPosition() noexcept
 {
-    return ML_wrapper::getGlobalMlWrapper()->getCursorWorldPosition();
+    try
+    {
+        return ML_wrapper::getGlobalMlWrapper()->getCursorWorldPosition();
+    }
+    catch (...)
+    {}
+    _ASSERT(false);
+    return {};
 }
 
 

@@ -53,28 +53,35 @@ mge::Button MgeWindow::getCloseButton()
 
 void MgeWindow::initialize() noexcept
 {
-	auto windowMainSizer = mge::createSizer(SizerType::VERTICAL);
+	try
+	{
+		auto windowMainSizer = mge::createSizer(SizerType::VERTICAL);
 
-	auto windowBar = mge::createFrame(FPoint(), ISize(1, 1), GraphicItemLayer::WINDOW_LAYER);
-	windowBar->setColor(DEFAULT_BAR_COLOR);
-	windowBar->setMinSize(MIN_WINDOW_WIDTH_PXLS, MIN_WINDOW_HEIGHT_PXLS);
-	windowBar->setMaxSize(MAX_WINDOW_BAR_WIDTH_PXLS, DEF_WINDOW_BAR_HEIGHT_PXLS);
+		auto windowBar = mge::createFrame(FPoint(), ISize(1, 1), GraphicItemLayer::WINDOW_LAYER);
+		windowBar->setColor(DEFAULT_BAR_COLOR);
+		windowBar->setMinSize(MIN_WINDOW_WIDTH_PXLS, MIN_WINDOW_HEIGHT_PXLS);
+		windowBar->setMaxSize(MAX_WINDOW_BAR_WIDTH_PXLS, DEF_WINDOW_BAR_HEIGHT_PXLS);
 
-	auto windowCloseButton = mge::createButton(FPoint(), ISize(MIN_WINDOW_HEIGHT_PXLS, MIN_WINDOW_HEIGHT_PXLS), GraphicItemLayer::WINDOW_LAYER);
-	windowCloseButton->setAlignment(GuiAlign::TopRight);
-	windowCloseButton->setDefaultButtonColor(MgeColor(240, 240, 240));
-	windowCloseButton->setMouseOverButtonColor(MgeColor(255, 0, 0));
-	windowCloseButton->setButtonText("X", 8, GuiAlign::MiddleCenter);
-	windowCloseButton->setButtonTextColors(MgeColor(255, 0, 0), MgeColor(0,0,255));
-	windowCloseButton->setOnLMBClick([this]() { closeWindow(); });
+		auto windowCloseButton = mge::createButton(FPoint(), ISize(MIN_WINDOW_HEIGHT_PXLS, MIN_WINDOW_HEIGHT_PXLS), GraphicItemLayer::WINDOW_LAYER);
+		windowCloseButton->setAlignment(GuiAlign::TopRight);
+		windowCloseButton->setDefaultButtonColor(MgeColor(240, 240, 240));
+		windowCloseButton->setMouseOverButtonColor(MgeColor(255, 0, 0));
+		windowCloseButton->setButtonText("X", 8, GuiAlign::MiddleCenter);
+		windowCloseButton->setButtonTextColors(MgeColor(255, 0, 0), MgeColor(0, 0, 255));
+		windowCloseButton->setOnLMBClick([this]() { closeWindow(); });
 
-	windowBar->addWidget(windowCloseButton);
+		windowBar->addWidget(windowCloseButton);
 
-	windowMainSizer->addWidget(windowBar);
-	m_mainSizer = windowMainSizer;
-	addWidget(std::move(windowMainSizer));
+		windowMainSizer->addWidget(windowBar);
+		m_mainSizer = windowMainSizer;
+		addWidget(std::move(windowMainSizer));
 
-	layout();
+		layout();
+	}
+	catch (...)
+	{
+		_ASSERT(false); //unexpected exception
+	}
 }
 
 namespace mge

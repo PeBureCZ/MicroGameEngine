@@ -61,7 +61,7 @@ public:
 	[[nodiscard]] GuiAlign getAlign() const noexcept;
 	void setAlign(GuiAlign align) noexcept;
 
-	[[nodiscard]] mgeType::Size<int> getTextSize() const;
+	[[nodiscard]] mgeType::Size<int> getTextSize() const noexcept;
 	[[nodiscard]] std::shared_ptr<MgeLayerObject> getTextObject() const noexcept;
 	[[nodiscard]] size_t getLayer() const noexcept;
 	void setLayer(size_t newLayer);

@@ -11,8 +11,8 @@ namespace mgeCore
 	[[nodiscard]] std::wstring getWExecutablePath(bool includeExeName = false);
 	[[nodiscard]] std::string getExecutablePath(bool includeExeName = false);
 	void setThisThreadAsMain();
-	[[nodiscard]] bool mainThreadIsSet();
-	[[nodiscard]] bool isMainThread();
+	[[nodiscard]] bool mainThreadIsSet() noexcept;
+	[[nodiscard]] bool isMainThread() noexcept;
     [[nodiscard]] std::string toUTF8(const std::wstring& wstr);
 	[[nodiscard]] std::wstring fromUTF8(const std::string& str);
 	void setDefaultZPosition(int64_t newDefaultValue);

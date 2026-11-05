@@ -47,7 +47,7 @@ void MgeFrame::setImage(MgeImage&& image)
 	setBasicCollision();
 }
 
-void MgeFrame::setVertices(MgeDrawable&& newVertices) noexcept
+void MgeFrame::setVertices(MgeDrawable&& newVertices)
 {
 	auto newGraphicObj = std::make_shared<MGE_GRAPHIC_VARIANT>(std::move(newVertices));
 	setGraphicObject(newGraphicObj);
@@ -58,13 +58,20 @@ void MgeFrame::setColor(unsigned char r, unsigned char g, unsigned char b, unsig
 	setColor(MgeColor(r,g,b,a));
 }
 
-void MgeFrame::setColor(const MgeColor& newColor)
+void MgeFrame::setColor(const MgeColor& newColor) noexcept
 {
-	if (auto graphicComponent = getGraphicComponent())
-		graphicComponent->setColor(newColor, BASIC_GRAPHIC_INDEX);
-	else
+	try
 	{
-		_ASSERT(false); //should not happened!
+		if (auto graphicComponent = getGraphicComponent())
+			graphicComponent->setColor(newColor, BASIC_GRAPHIC_INDEX);
+		else
+		{
+			_ASSERT(false); //should not happened!
+		}
+	}
+	catch (...)
+	{
+		_ASSERT(false); //unexpected exception
 	}
 }
 
@@ -72,13 +79,20 @@ void MgeFrame::setIsVisible(bool visible) noexcept
 {
 	MgeWidget::setIsVisible(visible);
 
-	if (auto graphic = getGraphicComponent())
-		graphic->setIsVisible(visible);
-
-	for (auto& child : editChildren())
+	try
 	{
-		if (auto widget = std::dynamic_pointer_cast<MgeWidget>(child))
-			widget->setIsVisible(visible);
+		if (auto graphic = getGraphicComponent())
+			graphic->setIsVisible(visible);
+
+		for (auto& child : editChildren())
+		{
+			if (auto widget = std::dynamic_pointer_cast<MgeWidget>(child))
+				widget->setIsVisible(visible);
+		}
+	}
+	catch (...)
+	{
+		_ASSERT(false); // unexpected exception
 	}
 }
 

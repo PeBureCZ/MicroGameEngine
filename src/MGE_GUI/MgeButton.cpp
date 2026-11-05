@@ -41,32 +41,53 @@ void MgeButton::setIsVisible(bool visible) noexcept
 	MgeFrame::setIsVisible(visible);
 }
 
-void MgeButton::setOnLMBClick(Callback_deprecated clickFunction) noexcept
+void MgeButton::setOnLMBClick(VoidCallback clickFunction) noexcept
 {
 	onLMBClick  = std::move(clickFunction);
 }
 
-void MgeButton::setOnRMBClick(Callback_deprecated clickFunction) noexcept
+void MgeButton::setOnRMBClick(VoidCallback clickFunction) noexcept
 {
 	onRMBClick = std::move(clickFunction);
 }
 
 void MgeButton::onLmbClickCall() noexcept
 {
-	if (onLMBClick)
-		onLMBClick();
+	try
+	{
+		if (onLMBClick)
+			onLMBClick();
+	}
+	catch (...)
+	{
+		_ASSERT(false); //unexpected exception
+	}
 }
 
 void MgeButton::onRmbClickCall() noexcept
 {
-	if (onRMBClick)
-		onRMBClick();
+	try
+	{
+		if (onRMBClick)
+			onRMBClick();
+	}
+	catch (...)
+	{
+		_ASSERT(false); //unexpected exception
+	}
 }
 
 void MgeButton::layout() noexcept
 {
-	if (m_buttonText)
-		m_buttonText->setAbsolutePosition(getAlignedPosition(m_buttonText->getAlign(), m_buttonText->getTextSize()));
+	try
+	{
+		if (m_buttonText)
+			m_buttonText->setAbsolutePosition(getAlignedPosition(m_buttonText->getAlign(), m_buttonText->getTextSize()));
+	}
+	catch (...)
+	{
+		_ASSERT(false); //unexpected exception
+	}
 
 	MgeFrame::layout();
 }

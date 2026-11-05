@@ -41,17 +41,31 @@ void  MgeTextFrame::setDefaultTextColor(const MgeColor& color) noexcept
 
 void MgeTextFrame::addTextLine(std::string text_utf8, unsigned int height_pxls, MgeColor color, bool bold) noexcept
 {
-	size_t layer = getLayer();
-	MgeText newText(std::move(text_utf8), height_pxls, FPoint(), bold, layer, m_defaultTextColor);
-	newText.setColor(std::move(color));
-	m_frameTexts.push_back(std::move(newText));
-	redrawTextFrame();
+	try
+	{
+		size_t layer = getLayer();
+		MgeText newText(std::move(text_utf8), height_pxls, FPoint(), bold, layer, m_defaultTextColor);
+		newText.setColor(std::move(color));
+		m_frameTexts.push_back(std::move(newText));
+		redrawTextFrame();
+	}
+	catch (...)
+	{
+		_ASSERT(false); //unexpected exception
+	}
 }
 
 void MgeTextFrame::addTextLine(std::wstring text, unsigned int height_pxls, MgeColor color, bool bold) noexcept
 {
-	std::string text_utf8 = mgeCore::toUTF8(text);
-	addTextLine(std::move(text_utf8), height_pxls, color, bold);
+	try
+	{
+		std::string text_utf8 = mgeCore::toUTF8(text);
+		addTextLine(std::move(text_utf8), height_pxls, color, bold);
+	}
+	catch (...)
+	{
+		_ASSERT(false); //unexpected exception
+	}
 }
 
 void MgeTextFrame::appendTextToLine(const std::string& text_utf8, size_t lineIndex)
@@ -85,7 +99,7 @@ void MgeTextFrame::setPadding(int leftPadding_pxls, int topPadding_pxls, int rig
 	redrawTextFrame();
 }
 
-void MgeTextFrame::setEditable(bool editable, bool defaultFrameColoring) noexcept
+void MgeTextFrame::setEditable(bool editable, bool defaultFrameColoring)
 {
 	setIsFocusable(editable);
 	editCollisions().clear();
@@ -179,25 +193,39 @@ std::shared_ptr<MgeTextValidator> MgeTextFrame::editValidator() noexcept
 
 void MgeTextFrame::onFocusGet() noexcept
 {
-	m_isUnderEdit = true;
-	_ASSERT(getEventBindingsCount() == 0);
-	bindEvent<KeyPressEvent>([this](const KeyPressEvent& keyPressEvent) { processKeyPressEvent(keyPressEvent); });
-	bindEvent<TextKeyEnteredEvent>([this](const TextKeyEnteredEvent& textKeyEnteredEvent) { processTextKeyEnteredEvent(textKeyEnteredEvent); });
-	if (m_defaultFrameColoring)
+	try
 	{
-		if (auto graphicComponent = getGraphicComponent())
-			graphicComponent->setColor(m_underEditColor, BASIC_GRAPHIC_INDEX);
+		m_isUnderEdit = true;
+		_ASSERT(getEventBindingsCount() == 0);
+		bindEvent<KeyPressEvent>([this](const KeyPressEvent& keyPressEvent) { processKeyPressEvent(keyPressEvent); });
+		bindEvent<TextKeyEnteredEvent>([this](const TextKeyEnteredEvent& textKeyEnteredEvent) { processTextKeyEnteredEvent(textKeyEnteredEvent); });
+		if (m_defaultFrameColoring)
+		{
+			if (auto graphicComponent = getGraphicComponent())
+				graphicComponent->setColor(m_underEditColor, BASIC_GRAPHIC_INDEX);
+		}
+	}
+	catch(...)
+	{
+		_ASSERT(false); //unexpected exception
 	}
 }
 
 void MgeTextFrame::onFocusLost() noexcept
 {
-	m_isUnderEdit = false;
-	removeAllEventBindings();
-	if (m_defaultFrameColoring)
+	try
 	{
-		if (auto graphicComponent = getGraphicComponent())
-			graphicComponent->setColor(m_nonEditColor, BASIC_GRAPHIC_INDEX);
+		m_isUnderEdit = false;
+		removeAllEventBindings();
+		if (m_defaultFrameColoring)
+		{
+			if (auto graphicComponent = getGraphicComponent())
+				graphicComponent->setColor(m_nonEditColor, BASIC_GRAPHIC_INDEX);
+		}
+	}
+	catch (...)
+	{
+		_ASSERT(false); //unexpected exception
 	}
 }
 

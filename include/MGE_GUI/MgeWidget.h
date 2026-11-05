@@ -16,7 +16,7 @@
 
 
 using WidgetId = uintptr_t;
-using Callback_deprecated = std::function<void()>;
+using VoidCallback = std::function<void()>;
 
 class MgeWidget;
 
@@ -44,7 +44,7 @@ public:
 	GuiAlign getAlignment() const noexcept;
 
 	//to define function which will be call when mouse is over the widget
-	void setOnCursorOver(Callback_deprecated cursorEnterFunction, Callback_deprecated cursorLeaveFunction = nullptr);
+	void setOnCursorOver(VoidCallback cursorEnterFunction, VoidCallback cursorLeaveFunction = nullptr);
 
 	void setSize(const ISize& newSize) noexcept;
 	[[nodiscard]] ISize getSize() const noexcept;

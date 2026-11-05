@@ -171,7 +171,7 @@ namespace ML_wrapper
         {
             if (event->is<sf::Event::Closed>())
             {
-                sendEvent(std::move(AppTermination{}));
+                sendEvent(std::move(AppCloseRequest{}));
                 return;
             }
             else if (const auto* mousePressed = event->getIf<sf::Event::MouseButtonPressed>())

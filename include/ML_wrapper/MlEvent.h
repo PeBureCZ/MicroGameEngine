@@ -51,6 +51,11 @@ struct AppTermination
 	MGE_EVENT_TYPE = MgeEventType::ExitApp;
 };
 
+struct AppCloseRequest
+{
+	MGE_EVENT_TYPE = MgeEventType::AppCloseRequestEvent;
+};
+
 
 
 

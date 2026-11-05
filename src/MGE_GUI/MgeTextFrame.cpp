@@ -167,12 +167,12 @@ void MgeTextFrame::setUnderEditColors(const MgeColor& nonEditColor, const MgeCol
 	m_underEditColor = underEditColor;
 }
 
-void MgeTextFrame::setValidator(std::shared_ptr<const MgeTextValidator> newValidator) noexcept
+void MgeTextFrame::setValidator(std::shared_ptr<MgeTextValidator> newValidator) noexcept
 {
 	m_validator = std::move(newValidator);
 }
 
-const std::shared_ptr<const MgeTextValidator>& MgeTextFrame::getValidator() const noexcept
+std::shared_ptr<MgeTextValidator> MgeTextFrame::editValidator() noexcept
 {
 	return m_validator;
 }

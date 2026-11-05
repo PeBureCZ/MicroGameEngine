@@ -13,6 +13,7 @@ enum MgeEventType : uint64_t
     MgeScreenEvent,
     MgeMouseClick,
     MgeWheel,
+    AppCloseRequestEvent,
     ExitApp,
     ResizeRenderWindow,
     CloseMgeWindow,
@@ -37,11 +38,6 @@ static_assert(STATIC_CHECKER < lastMgeReserved);
 //    MGE_EVENT_TYPE = MgeEventType::lastMgeReserved + 1; // Example event type
 //    std::string data = "test";
 //};
-
-struct TerminateApp
-{
-	MGE_EVENT_TYPE = MgeEventType::ExitApp;
-};
 
 struct ResizeWindowEvent
 {

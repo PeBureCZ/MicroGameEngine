@@ -19,6 +19,7 @@ namespace ML_wrapper
 class MgeScreen;
 class MgeWidget;
 struct AppTermination;
+struct AppCloseRequest;
 struct MouseClick;
 struct WheelScroll;
 
@@ -42,9 +43,11 @@ protected:
 	[[nodiscard]] std::shared_ptr<MgeScreen> getActualScreen() const noexcept;
 
 	/**could be managed in derived*/
-	virtual void onAppTick(double deltaTime);
+	virtual void onAppTick(double deltaTime) {};
 	/**could be managed in derived*/
-	virtual void afterAppTick();
+	virtual void afterAppTick() {};
+	/**could be managed in derived*/
+	virtual void processCloseRequestEvent(const AppCloseRequest& closeRequestEvent) { terminateApplication(); }
 
 	template <typename Event>
 	void sendEvent(Event&& ev)

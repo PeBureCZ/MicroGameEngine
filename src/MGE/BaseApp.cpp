@@ -12,21 +12,11 @@ BaseApp::BaseApp()
     bindEvent<AppTermination>([this](const AppTermination& exitEvent) { processTerminationEvent(exitEvent); });
     bindEvent<MouseClick>([this](const MouseClick& clickEvent) { processMouseClickEvent(clickEvent); });
     bindEvent<WheelScroll>([this](const WheelScroll& wheelEvent) { processWheelEvent(wheelEvent); });
-    bindEvent<TerminateApp>([this](const TerminateApp& wheelEvent) { terminateApplication(); });
+    bindEvent<AppCloseRequest>([this](const AppCloseRequest& closeRequestEvent) { processCloseRequestEvent(closeRequestEvent); });
     bindEvent<ResizeWindowEvent>([this](const ResizeWindowEvent& wheelEvent) { processResizeEvent(); });
     bindEvent<CloseMgeWindowEvent>([this](const CloseMgeWindowEvent& winEvent) { processCloseWindowEvent(winEvent); });
     bindEvent<FocusWidgetEvent>([this](const FocusWidgetEvent& e)
         { e.m_focus ? gui.setFocusedWidget(e.m_widget.lock()) : gui.releaseFocus(e.m_widget.lock());});
-}
-
-void BaseApp::onAppTick(double deltaTime)
-{
-    //could be used in derived classes
-}
-
-void BaseApp::afterAppTick()
-{
-    //could be used in derived classes
 }
 
 void BaseApp::processMouseClickEvent(const MouseClick& clickEvent)

@@ -72,8 +72,15 @@ public:
 	@param newValidator nullptr = no filtering (default)
 	@note Only typed characters are filtered. addTextLine(), appendTextToLine(), Enter (new line) and Backspace are not validated.
 	@see MgeTextValidator, mge::createNumberValidator(), mge::createCharacterSetValidator(), mge::createMaxLengthValidator()*/
-	void setValidator(std::shared_ptr<const MgeTextValidator> newValidator) noexcept;
-	[[nodiscard]] const std::shared_ptr<const MgeTextValidator>& getValidator() const noexcept;
+	void setValidator(std::shared_ptr<MgeTextValidator> newValidator) noexcept;
+
+	template <typename T>
+	[[nodiscard]] const std::shared_ptr<T> getValidatorAs() const noexcept
+	{
+		return std::dynamic_pointer_cast<T>(m_validator);
+	}
+
+	[[nodiscard]] std::shared_ptr<MgeTextValidator> editValidator() noexcept;
 
 	void removeLine(size_t index) noexcept;
 	void removeFirstLine() noexcept;
@@ -101,7 +108,7 @@ private:
 	MgeColor m_defaultTextColor = DEFAULT_TEXT_COLOR;
 	GuiAlign usedAlign = GuiAlign::TopLeft;
 	std::deque<MgeText> m_frameTexts;
-	std::shared_ptr<const MgeTextValidator> m_validator;
+	std::shared_ptr<MgeTextValidator> m_validator;
 
 	unsigned int m_defaultNewTextSize_pxls = DEFAULT_TEXT_SIZE_PXLS;
 

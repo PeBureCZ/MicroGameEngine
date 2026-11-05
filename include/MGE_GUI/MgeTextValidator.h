@@ -4,11 +4,6 @@
 
 class MgeTextValidator;
 
-namespace mge
-{
-	using TextValidator = std::shared_ptr<const MgeTextValidator>;
-}
-
 /**@brief Strategy used by MgeTextFrame to decide whether a typed character may be appended to the edited line.
 @note A validator only filters input - it never changes, formats or colors the text.
 @note Characters are UTF-16 code units (wchar_t). Characters above U+FFFF (surrogate pairs) are always rejected.
@@ -18,6 +13,7 @@ a typed character passes only if both accept it. Callers use the public isAllowe
 class MgeTextValidator
 {
 public:
+	MgeTextValidator() = default;
 	virtual ~MgeTextValidator() = default;
 
 	/**@param newChar character typed by the user, e.g. L'x'
@@ -28,7 +24,6 @@ public:
 	[[nodiscard]] bool isAllowed(std::string_view newChar_utf8, std::string_view currentText_utf8) const noexcept;
 
 protected:
-	MgeTextValidator() = default;
 	MgeTextValidator(const MgeTextValidator&) = default;
 	MgeTextValidator(MgeTextValidator&&) = default;
 	MgeTextValidator& operator=(const MgeTextValidator&) = default;

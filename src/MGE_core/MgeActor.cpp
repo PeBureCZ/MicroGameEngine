@@ -29,7 +29,7 @@ MGE_COMPONENT MgeBasicActor::editComponent(uint64_t type) noexcept
 	else
 	{
 		auto it = std::lower_bound(components.begin(), components.end(), type, [](const MGE_COMPONENT component, uint64_t type_id)
-			{ return component->getType() == type_id; });
+			{ return component->getType() < type_id; });
 
 		if (it == components.end())
 		{

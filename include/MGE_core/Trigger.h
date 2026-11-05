@@ -190,7 +190,7 @@ public:
 				mgeShape::Rectangle<T> shape = std::get<mgeShape::Rectangle<T>>(collisionShape);
 				return shape.getPosition();
 			}
-			else if (std::holds_alternative<mgeShape::Rectangle<T>>(collisionShape))
+			else if (std::holds_alternative<mgeShape::Circle<T>>(collisionShape))
 			{
 				mgeShape::Circle<T> shape = std::get<mgeShape::Circle<T>>(collisionShape);
 				return shape.getPosition();

@@ -132,9 +132,9 @@ namespace MgeKeys
 
 struct KeyPressEvent
 {
-    //KeyCode — identifies the physical / logical key, such as A, Space, or Escape.
-    //KeyAction — identifies whether the key was pressed or released.
-    //KeyModifiers — records whether Ctrl, Shift, Alt, or System was held.
+    //KeyCode - identifies the physical / logical key, such as A, Space, or Escape.
+    //KeyAction - identifies whether the key was pressed or released.
+    //KeyModifiers - records whether Ctrl, Shift, Alt, or System was held.
     MGE_EVENT_TYPE = MgeEventType::KeyboardPressEvent;
     MgeKeys::MgeKey m_key = MgeKeys::MgeKey::Unknown;
     MgeKeys::KeyModifier m_modifiers = MgeKeys::KeyModifier::None;
@@ -142,9 +142,9 @@ struct KeyPressEvent
 
 struct KeyReleaseEvent
 {
-    //KeyCode — identifies the physical / logical key, such as A, Space, or Escape.
-    //KeyAction — identifies whether the key was pressed or released.
-    //KeyModifiers — records whether Ctrl, Shift, Alt, or System was held.
+    //KeyCode - identifies the physical / logical key, such as A, Space, or Escape.
+    //KeyAction - identifies whether the key was pressed or released.
+    //KeyModifiers - records whether Ctrl, Shift, Alt, or System was held.
     MGE_EVENT_TYPE = MgeEventType::KeyboardReleaseEvent;
     MgeKeys::MgeKey m_key = MgeKeys::MgeKey::Unknown;
 };

@@ -46,7 +46,7 @@ public:
     {
         _ASSERT(m_type == T::mgeEventType);
         const auto* ptr = std::any_cast<T>(&m_data);
-        return *ptr; //if no ¨data, ptr = nullptr"
+        return *ptr; //if no data, ptr = nullptr"
     }
 
 private:

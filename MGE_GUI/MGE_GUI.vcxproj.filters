@@ -37,6 +37,9 @@
     <ClInclude Include="..\include\MGE_GUI\MgeNumberValidator.h">
       <Filter>include\textValidator</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\MGE_GUI\MgeMessageWindow.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -88,6 +91,9 @@
     </ClCompile>
     <ClCompile Include="..\src\MGE_GUI\MgeTextValidator.cpp">
       <Filter>src\textValidator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MGE_GUI\MgeMessageWindow.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

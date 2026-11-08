@@ -33,8 +33,8 @@ public:
 	MgeText() = delete;
 
 	MgeText(const MgeText& other) = delete;
-	MgeText(MgeText&& other) = default;
-	MgeText& operator=(MgeText&& other) = default;
+	MgeText(MgeText&& other) noexcept = default;
+	MgeText& operator=(MgeText&& other) noexcept;
 	MgeText& operator=(const MgeText&) = delete;
 	bool operator==(const MgeText& other) const;
 	bool operator==(MgeText& other) const;
@@ -68,11 +68,11 @@ public:
 	void setZPosition(int64_t newZPosition) noexcept;
 	[[nodiscard]] int64_t getZPosition() const noexcept;
 
-	[[nodiscard]] 
-
 	~MgeText();
 
 private:
+	void destroyText() noexcept;
+
 	std::weak_ptr<MgeLayerObject> m_text;
 	std::uint8_t m_alpha = 255;
 	bool m_isVisible = true;

@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include <string_view>
+#include <filesystem>
 #include <windows.h>
 #include <thread>
 #include <functional>
@@ -8,8 +10,12 @@
 
 namespace mgeCore
 {
+	/**folder of the running exe (or the exe itself), any length, any characters*/
+	[[nodiscard]] std::filesystem::path getExecutableLocation(bool includeExeName = false);
 	[[nodiscard]] std::wstring getWExecutablePath(bool includeExeName = false);
+	//UTF-8 (not ANSI)
 	[[nodiscard]] std::string getExecutablePath(bool includeExeName = false);
+
 	void setThisThreadAsMain();
 	[[nodiscard]] bool mainThreadIsSet() noexcept;
 	[[nodiscard]] bool isMainThread() noexcept;

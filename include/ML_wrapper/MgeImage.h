@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <optional>
+#include <filesystem>
 
 #include "SFML\Graphics.hpp"
 #include "GraphicDependencies.h"
@@ -35,9 +36,9 @@ public:
 	MgeImage();
 
 	MgeImage(const MgeImage& other);
-	MgeImage(MgeImage&& other) = default;
+	MgeImage(MgeImage&& other) noexcept;
 	MgeImage& operator= (const MgeImage& other);
-	MgeImage& operator= (MgeImage&& other) = default;
+	MgeImage& operator= (MgeImage&& other) noexcept;
 
 	[[nodiscard]] mgeType::Size<int> getSize() const noexcept;
 
@@ -64,8 +65,8 @@ public:
 		const FPoint& newPosition = FPoint(), std::optional<ImgType> imgFileFormat = std::nullopt);
 	static [[nodiscard]] MgeImage loadImageFromDefaultFolder(const std::wstring& name, size_t layer = GraphicItemLayer::DEFAULT_LAYER,
 		const FPoint& newPosition = FPoint(), std::optional<ImgType> imgFileFormat = std::nullopt);
-	static void setDefaultImageFolder(const std::wstring& location);
-	static void setDefaultImageFolder(const std::string& location);
+	static void setDefaultImageFolder(const std::filesystem::path& location);
+	static void setDefaultImageFolder(const std::string& location_utf8);
 	static [[nodiscard]] std::wstring getDefaultImageFolder();
 
 	void setZPosition(int64_t newZPosition) noexcept;
@@ -82,7 +83,9 @@ private:
 
 	void createNewSprite(size_t usedLayer, int64_t zPosition = mgeCore::getDefaultZPosition(), const DSize& currentScale = DSize(1.0, 1.0),
 		const MgeColor& currentColor = MgeColor(255, 255, 255, 255));
-	void destroySprite();
+	void destroySprite() noexcept;
+	void copySpriteFrom(const MgeImage& other);
+	void takeSpriteFrom(MgeImage& other) noexcept;
 
 	mgeType::Size<int> size;
 	SPRITE_ID imageId = (SPRITE_ID)0;

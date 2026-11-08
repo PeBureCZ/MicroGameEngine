@@ -14,13 +14,13 @@ static void normalizeTextOrigin(sf::Text& text)
 
 MgeText::MgeText(std::string newText, unsigned int characterSize_pxls, const FPoint& position, bool bold, size_t layer, const MgeColor& color)
 {
-	const std::string fontPath = mgeCore::getExecutablePath() + "\\Fonts\\NotoSerifGeorgian-Regular.ttf";
-	
 	//THIS IS ONLY TEMP SOLUTION! FONT NEEDS TO BE SAVED SOMEWHERE TO USE IT!
-	static sf::Font font; 
+	static sf::Font font;
 	static bool firstTimeOpen = true;
 	if (firstTimeOpen)
 	{
+		//std::filesystem::path end to end: a std::string path would be read as ANSI
+		const std::filesystem::path fontPath = mgeCore::getExecutableLocation() / L"Fonts" / L"NotoSerifGeorgian-Regular.ttf";
 		if (!font.openFromFile(fontPath))
 		{
 			_ASSERT(false); //font loading failed
@@ -41,6 +41,21 @@ MgeText::MgeText(std::string newText, unsigned int characterSize_pxls, const FPo
 	sfText.setFillColor(sf::Color { color.r, color.g, color .b, color .a});
 	normalizeTextOrigin(sfText);
 	ML_wrapper::getGlobalMlWrapper()->addMgeLayerObject(std::move(newMgeText));
+}
+
+MgeText& MgeText::operator=(MgeText&& other) noexcept
+{
+	MAIN_THREAD_GUARD;
+	if (this == &other)
+		return *this;
+
+	destroyText(); //otherwise the old text stays in its layer: drawn forever, never freed
+	m_text = std::move(other.m_text);
+	other.m_text.reset(); //other must not remove the text in its destructor
+	m_alpha = other.m_alpha;
+	m_isVisible = other.m_isVisible;
+	m_align = other.m_align;
+	return *this;
 }
 
 bool MgeText::operator==(const MgeText& other) const
@@ -401,10 +416,22 @@ int64_t MgeText::getZPosition() const noexcept
 
 MgeText::~MgeText()
 {
-	if (auto text = m_text.lock())
+	destroyText();
+}
+
+void MgeText::destroyText() noexcept
+{
+	try
 	{
-		ML_wrapper::getGlobalMlWrapper()->removeMgeLayerObject(text);
-		m_text.reset();
-		_ASSERT(text.use_count() == 1); //correct = last instance is local
+		if (auto text = m_text.lock())
+		{
+			ML_wrapper::getGlobalMlWrapper()->removeMgeLayerObject(text);
+			m_text.reset();
+			_ASSERT(text.use_count() == 1); //correct = last instance is local
+		}
+	}
+	catch (...)
+	{
+		_ASSERT(false); //called from the destructor and the move assignment, must not throw
 	}
 }

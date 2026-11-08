@@ -15,36 +15,50 @@ static std::atomic<int64_t> defaultZPosition = DEFAULT_Z_POSITION;
 
 namespace mgeCore
 {
-    [[nodiscard]] std::wstring getWExecutablePath(bool includeExeName)
-    {
-        wchar_t buffer[MAX_PATH];
-        GetModuleFileNameW(nullptr, buffer, MAX_PATH);
-		std::wstring path(buffer);
-        if (!includeExeName)
-        {
-            size_t pos = path.find_last_of(L"\\/");
-            if (pos != std::wstring::npos)
-                path = path.substr(0, pos);
-        }
+	[[nodiscard]] std::filesystem::path getExecutableLocation(bool includeExeName)
+	{
+		constexpr size_t MAX_LONG_PATH_LENGTH = 32767; //Windows limit for a long ("\\?\") path
+
+		std::wstring buffer(MAX_PATH, L'\0');
+		while (true)
+		{
+			const DWORD length = GetModuleFileNameW(nullptr, buffer.data(), static_cast<DWORD>(buffer.size()));
+			if (length == 0)
+			{
+				_ASSERT(false); //GetModuleFileNameW failed
+				return {};
+			}
+
+			if (length < buffer.size())
+			{
+				buffer.resize(length);
+				break;
+			}
+
+			//length == buffer size -> the path was truncated, retry with a bigger buffer
+			if (buffer.size() >= MAX_LONG_PATH_LENGTH)
+			{
+				_ASSERT(false); //longer than Windows allows
+				return {};
+			}
+			buffer.resize((std::min)(buffer.size() * 2, MAX_LONG_PATH_LENGTH));
+		}
+
+		std::filesystem::path path(std::move(buffer));
+		if (!includeExeName)
+			path = path.parent_path();
 		return path;
-    }
+	}
 
-    [[nodiscard]] std::string getExecutablePath(bool includeExeName)
-    {
-        char buffer[MAX_PATH];
-        GetModuleFileNameA(nullptr, buffer, MAX_PATH);
+	[[nodiscard]] std::wstring getWExecutablePath(bool includeExeName)
+	{
+		return getExecutableLocation(includeExeName).native();
+	}
 
-        std::string path(buffer);
-
-        if (!includeExeName)
-        {
-            size_t pos = path.find_last_of("\\/");
-            if (pos != std::string::npos)
-                path = path.substr(0, pos);
-        }
-
-        return path;
-    }
+	[[nodiscard]] std::string getExecutablePath(bool includeExeName)
+	{
+        return toUTF8(getExecutableLocation(includeExeName).native());
+	}
 
     void setThisThreadAsMain()
     {

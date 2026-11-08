@@ -6,26 +6,25 @@
 
 namespace
 {
-	std::string generateExtension(MgeImage::ImgType type)
+	std::wstring_view generateExtension(MgeImage::ImgType type)
 	{
 		switch (type)
 		{
-		case MgeImage::ImgType::BMP: return { ".bmp" };
-		case MgeImage::ImgType::PNG: return { ".png" };
-		case MgeImage::ImgType::JPG: return { ".jpg" };
-		case MgeImage::ImgType::TGA: return { ".tga" };
-		case MgeImage::ImgType::GIF: return { ".gif" };
-		case MgeImage::ImgType::PSD: return { ".psd" };
-		case MgeImage::ImgType::HDR: return { ".hdr" };
-		case MgeImage::ImgType::PIC: return { ".pic" };
-		case MgeImage::ImgType::PNM: return { ".pnm" };
+		case MgeImage::ImgType::BMP: return L".bmp";
+		case MgeImage::ImgType::PNG: return L".png";
+		case MgeImage::ImgType::JPG: return L".jpg";
+		case MgeImage::ImgType::TGA: return L".tga";
+		case MgeImage::ImgType::GIF: return L".gif";
+		case MgeImage::ImgType::PSD: return L".psd";
+		case MgeImage::ImgType::HDR: return L".hdr";
+		case MgeImage::ImgType::PIC: return L".pic";
+		case MgeImage::ImgType::PNM: return L".pnm";
 		default: _ASSERT(false); //undefined or unknown type
 		}
-		return { ".png" };
+		return L".png";
 	}
 
-	std::string m_defaultPath;
-	std::string defaultExtension = ".png";
+	std::filesystem::path g_defaultImageFolder;
 }
 
 MgeImage::MgeImage(const TextureId& usedTextureId, size_t usedLayer, const FPoint& newPosition)
@@ -44,29 +43,77 @@ MgeImage::MgeImage()
 MgeImage::MgeImage(const MgeImage& other)
 {
 	imageId = reinterpret_cast<VerticesId>(this);
-	m_usedTexture = other.m_usedTexture;
-	absolutePosition = other.absolutePosition;
-	size = other.size;
-	const sf::Texture& usedSfTexture = ML_wrapper::getGlobalMlWrapper()->appendTexture(*this);
-	auto newSprite = std::make_shared<MgeLayerObject>(MgeLayerObject{ mgeCore::getDefaultZPosition(), other.getLayer(), sf::Sprite{usedSfTexture}});
-	ML_wrapper::getGlobalMlWrapper()->addMgeLayerObject(newSprite);
-	if (newSprite)
-		m_sprite = newSprite;
+	copySpriteFrom(other);
+}
 
+MgeImage::MgeImage(MgeImage&& other) noexcept
+{
+	imageId = reinterpret_cast<VerticesId>(this); //own address, not other's
+	takeSpriteFrom(other);
 }
 
 MgeImage& MgeImage::operator=(const MgeImage& other)
 {
+	MAIN_THREAD_GUARD;
 	if (this == &other)
 		return *this;
-	imageId = reinterpret_cast<VerticesId>(this);
+
+	destroySprite(); //otherwise the old sprite stays in its layer: drawn forever, never freed
+	copySpriteFrom(other);
+	return *this;
+}
+
+MgeImage& MgeImage::operator=(MgeImage&& other) noexcept
+{
+	MAIN_THREAD_GUARD;
+	if (this == &other)
+		return *this;
+
+	destroySprite(); //otherwise the old sprite stays in its layer: drawn forever, never freed
+	takeSpriteFrom(other);
+	return *this;
+}
+
+void MgeImage::copySpriteFrom(const MgeImage& other)
+{
+	MAIN_THREAD_GUARD;
+	if (!m_sprite.expired())
+		destroySprite();
+
 	size = other.size;
 	m_usedTexture = other.m_usedTexture;
 	absolutePosition = other.absolutePosition;
-	const sf::Texture& usedSfTexture = ML_wrapper::getGlobalMlWrapper()->appendTexture(*this);
-	auto newSprite = std::make_shared<MgeLayerObject>(MgeLayerObject{ mgeCore::getDefaultZPosition(), other.getLayer(), sf::Sprite{usedSfTexture} });
-	ML_wrapper::getGlobalMlWrapper()->addMgeLayerObject(newSprite);
-	return *this;
+	m_alpha = other.m_alpha;
+	m_isVisible = other.m_isVisible;
+
+	const auto otherSprite = other.m_sprite.lock();
+	if (!otherSprite || !std::holds_alternative<sf::Sprite>(otherSprite->data))
+	{
+		_ASSERT(false); //wrong sprite to copy
+		return;
+	}
+
+	auto mlWrapper = ML_wrapper::getGlobalMlWrapper();
+	mlWrapper->appendTexture(*this); //texture reference count only: the copied sf::Sprite already points to the same texture
+
+	//copy of the whole layer object = texture, layer, z-position, position, scale, origin, rotation, color (incl. hidden alpha)
+	auto newSprite = std::make_shared<MgeLayerObject>(*otherSprite);
+
+	m_sprite = newSprite;
+	mlWrapper->addMgeLayerObject(newSprite);
+}
+
+void MgeImage::takeSpriteFrom(MgeImage& other) noexcept
+{
+	_ASSERT(m_sprite.expired());
+
+	size = other.size;
+	m_usedTexture = std::move(other.m_usedTexture);
+	absolutePosition = other.absolutePosition;
+	m_alpha = other.m_alpha;
+	m_isVisible = other.m_isVisible;
+	m_sprite = std::move(other.m_sprite);
+	other.m_sprite.reset(); //other must not remove the sprite in its destructor
 }
 
 mgeType::Size<int> MgeImage::getSize() const noexcept
@@ -117,7 +164,7 @@ void MgeImage::createNewSprite(size_t usedLayer, int64_t zPosition, const DSize&
 	if (!m_sprite.expired())
 		destroySprite();
 
-	_ASSERT(!m_usedTexture.getPath().empty() && m_usedTexture.getPath() != UNDEFINED_TEXTURE_PATH);
+	_ASSERT(!m_usedTexture.getPath().empty());
 
 	const sf::Texture& usedSfTexture = ML_wrapper::getGlobalMlWrapper()->appendTexture(*this);
 	auto newSprite = std::make_shared<MgeLayerObject>(MgeLayerObject{ zPosition, usedLayer, sf::Sprite{usedSfTexture} });
@@ -134,14 +181,21 @@ void MgeImage::createNewSprite(size_t usedLayer, int64_t zPosition, const DSize&
 	size = mgeType::Size<int>((int)usedSfTexture.getSize().x, (int)usedSfTexture.getSize().y);
 }
 
-void MgeImage::destroySprite()
+void MgeImage::destroySprite() noexcept
 {
-	if (auto sprite = m_sprite.lock())
+	try
 	{
-		_ASSERT(m_usedTexture.getPath() != UNDEFINED_TEXTURE_PATH && !m_usedTexture.getPath().empty());
-		ML_wrapper::getGlobalMlWrapper()->removeMgeLayerObject(sprite);
-		m_sprite.reset();
-		_ASSERT(sprite.use_count() == 1); //correct = last instance is local
+		if (auto sprite = m_sprite.lock())
+		{
+			_ASSERT(!m_usedTexture.getPath().empty());
+			ML_wrapper::getGlobalMlWrapper()->removeMgeLayerObject(sprite);
+			m_sprite.reset();
+			_ASSERT(sprite.use_count() == 1); //correct = last instance is local
+		}
+	}
+	catch (...)
+	{
+		_ASSERT(false); //called from the destructor and the move assignment, must not throw
 	}
 }
 
@@ -298,7 +352,7 @@ DSize MgeImage::getScale() const
 
 bool MgeImage::isValid() const noexcept
 {
-	return !m_sprite.expired() && !m_usedTexture.getPath().empty() && m_usedTexture.getPath() != UNDEFINED_TEXTURE_PATH;
+	return !m_sprite.expired() && !m_usedTexture.getPath().empty();
 }
 
 void  MgeImage::setImgAbsolutePosition(FPoint newPosition)
@@ -335,14 +389,18 @@ MgeImage MgeImage::loadTexture(const TextureId& textureId, size_t layer)
 MgeImage MgeImage::loadImageFromDefaultFolder(const std::string& name, size_t layer, const FPoint& newPosition, std::optional<MgeImage::ImgType> imgFileFormat)
 {
 	namespace fs = std::filesystem;
-	_ASSERT(!m_defaultPath.empty());
-	if (m_defaultPath.empty())
+	_ASSERT(!g_defaultImageFolder.empty());
+	if (g_defaultImageFolder.empty())
 		return {};
 
-	fs::path path = m_defaultPath + "\\" + name + generateExtension(imgFileFormat.value_or(MgeImage::ImgType::PNG));
-	_ASSERT(fs::exists(m_defaultPath));
-	if (!fs::exists(m_defaultPath))
+	std::error_code errorCode;
+	const bool folderExists = fs::exists(g_defaultImageFolder, errorCode);
+	_ASSERT(folderExists);
+	if (!folderExists)
 		return {};
+
+	fs::path path = g_defaultImageFolder / std::filesystem::path(mgeCore::fromUTF8(name));
+	path += generateExtension(imgFileFormat.value_or(MgeImage::ImgType::PNG));
 	return MgeImage(TextureId(path), layer, newPosition);
 }
 
@@ -351,21 +409,21 @@ MgeImage MgeImage::loadImageFromDefaultFolder(const std::wstring& name, size_t l
 	return loadImageFromDefaultFolder(mgeCore::toUTF8(name), layer, newPosition, imgFileFormat);
 }
 
-void MgeImage::setDefaultImageFolder(const std::wstring& location)
+void MgeImage::setDefaultImageFolder(const std::filesystem::path& location)
 {
-	return setDefaultImageFolder(mgeCore::toUTF8(location));
+	std::error_code errorCode;
+	_ASSERT(std::filesystem::exists(location, errorCode));
+	g_defaultImageFolder = location;
 }
 
-void MgeImage::setDefaultImageFolder(const std::string& location)
+void MgeImage::setDefaultImageFolder(const std::string& location_utf8)
 {
-	namespace fs = std::filesystem;
-	_ASSERT(fs::exists(location));
-	m_defaultPath = location;
+	setDefaultImageFolder(std::filesystem::path(mgeCore::fromUTF8(location_utf8)));
 }
 
 std::wstring MgeImage::getDefaultImageFolder()
 {
-	return mgeCore::fromUTF8(m_defaultPath);
+	return g_defaultImageFolder.native();
 }
 
 void MgeImage::setZPosition(const int64_t newZPosition) noexcept

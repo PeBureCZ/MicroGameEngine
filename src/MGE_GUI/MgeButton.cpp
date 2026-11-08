@@ -285,7 +285,7 @@ void MgeButton::applyLook() noexcept
 	auto setLook = [&](const MgeColor& color, const TextureId& texture)
 		{
 			MgeFrame::setColor(color);
-			if (texture.getPath() != TextureId() && !texture.getPath().empty())
+			if (!texture.getPath().empty())
 				setImageTexture(texture);
 			else
 			{

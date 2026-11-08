@@ -3,8 +3,6 @@
 #include <string>
 #include "GlobalFunctions.h"
 
-inline const char* UNDEFINED_TEXTURE_PATH = "undefined";
-
 using VerticesId = uintptr_t;
 
 enum class GuiAlign : size_t
@@ -23,39 +21,41 @@ enum class GuiAlign : size_t
 struct TextureId
 {
 public:
-	TextureId(std::string usedPath = std::string(UNDEFINED_TEXTURE_PATH))
-		: m_path(std::move(usedPath))
-	{
-
-	}
+	TextureId(std::string usedPath_utf8 = "")
+		: m_path(mgeCore::fromUTF8(usedPath_utf8))
+	{}
 
 	TextureId(std::wstring usedPath)
-		: m_path(mgeCore::toUTF8(usedPath))
-	{
+		: m_path(usedPath)
+	{}
 
-	}
-
-		bool operator == (const TextureId& other) const
+	bool operator == (const TextureId& other) const
 	{
 		return m_path == other.m_path;
 	}
 
-	bool operator == (const std::string& other) const
+	bool operator == (const std::wstring& other) const
 	{
 		return m_path == other;
 	}
 
-	bool operator == (const char* other) const
+	bool operator == (const wchar_t* other) const
 	{
 		return m_path == other;
 	}
 
-	const std::string& getPath() const
+	const std::wstring& getPath() const
 	{
 		return m_path;
 	}
+
+	[[nodiscard]] std::filesystem::path getFilesystemPath() const
+	{
+		return std::filesystem::path(m_path);
+	}
+
 private:
-	std::string m_path;
+	std::wstring m_path;
 };
 
 namespace std
@@ -65,7 +65,7 @@ namespace std
 	{
 		size_t operator()(const TextureId& id) const noexcept
 		{
-			return std::hash<std::string>{}(id.getPath());
+			return std::hash<std::wstring>{}(id.getPath());
 		}
 	};
 }

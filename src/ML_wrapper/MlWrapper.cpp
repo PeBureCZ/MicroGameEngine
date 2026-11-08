@@ -592,7 +592,7 @@ namespace ML_wrapper
         else
         {
             sf::Texture texture;
-            if (!texture.loadFromFile(textureId.getPath()))
+            if (!texture.loadFromFile(textureId.getFilesystemPath()))
                 _ASSERT(false); //file not found
             else
             {

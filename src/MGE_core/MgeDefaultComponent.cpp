@@ -117,10 +117,9 @@ const std::shared_ptr<MgeActor> MgeDefaultComponent::getMasterParent() const noe
 
 [[nodiscard]] FPoint MgeDefaultComponent::getAbsolutePosition() const noexcept
 {
-	if (!parent.expired())
-		return { getPosition() + parent.lock()->getAbsolutePosition() };
-	else
-		return getPosition();
+	if (const auto parentActor = parent.lock())
+		return getPosition() + parentActor->getAbsolutePosition();
+	return getPosition();
 }
 
 [[nodiscard]] const FPoint& MgeDefaultComponent::getPosition() const noexcept
@@ -135,17 +134,17 @@ void MgeDefaultComponent::setRelativePosition(const FPoint& position) noexcept
 
 void MgeDefaultComponent::setAbsolutePosition(const FPoint& position) noexcept
 {
-	const auto& actualPos = getAbsolutePosition();
-	auto dif = position - actualPos;
-	MgeTransform::setPosition(position);
+	if (const auto parentActor = parent.lock())
+		MgeTransform::setPosition(position - parentActor->getAbsolutePosition());
+	else
+		MgeTransform::setPosition(position);
 }
 
 [[nodiscard]] float MgeDefaultComponent::getAbsoluteRotation() const noexcept
 {
-	if (!parent.expired())
-		return { getRotation() + parent.lock()->getAbsoluteRotation() };
-	else
-		return getRotation();
+	if (const auto parentActor = parent.lock())
+		return getRotation() + parentActor->getAbsoluteRotation();
+	return getRotation();
 }
 
 [[nodiscard]] float MgeDefaultComponent::getRelativeRotation() const noexcept
@@ -155,11 +154,10 @@ void MgeDefaultComponent::setAbsolutePosition(const FPoint& position) noexcept
 
 void MgeDefaultComponent::setAbsoluteRotation(float rotation) noexcept
 {
-	float actualAbsoluteRotation = (parent.expired())
-		? getRotation()
-		: getRotation() + parent.lock()->getAbsoluteRotation();
-
-	setRotation(rotation - actualAbsoluteRotation);
+	if (const auto parentActor = parent.lock())
+		setRotation(rotation - parentActor->getAbsoluteRotation());
+	else
+		setRotation(rotation);
 }
 
 void MgeDefaultComponent::setRelativeRotation(float rotation) noexcept

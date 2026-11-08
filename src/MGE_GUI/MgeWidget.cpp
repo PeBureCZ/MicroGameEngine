@@ -83,9 +83,8 @@ FPoint MgeWidget::getAlignmentOffset() const noexcept
 	{
 		widget = std::dynamic_pointer_cast<MgeWidget>(getParent());
 	}
-	catch (const std::exception& e)
+	catch ([[maybe_unused]]const std::exception& e)
 	{
-		auto x = e.what();
 		_ASSERT(false);
 	}
 	catch (...)
@@ -291,6 +290,21 @@ bool MgeWidget::getIsFocusable() const noexcept
 void MgeWidget::setIsFocusable(bool focusable) noexcept
 {
 	m_isFocusable = focusable;
+}
+
+bool MgeWidget::isUnderCursor() const noexcept
+{
+	return m_isUnderMouseCursor;
+}
+
+void MgeWidget::setUnderMouseCursor(bool isUnderMouse)
+{
+	bool savedUnderCursor = m_isUnderMouseCursor;
+	m_isUnderMouseCursor = isUnderMouse;
+	if (!savedUnderCursor && isUnderMouse)
+		onCursorEnterCall();
+	else if (savedUnderCursor && !isUnderMouse)
+		onCursorLeaveCall();
 }
 
 void MgeWidget::onFocusGet() noexcept

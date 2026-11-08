@@ -451,9 +451,9 @@ void MgeMessageWindow::applyButtonsColors() noexcept
 	MAIN_THREAD_GUARD;
 	forEachButton([this](MgeButton& button)
 		{
-			button.setDefaultButtonColor(m_buttonColor);
-			button.setMouseOverButtonColor(m_mouseOverButtonColor);
-			button.setButtonTextColors(m_buttonTextColor, m_mouseOverButtonTextColor);
+			button.setColor(m_buttonColor);
+			button.setHoveredColor(m_mouseOverButtonColor);
+			button.setButtonTextColors(m_buttonTextColor, m_mouseOverButtonTextColor, m_buttonTextColor, m_buttonTextColor, m_buttonTextColor);
 		});
 }
 

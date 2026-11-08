@@ -254,25 +254,11 @@ void MgeFrame::layout() noexcept
 	}
 }
 
-void MgeFrame::setUnderMouseCursor(bool isUnderMouse)
-{
-	if (!m_isUnderMouseCursor && isUnderMouse)
-		onCursorEnterCall();
-	else if (m_isUnderMouseCursor && !isUnderMouse)
-		onCursorLeaveCall();
-	m_isUnderMouseCursor = isUnderMouse;
-}
-
 MGE_GRAPHIC MgeFrame::getGraphicComponent()
 {
 	if (auto graphicComponent = std::dynamic_pointer_cast<MgeGraphicComponent>(editComponent(MgePredefinedComponents::GRAPHIC)))
 		return graphicComponent;
 	return nullptr;
-}
-
-bool MgeFrame::isUnderCursor() const noexcept
-{
-	return m_isUnderMouseCursor;
 }
 
 IPoint MgeFrame::getAlignedPosition(GuiAlign align, mgeType::Size<int> objectSize)

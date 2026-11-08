@@ -29,8 +29,9 @@ mge::Button MgeRollMenu::getMainButton()
 	{
 		mainButton = mge::createButton(FPoint(0.f, 0.f), getSize());
 		mainButton->setColor(DEFAULT_FRAME_COLOR);
-		mainButton->setMouseOverButtonColor(MOUSE_OVER_FRAME_COLOR);
-		mainButton->setButtonTextColors(DEFAULT_TEXT_COLOR, MOUSE_OVER_TEXT_COLOR);
+		mainButton->setHoveredColor(MOUSE_OVER_FRAME_COLOR);
+		mainButton->setButtonTextColors(DEFAULT_TEXT_COLOR, DEFAULT_TEXT_COLOR, DISABLED_TEXT_COLOR,
+			DEFAULT_TEXT_COLOR, DEFAULT_TEXT_COLOR);
 		mainButton->setOnLMBClick([this]() { onRollMenuLMBClick(); });
 		mainButton->setOnCursorOver([this]() {onCursorEnterCall(); }); //used for auto opening - if it is set
 		mainButton->setButtonText(mainButtonText, 14, GuiAlign::MiddleCenter);

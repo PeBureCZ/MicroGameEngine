@@ -12,7 +12,7 @@
 #include "MgeGraphicComponent.h"
 
 constexpr MgeColor DEFAULT_TEXT_COLOR = MgeColor(0, 0, 0, 255);
-constexpr MgeColor MOUSE_OVER_TEXT_COLOR = MgeColor(0, 0, 0, 255);
+constexpr MgeColor DISABLED_TEXT_COLOR = MgeColor(50, 50, 50, 200);
 constexpr MgeColor DEFAULT_FRAME_COLOR = MgeColor(200, 200, 200, 255);
 
 class MgeButton;
@@ -63,8 +63,8 @@ public:
 	void setImage(MgeImage&& image);
 	void setVertices(MgeDrawable&& newVertices);
 
-	void setColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);
-	void setColor(const MgeColor& newColor) noexcept;
+	virtual void setColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);
+	virtual void setColor(const MgeColor& newColor) noexcept;
 
 	void setIsVisible(bool visible) noexcept override;
 
@@ -77,14 +77,9 @@ public:
 	//** set layer to all graphic components of the frame, including border and children
 	void setLayerToAll(GraphicItemLayer newLayer);
 
-	//function is called automatically from GUI
-	void setUnderMouseCursor(bool isUnderMouse);
-
 	MGE_GRAPHIC getGraphicComponent();
 
 	void layout() noexcept override;
-
-	[[nodiscard]] bool isUnderCursor() const noexcept;
 
 protected:
 

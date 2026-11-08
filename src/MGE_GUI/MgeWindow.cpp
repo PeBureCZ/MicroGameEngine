@@ -64,10 +64,10 @@ void MgeWindow::initialize() noexcept
 
 		auto windowCloseButton = mge::createButton(FPoint(), ISize(MIN_WINDOW_HEIGHT_PXLS, MIN_WINDOW_HEIGHT_PXLS), GraphicItemLayer::WINDOW_LAYER);
 		windowCloseButton->setAlignment(GuiAlign::TopRight);
-		windowCloseButton->setDefaultButtonColor(MgeColor(240, 240, 240));
-		windowCloseButton->setMouseOverButtonColor(MgeColor(255, 0, 0));
+		windowCloseButton->setColor(MgeColor(240, 240, 240));
+		windowCloseButton->setHoveredColor(MgeColor(255, 0, 0));
 		windowCloseButton->setButtonText("X", 8, GuiAlign::MiddleCenter);
-		windowCloseButton->setButtonTextColors(MgeColor(255, 0, 0), MgeColor(0, 0, 255));
+		windowCloseButton->setButtonTextColors(MgeColor(255, 0, 0), MgeColor(0, 0, 255), MgeColor(120,120,120), MgeColor(255, 0, 0), MgeColor(255, 0, 0));
 		windowCloseButton->setOnLMBClick([this]() { closeWindow(); });
 
 		windowBar->addWidget(windowCloseButton);

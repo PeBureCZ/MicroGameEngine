@@ -4,8 +4,8 @@
 
 namespace mgeVersion
 {
-	constexpr std::string_view VERSION = "0.1.6_BETA";
-	constexpr std::wstring_view VERSION_W = L"0.1.6_BETA";
+	constexpr std::string_view VERSION = "0.1.6";
+	constexpr std::wstring_view VERSION_W = L"0.1.6";
 
 	inline static std::string getVersion()
 	{

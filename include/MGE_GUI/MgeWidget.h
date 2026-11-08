@@ -77,6 +77,10 @@ public:
 
 	[[nodiscard]] bool getIsFocusable() const noexcept;
 	void setIsFocusable(bool focusable) noexcept;
+	[[nodiscard]] bool isUnderCursor() const noexcept;
+
+	//function is called automatically from GUI
+	void setUnderMouseCursor(bool isUnderMouse);
 
 	virtual ~MgeWidget() = default;
 
@@ -94,8 +98,6 @@ protected:
 
 	void setBasicCollision();
 
-	bool m_isUnderMouseCursor = false;
-
 private:
 	std::vector<Trigger<int>> m_collisions;
 
@@ -107,6 +109,7 @@ private:
 	ISize m_minSize = ISize(1, 1);
 	ISize m_maxSize = ISize(7680, 4320);
 	float m_autoSizeFactor = 1.0f; //default value, can be changed by user
+	bool m_isUnderMouseCursor = false;
 
 	std::function<void()> onCursorEnter = nullptr;
 	std::function<void()> onCursorLeave = nullptr;

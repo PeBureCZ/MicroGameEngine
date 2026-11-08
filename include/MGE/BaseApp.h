@@ -1,6 +1,7 @@
 #pragma once
 
-#include <memory> 
+#include <memory>
+#include <string>
 #include <vector>
 
 #include "BasicShapes.h"
@@ -26,7 +27,7 @@ struct WheelScroll;
 class BaseApp
 {
 public:
-	BaseApp();
+	BaseApp(bool fullscreen = false, const std::wstring& appName = std::wstring(ML_wrapper::DEFAULT_WINDOW_TITLE));
 	
 	bool isRunning() const;
 
@@ -34,6 +35,22 @@ public:
 	void terminateApplication() noexcept;
 
 	std::shared_ptr< ML_wrapper::MlWrapper> getMlWrapper();
+
+	/**shown in the render window title bar*/
+	void setAppName(const std::wstring& newAppName);
+	[[nodiscard]] std::wstring getAppName() const;
+
+	//render window control (see MlWrapper)
+	void lockWindowSize(const ISize& clientSize);
+	void unlockWindowSize();
+	[[nodiscard]] bool isWindowSizeLocked() const;
+	void maximizeWindow();
+	void minimizeWindow();
+	void restoreWindow();
+	[[nodiscard]] bool isWindowMaximized() const;
+	[[nodiscard]] bool isWindowMinimized() const;
+	void setFullscreen(bool isFullscreen);
+	[[nodiscard]] bool isFullscreen() const;
 
 	virtual ~BaseApp();
 
@@ -61,9 +78,10 @@ protected:
 		return eventsLifeTimeObserver.addToken<Event>(std::forward<Function>(fce));
 	}
 
-	MgeGui gui;
+	MgeGui& getGui();
 
 private:
+	std::unique_ptr<MgeGui> m_gui;
 	bool gameIsRunning = false;
 	std::shared_ptr<ML_wrapper::MlWrapper> sharedMlWrapper;
 	std::shared_ptr<MgeScreen> actualScreen;

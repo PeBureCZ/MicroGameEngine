@@ -7,6 +7,8 @@
 #include <optional>
 #include <vector>
 #include <mutex>
+#include <string>
+#include <string_view>
 
 #include "BasicTypes.h"
 #include "GraphicDependencies.h"
@@ -28,10 +30,12 @@ class MgeText;
 
 namespace ML_wrapper
 {
-    class MlWrapper 
+    constexpr std::wstring_view DEFAULT_WINDOW_TITLE = L"Mge Application";
+
+    class MlWrapper
     {
     public:
-        MlWrapper();
+        MlWrapper(bool fullscreen = false, const std::wstring& appName = DEFAULT_WINDOW_TITLE.data());
 
         void pollMlEvents();
         void clear();
@@ -48,6 +52,26 @@ namespace ML_wrapper
 
         [[nodiscard]] mgeType::Size<int> getRenderWindowSize() const noexcept;
         [[nodiscard]] std::shared_ptr<sf::RenderWindow> getRenderWindow() noexcept;
+
+        void setWindowTitle(const std::wstring& newTitle);
+        [[nodiscard]] const std::wstring& getWindowTitle() const noexcept;
+
+        /**fixed client size, centered on the desktop, no resize border / maximize box; kept through fullscreen*/
+        void lockWindowSize(const ISize& clientSize);
+        void unlockWindowSize();
+        [[nodiscard]] bool isWindowSizeLocked() const noexcept;
+
+        /**ignored while the size is locked or in fullscreen*/
+        void maximizeWindow();
+        void minimizeWindow();
+        /**back from maximized / minimized*/
+        void restoreWindow();
+        [[nodiscard]] bool isWindowMaximized() const noexcept;
+        [[nodiscard]] bool isWindowMinimized() const noexcept;
+
+        /**recreates the render window (desktop resolution / the last windowed size and position)*/
+        void setFullscreen(bool isFullscreen);
+        [[nodiscard]] bool isFullscreen() const noexcept;
 
 		void moveScreenOffset(FPoint offset) noexcept;
 		void setMaxScreenZoom(double zoomFactor) noexcept;
@@ -75,6 +99,9 @@ namespace ML_wrapper
         void removeTexture(TextureId textureId);
         void doSortLayerIfNeeded(MgeLayer& layer);
         void createLayerIfNeeded(size_t layer);
+        /**views follow the render window size*/
+        void updateViewsToWindowSize();
+        void applyWindowLock();
 
         template <typename Event>
         void sendEvent(Event&& ev)
@@ -102,8 +129,16 @@ namespace ML_wrapper
         double zoom = 1.0;
 		double maxZoom = 50.0;
 		double minZoom = 0.01;
-    };  
 
+        bool m_isFullscreen = false;
+        std::wstring m_windowTitle;
+        std::optional<ISize> m_lockedClientSize_opt;
+        //restored when leaving fullscreen
+        ISize m_windowedSize;
+        IPoint m_windowedPosition;
+    };
+
+    [[nodiscard]] bool initializeMlWrapper(bool fullscreen, const std::wstring& appName = DEFAULT_WINDOW_TITLE.data());
     std::shared_ptr<ML_wrapper::MlWrapper> getGlobalMlWrapper();
 }
 

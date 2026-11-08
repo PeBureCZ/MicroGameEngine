@@ -5,10 +5,14 @@
 #include "GlobalFunctions.h"
 #include "MlEvent.h"
 
-BaseApp::BaseApp()
+BaseApp::BaseApp(bool fullscreen, const std::wstring& appName)
 {
-    getMlWrapper(); //run game
+    mgeCore::setThisThreadAsMain();
+    [[maybe_unused]] bool initialized = ML_wrapper::initializeMlWrapper(fullscreen, appName);
+    _ASSERT(initialized);
+    sharedMlWrapper = ML_wrapper::getGlobalMlWrapper();
     gameIsRunning = true;
+    getGui(); //initialize gui
     bindEvent<AppTermination>([this](const AppTermination& exitEvent) { processTerminationEvent(exitEvent); });
     bindEvent<MouseClick>([this](const MouseClick& clickEvent) { processMouseClickEvent(clickEvent); });
     bindEvent<WheelScroll>([this](const WheelScroll& wheelEvent) { processWheelEvent(wheelEvent); });
@@ -16,11 +20,20 @@ BaseApp::BaseApp()
     bindEvent<ResizeWindowEvent>([this](const ResizeWindowEvent& wheelEvent) { processResizeEvent(); });
     bindEvent<CloseMgeWindowEvent>([this](const CloseMgeWindowEvent& winEvent) { processCloseWindowEvent(winEvent); });
     bindEvent<FocusWidgetEvent>([this](const FocusWidgetEvent& e)
-        { e.m_focus ? gui.setFocusedWidget(e.m_widget.lock()) : gui.releaseFocus(e.m_widget.lock());});
+        { e.m_focus ? getGui().setFocusedWidget(e.m_widget.lock()) : getGui().releaseFocus(e.m_widget.lock()); });
+}
+
+MgeGui& BaseApp::getGui()
+{
+    MAIN_THREAD_GUARD;
+    if (!m_gui)
+        m_gui = std::make_unique<MgeGui>();
+    return *m_gui;
 }
 
 void BaseApp::processMouseClickEvent(const MouseClick& clickEvent)
 {
+    auto& gui = getGui();
     if (clickEvent.getType() == MlEventTypeEnum::MouseLeftClick)
     {
         gui.sendLmbEventToGui(clickEvent.clickPosition, clickEvent.pressed); //main gui event processing (buttons etc.)
@@ -42,7 +55,7 @@ void BaseApp::processMouseClickEvent(const MouseClick& clickEvent)
 
 void BaseApp::processWheelEvent(const WheelScroll& wheelEvent)
 {
-    if (actualScreen && !gui.isCursorBlockedByGui())
+    if (actualScreen && !getGui().isCursorBlockedByGui())
         actualScreen->wheelScrollEventCall(wheelEvent);
 }
 
@@ -88,7 +101,7 @@ void BaseApp::tickApplication(double deltaTime)
     sharedMlWrapper->pollMlEvents();
 
     if (actualScreen)
-        gui.TickScreen(*actualScreen, deltaTime);
+        getGui().TickScreen(*actualScreen, deltaTime);
 
 	sharedMlWrapper->displayActualFrame(); //draw everything to main window and display it
 
@@ -143,9 +156,71 @@ void BaseApp::terminateApplication() noexcept
 
 std::shared_ptr< ML_wrapper::MlWrapper> BaseApp::getMlWrapper()
 {
+    _ASSERT(sharedMlWrapper);
     if (!sharedMlWrapper)
         sharedMlWrapper = ML_wrapper::getGlobalMlWrapper();
     return sharedMlWrapper;
+}
+
+void BaseApp::setAppName(const std::wstring& newAppName)
+{
+	getMlWrapper()->setWindowTitle(newAppName);
+}
+
+std::wstring BaseApp::getAppName() const
+{
+	_ASSERT(sharedMlWrapper);
+	return sharedMlWrapper ? sharedMlWrapper->getWindowTitle() : std::wstring();
+}
+
+void BaseApp::lockWindowSize(const ISize& clientSize)
+{
+	getMlWrapper()->lockWindowSize(clientSize);
+}
+
+void BaseApp::unlockWindowSize()
+{
+	getMlWrapper()->unlockWindowSize();
+}
+
+bool BaseApp::isWindowSizeLocked() const
+{
+	return sharedMlWrapper && sharedMlWrapper->isWindowSizeLocked();
+}
+
+void BaseApp::maximizeWindow()
+{
+	getMlWrapper()->maximizeWindow();
+}
+
+void BaseApp::minimizeWindow()
+{
+	getMlWrapper()->minimizeWindow();
+}
+
+void BaseApp::restoreWindow()
+{
+	getMlWrapper()->restoreWindow();
+}
+
+bool BaseApp::isWindowMaximized() const
+{
+	return sharedMlWrapper && sharedMlWrapper->isWindowMaximized();
+}
+
+bool BaseApp::isWindowMinimized() const
+{
+	return sharedMlWrapper && sharedMlWrapper->isWindowMinimized();
+}
+
+void BaseApp::setFullscreen(bool isFullscreen)
+{
+	getMlWrapper()->setFullscreen(isFullscreen);
+}
+
+bool BaseApp::isFullscreen() const
+{
+	return sharedMlWrapper && sharedMlWrapper->isFullscreen();
 }
 
 BaseApp::~BaseApp()

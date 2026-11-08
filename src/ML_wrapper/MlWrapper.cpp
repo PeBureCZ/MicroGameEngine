@@ -12,6 +12,26 @@
 
 std::shared_ptr<sf::RenderWindow> mainWindow;
 
+/**resize border + maximize box on / off (SFML has no style change without recreating the window)*/
+static void setWindowResizable(HWND windowHandle, bool isResizable)
+{
+	constexpr LONG_PTR RESIZE_STYLES = WS_THICKFRAME | WS_MAXIMIZEBOX;
+	const LONG_PTR style = GetWindowLongPtrW(windowHandle, GWL_STYLE);
+	SetWindowLongPtrW(windowHandle, GWL_STYLE, isResizable ? (style | RESIZE_STYLES) : (style & ~RESIZE_STYLES));
+	SetWindowPos(windowHandle, nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+}
+
+/**whole window (with frame) centered on the primary desktop*/
+static void centerWindowOnDesktop(sf::RenderWindow& window)
+{
+	RECT windowRect{};
+	GetWindowRect(window.getNativeHandle(), &windowRect);
+	const sf::Vector2u desktopSize = sf::VideoMode::getDesktopMode().size;
+	const int x = (static_cast<int>(desktopSize.x) - (windowRect.right - windowRect.left)) / 2;
+	const int y = (static_cast<int>(desktopSize.y) - (windowRect.bottom - windowRect.top)) / 2;
+	window.setPosition(sf::Vector2i((std::max)(0, x), (std::max)(0, y)));
+}
+
 static MgeKeys::MgeKey toMgeKey(sf::Keyboard::Key key)
 {
     return static_cast<MgeKeys::MgeKey>(key);
@@ -38,19 +58,24 @@ static MgeKeys::KeyModifier getKeyModifiers(const sf::Event::KeyPressed& event)
 
 namespace ML_wrapper
 {
-    MlWrapper::MlWrapper()
+    MlWrapper::MlWrapper(bool fullscreen, const std::wstring& appName)
+		: m_isFullscreen(fullscreen), m_windowTitle(appName)
     {
         if (!mainWindow)
         {
-            //#define USE_FULLSCREEN //uncomment to enable fullscreen mode in debug (for testing purposes)
-#ifdef USE_FULLSCREEN
-            // Fullscreen mode with current desktop resolution
-            auto dm = sf::VideoMode::getDesktopMode();
-            mainWindow = std::make_shared<sf::RenderWindow>(dm, "Mge Application", sf::Style::Default, sf::State::Fullscreen);
-#else
             sf::Vector2u windowSize{ 1280, 720 };
-            mainWindow = std::make_shared<sf::RenderWindow>(sf::VideoMode(windowSize), "Mge Application", sf::Style::Default, sf::State::Windowed);
-#endif 
+            m_windowedSize = ISize(static_cast<int>(windowSize.x), static_cast<int>(windowSize.y));
+            if (m_isFullscreen)
+            {
+                // Fullscreen mode with current desktop resolution
+                auto dm = sf::VideoMode::getDesktopMode();
+                mainWindow = std::make_shared<sf::RenderWindow>(dm, m_windowTitle, sf::Style::Default, sf::State::Fullscreen);
+            }
+            else
+                mainWindow = std::make_shared<sf::RenderWindow>(sf::VideoMode(windowSize), m_windowTitle, sf::Style::Default, sf::State::Windowed);
+
+            const sf::Vector2i position = mainWindow->getPosition();
+            m_windowedPosition = IPoint(position.x, position.y);
             auto size = mainWindow->getSize();
 
             // World view (zoomable)
@@ -107,6 +132,152 @@ namespace ML_wrapper
     {
         return mainWindow;
     }
+
+	void MlWrapper::setWindowTitle(const std::wstring& newTitle)
+	{
+		m_windowTitle = newTitle;
+		_ASSERT(mainWindow);
+		if (mainWindow)
+			mainWindow->setTitle(m_windowTitle);
+	}
+
+	const std::wstring& MlWrapper::getWindowTitle() const noexcept
+	{
+		return m_windowTitle;
+	}
+
+	void MlWrapper::lockWindowSize(const ISize& clientSize)
+	{
+		_ASSERT(clientSize.width > 0 && clientSize.height > 0);
+		if (clientSize.width <= 0 || clientSize.height <= 0)
+			return;
+
+		m_lockedClientSize_opt = clientSize;
+		if (!m_isFullscreen) //otherwise applied when leaving fullscreen
+			applyWindowLock();
+	}
+
+	void MlWrapper::unlockWindowSize()
+	{
+		m_lockedClientSize_opt.reset();
+		_ASSERT(mainWindow);
+		if (mainWindow && !m_isFullscreen)
+			setWindowResizable(mainWindow->getNativeHandle(), true);
+	}
+
+	bool MlWrapper::isWindowSizeLocked() const noexcept
+	{
+		return m_lockedClientSize_opt.has_value();
+	}
+
+	void MlWrapper::applyWindowLock()
+	{
+		_ASSERT(mainWindow && m_lockedClientSize_opt);
+		if (!mainWindow || !m_lockedClientSize_opt)
+			return;
+
+		const HWND windowHandle = mainWindow->getNativeHandle();
+		if (IsZoomed(windowHandle) || IsIconic(windowHandle))
+			ShowWindow(windowHandle, SW_RESTORE); //a maximized window would keep its maximized size
+		setWindowResizable(windowHandle, false);
+
+		//Resized event -> views + ResizeWindowEvent in pollMlEvents()
+		const ISize clientSize = *m_lockedClientSize_opt;
+		mainWindow->setSize(sf::Vector2u(static_cast<unsigned int>(clientSize.width), static_cast<unsigned int>(clientSize.height)));
+		centerWindowOnDesktop(*mainWindow);
+	}
+
+	void MlWrapper::maximizeWindow()
+	{
+		_ASSERT(mainWindow);
+		if (!mainWindow || m_isFullscreen || isWindowSizeLocked())
+			return;
+		ShowWindow(mainWindow->getNativeHandle(), SW_MAXIMIZE);
+	}
+
+	void MlWrapper::minimizeWindow()
+	{
+		_ASSERT(mainWindow);
+		if (mainWindow)
+			ShowWindow(mainWindow->getNativeHandle(), SW_MINIMIZE);
+	}
+
+	void MlWrapper::restoreWindow()
+	{
+		_ASSERT(mainWindow);
+		if (mainWindow)
+			ShowWindow(mainWindow->getNativeHandle(), SW_RESTORE);
+	}
+
+	bool MlWrapper::isWindowMaximized() const noexcept
+	{
+		return mainWindow && IsZoomed(mainWindow->getNativeHandle());
+	}
+
+	bool MlWrapper::isWindowMinimized() const noexcept
+	{
+		return mainWindow && IsIconic(mainWindow->getNativeHandle());
+	}
+
+	void MlWrapper::setFullscreen(bool isFullscreen)
+	{
+		_ASSERT(mainWindow);
+		if (!mainWindow || isFullscreen == m_isFullscreen)
+			return;
+
+		//create() makes a new OS window: style changes, icon, key repeat, vsync / framerate limit are reset
+		if (isFullscreen)
+		{
+			const HWND windowHandle = mainWindow->getNativeHandle();
+			if (IsZoomed(windowHandle) || IsIconic(windowHandle))
+				ShowWindow(windowHandle, SW_RESTORE); //remember the normal size, not the maximized one
+			const sf::Vector2u size = mainWindow->getSize();
+			const sf::Vector2i position = mainWindow->getPosition();
+			m_windowedSize = ISize(static_cast<int>(size.x), static_cast<int>(size.y));
+			m_windowedPosition = IPoint(position.x, position.y);
+
+			mainWindow->create(sf::VideoMode::getDesktopMode(), m_windowTitle, sf::Style::Default, sf::State::Fullscreen);
+		}
+		else
+		{
+			const sf::Vector2u size(static_cast<unsigned int>(m_windowedSize.width), static_cast<unsigned int>(m_windowedSize.height));
+			mainWindow->create(sf::VideoMode(size), m_windowTitle, sf::Style::Default, sf::State::Windowed);
+			mainWindow->setPosition(sf::Vector2i(m_windowedPosition.x, m_windowedPosition.y));
+		}
+		m_isFullscreen = isFullscreen;
+
+		if (!m_isFullscreen && m_lockedClientSize_opt)
+			applyWindowLock();
+
+		//create() sends no Resized event
+		updateViewsToWindowSize();
+		sendEvent(std::move(ResizeWindowEvent{}));
+	}
+
+	bool MlWrapper::isFullscreen() const noexcept
+	{
+		return m_isFullscreen;
+	}
+
+	void MlWrapper::updateViewsToWindowSize()
+	{
+		_ASSERT(mainWindow);
+		if (!mainWindow)
+			return;
+
+		const auto size = mainWindow->getSize();
+		sf::Vector2f newSize(static_cast<float>(size.x), static_cast<float>(size.y));
+
+		// --- GUI VIEW ---
+		guiView.setSize(newSize);
+		guiView.setCenter(newSize / 2.f);
+
+		// --- WORLD VIEW ---
+		// Keep zoom, adapt view size to window
+		worldView.setSize(newSize);
+		worldView.setCenter(newSize / 2.f);
+		worldView.zoom(static_cast<float>(zoom));
+	}
 
     void MlWrapper::moveScreenOffset(FPoint offset) noexcept
     {
@@ -200,20 +371,7 @@ namespace ML_wrapper
                 sendEvent(WheelScroll{wheel->delta > 0 ? 1 : -1 });
             else if (const auto* resized = event->getIf<sf::Event::Resized>())
             {
-                const auto size = mainWindow->getSize();
-
-                sf::Vector2f newSize(static_cast<float>(size.x), static_cast<float>(size.y));
-
-                // --- GUI VIEW ---
-                guiView.setSize(newSize);
-                guiView.setCenter(newSize / 2.f);
-
-                // --- WORLD VIEW ---
-                // Keep zoom, adapt view size to window
-                worldView.setSize(newSize);
-                worldView.setCenter(newSize / 2.f);
-                worldView.zoom((float)zoom);
-
+                updateViewsToWindowSize();
                 sendEvent(std::move(ResizeWindowEvent{}));
             }
             else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
@@ -475,6 +633,18 @@ namespace ML_wrapper
     }
 
     static std::shared_ptr<ML_wrapper::MlWrapper> g_mlWrapper;
+
+    bool initializeMlWrapper(bool fullscreen, const std::wstring& appName)
+    {
+        _ASSERT(!g_mlWrapper);
+        if (!g_mlWrapper)
+        {
+            g_mlWrapper = std::make_shared<ML_wrapper::MlWrapper>(fullscreen, appName);
+            return true;
+        }
+        return false;
+    }
+
     std::shared_ptr<ML_wrapper::MlWrapper> getGlobalMlWrapper()
     {
         if (!g_mlWrapper)

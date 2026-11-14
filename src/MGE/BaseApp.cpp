@@ -5,8 +5,18 @@
 #include "GlobalFunctions.h"
 #include "MlEvent.h"
 
+#include <timeapi.h>
+#pragma comment(lib, "winmm.lib")
+
+namespace
+{
+    constexpr unsigned int MAX_FRAME_RATE = 60;
+    constexpr auto FRAME_DURATION = std::chrono::duration<double>(1.0 / MAX_FRAME_RATE);
+}
+
 BaseApp::BaseApp(bool fullscreen, const std::wstring& appName)
 {
+    timeBeginPeriod(1);   // 1 ms timer precision for accurate frame sleeps
     mgeCore::setThisThreadAsMain();
     [[maybe_unused]] bool initialized = ML_wrapper::initializeMlWrapper(fullscreen, appName);
     _ASSERT(initialized);
@@ -82,9 +92,9 @@ void BaseApp::processCloseWindowEvent(const CloseMgeWindowEvent& winEvent)
     }
 }
 
-void BaseApp::tickApplication(double deltaTime)
+void BaseApp::tickApplication(double deltaTime_sec)
 {
-    onAppTick(deltaTime);
+    onAppTick(deltaTime_sec);
 
     if (!sharedMlWrapper)
     {
@@ -101,7 +111,7 @@ void BaseApp::tickApplication(double deltaTime)
     sharedMlWrapper->pollMlEvents();
 
     if (actualScreen)
-        getGui().TickScreen(*actualScreen, deltaTime);
+        getGui().TickScreen(*actualScreen, deltaTime_sec);
 
 	sharedMlWrapper->displayActualFrame(); //draw everything to main window and display it
 
@@ -122,8 +132,9 @@ void BaseApp::runApp()
 
     while (isRunning())
     {
-        auto tick_start = std::chrono::high_resolution_clock::now();
-        if (!getEventSystem().isEmpty())
+        int maxLoopRepeat = static_cast<int>(getEventSystem().getEventCount());
+        auto tickStart_ns = std::chrono::steady_clock::now();
+        while (maxLoopRepeat-- > 0)
         {
             try
             {
@@ -137,15 +148,18 @@ void BaseApp::runApp()
                 _ASSERT(false);
             }
 #endif //_DEBUG
-            catch(...)
+            catch (...)
             {
 
             }
         }
 
         tickApplication(delta_sec.count());
-        auto tick_end = std::chrono::high_resolution_clock::now();
-        delta_sec = tick_end - tick_start;
+
+        std::this_thread::sleep_until(tickStart_ns + std::chrono::duration_cast<std::chrono::steady_clock::duration>(FRAME_DURATION));
+
+        auto tickEnd_ns = std::chrono::steady_clock::now();
+        delta_sec = tickEnd_ns - tickStart_ns;
     }
 }
 
@@ -225,7 +239,7 @@ bool BaseApp::isFullscreen() const
 
 BaseApp::~BaseApp()
 {
-
+    timeEndPeriod(1);     // restore default timer precision
 }
 
 void BaseApp::setActualScreen(std::shared_ptr<MgeScreen> newScreen)

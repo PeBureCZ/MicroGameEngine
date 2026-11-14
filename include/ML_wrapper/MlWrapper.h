@@ -106,7 +106,7 @@ namespace ML_wrapper
         template <typename Event>
         void sendEvent(Event&& ev)
         {
-            getEventSystem().pushEvent(std::move(ev));
+            getEventSystem().pushEvent(std::forward<Event>(ev));
         }
 
         std::mutex delayedSortMutex;

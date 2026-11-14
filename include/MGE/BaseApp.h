@@ -69,7 +69,7 @@ protected:
 	template <typename Event>
 	void sendEvent(Event&& ev)
 	{
-		getEventSystem().pushEvent(std::move(ev));
+		getEventSystem().pushEvent(std::forward<Event>(ev));
 	}
 
 	template <typename Event, typename Function>
@@ -92,5 +92,5 @@ private:
 	void processTerminationEvent(const AppTermination& exitEvent);
 	void processResizeEvent();
 	void processCloseWindowEvent(const CloseMgeWindowEvent& winEvent);
-	void tickApplication(double deltaTime);
+	void tickApplication(double deltaTime_sec);
 };

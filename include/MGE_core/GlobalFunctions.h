@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <thread>
 #include <functional>
+#include <chrono>
 
 #define MAIN_THREAD_GUARD _ASSERT(mgeCore::mainThreadIsSet() && mgeCore::isMainThread())
 
@@ -19,6 +20,13 @@ namespace mgeCore
 	void setThisThreadAsMain();
 	[[nodiscard]] bool mainThreadIsSet() noexcept;
 	[[nodiscard]] bool isMainThread() noexcept;
+
+	template<typename Rep, typename Period>
+	void sleepFor(const std::chrono::duration<Rep, Period>& _Rel_time)
+	{
+		std::this_thread::sleep_for(_Rel_time);
+	}
+
     [[nodiscard]] std::string toUTF8(const std::wstring& wstr);
 	[[nodiscard]] std::wstring fromUTF8(const std::string& str);
 	void setDefaultZPosition(int64_t newDefaultValue);

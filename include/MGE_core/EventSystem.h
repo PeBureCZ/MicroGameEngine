@@ -42,11 +42,10 @@ public:
 
     //can return nullptr!
     template<typename T>
-    [[nodiscard]] const T& get() const noexcept
+    [[nodiscard]] const T* get() const noexcept
     {
-        _ASSERT(m_type == T::mgeEventType);
-        const auto* ptr = std::any_cast<T>(&m_data);
-        return *ptr; //if no data, ptr = nullptr"
+        _ASSERT(m_type == T::mgeEventType); // Event type/id mismatch
+        return std::any_cast<T>(&m_data);
     }
 
 private:
@@ -98,7 +97,7 @@ public:
             return {};
         EventDataHandler event = std::move(eventQueue.front());
         eventQueue.pop_front();
-        emptyEventQue.store(eventQueue.empty());
+        emptyEventQueue.store(eventQueue.empty());
         return event;
     }
     
@@ -107,7 +106,7 @@ public:
     {
         std::lock_guard lock(eventSystemMutex);
         eventQueue.emplace_back(std::forward<T>(event));
-        emptyEventQue.store(false);
+        emptyEventQueue.store(false);
 		cv.notify_one();
     }
 
@@ -117,9 +116,15 @@ public:
         // use atomic variable to avoid locking mutex every time in release configuration
 #ifdef _DEBUG
         std::lock_guard<std::mutex> lock(eventSystemMutex);
-		_ASSERT(emptyEventQue.load() == eventQueue.empty());
+		_ASSERT(emptyEventQueue.load() == eventQueue.empty());
 #endif
-		return emptyEventQue.load();
+		return emptyEventQueue.load();
+    }
+
+    [[nodiscard]] size_t getEventCount() noexcept
+    {
+        std::lock_guard lock(eventSystemMutex);
+        return eventQueue.size();
     }
 
     template<typename Event>
@@ -221,7 +226,7 @@ public:
     }
 
 private:
-	std::atomic<bool> emptyEventQue{ true };
+	std::atomic<bool> emptyEventQueue{ true };
     std::thread workerThread;
     std::mutex eventSystemMutex;
     std::deque<EventDataHandler> eventQueue;
@@ -276,7 +281,10 @@ public:
         Callback cb =
             [func = std::forward<Function>(f)](const EventDataHandler& e)
             {
-                func(e.get<Event>());
+                auto* event = e.get<Event>();
+                _ASSERT(event); //this should not happen! (check if event id is unique)
+                if (event)
+                    func(*event);
             };
 
         auto lifetime = std::make_shared<ObserverLifetime>();

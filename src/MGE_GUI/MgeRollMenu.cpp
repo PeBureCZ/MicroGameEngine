@@ -132,12 +132,12 @@ void MgeRollMenu::generateNewRollMenuCollision()
 
 			if (childPos.x < leftUpCorner.x)
 				leftUpCorner.x = childPos.x;
-			else if(childPos.x + childSize.width > rightUpCorner.x)
+			if (childPos.x + childSize.width > rightUpCorner.x)
 				rightUpCorner.x = childPos.x + childSize.width;
 
 			if (childPos.y < leftUpCorner.y)
 				leftUpCorner.y = childPos.y;
-			else if (childPos.y + childSize.height > rightUpCorner.y)
+			if (childPos.y + childSize.height > rightUpCorner.y)
 				rightUpCorner.y = childPos.y + childSize.height;
 		}
 		else
@@ -146,11 +146,14 @@ void MgeRollMenu::generateNewRollMenuCollision()
 		}
 	}
 
-	auto newSize = mgeType::Size<int>((int)rightUpCorner.x - (int)leftUpCorner.x, (int)rightUpCorner.y - (int)leftUpCorner.y);
+	auto newSize = mgeType::Size<int>(
+		(std::max)(1, (int)rightUpCorner.x - (int)leftUpCorner.x),
+		(std::max)(1, (int)rightUpCorner.y - (int)leftUpCorner.y));
 
 	if (!rollMenuCollisionFrame)
 	{ //invisible frame for non-blocking collision up to buttons
-		rollMenuCollisionFrame = mge::createFrame(FPoint(), mgeType::Size<int>());
+		//MgeWidget requires a positive size; the real hit area is the custom collision below
+		rollMenuCollisionFrame = mge::createFrame(FPoint(), newSize);
 		rollMenuCollisionFrame->setColor(DEFAULT_FRAME_COLOR);
 		rollMenuCollisionFrame->setOnCursorOver
 			(

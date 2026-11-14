@@ -61,6 +61,7 @@ public:
 	[[nodiscard]] GuiAlign getAlign() const noexcept;
 	void setAlign(GuiAlign align) noexcept;
 
+	//size of the drawn glyphs (local bounds), not the character size; the text origin is the top-left of the glyphs
 	[[nodiscard]] mgeType::Size<int> getTextSize() const noexcept;
 	[[nodiscard]] std::shared_ptr<MgeLayerObject> getTextObject() const noexcept;
 	[[nodiscard]] size_t getLayer() const noexcept;

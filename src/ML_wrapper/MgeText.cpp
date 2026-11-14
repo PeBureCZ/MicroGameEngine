@@ -1,5 +1,7 @@
 #include "MgeText.h"
 
+#include <cmath>
+
 #include "GlobalFunctions.h"
 #include "layerDefinition.h"
 
@@ -360,9 +362,9 @@ mgeType::Size<int> MgeText::getTextSize() const noexcept
 			if (std::holds_alternative<sf::Text>(text->data))
 			{
 				auto& sfText = std::get<sf::Text>(text->data);
-				auto charSize = sfText.getCharacterSize();
-				auto bounds = sfText.getLocalBounds();
-				return mgeType::Size<int>(static_cast<int>(bounds.size.x), static_cast<int>(charSize));
+				//size of the drawn glyphs; matches the origin set by normalizeTextOrigin (top-left of the glyphs)
+				const auto bounds = sfText.getLocalBounds();
+				return mgeType::Size<int>(static_cast<int>(std::lround(bounds.size.x)), static_cast<int>(std::lround(bounds.size.y)));
 			}
 		}
 	}

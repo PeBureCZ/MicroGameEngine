@@ -3,40 +3,48 @@
 
 #include <vector>
 #include <memory>
+#include <string>
 #include <string_view>
 
 #include "MgeButton.h"
 
 class MgeRollMenu : public MgeFrame
 {
-public: 
+public:
 	MgeRollMenu(const FPoint& newPosition, ISize newSize = ISize(100,60), std::string_view text = "");
 
+	// Note: the menu sets a cursor-leave callback (setOnCursorOver) on the returned button for auto close,
+	// overriding it disables auto close for that row.
 	mge::Button addRollButton(const std::string& butText, VoidCallback onLMBClickFunc = nullptr, VoidCallback onRMBClickFunc = nullptr);
 	mge::Button getMainButton();
 
+	void setMainButtonText(std::string_view text);
+
+	void open() noexcept;
+	void close() noexcept;
+	[[nodiscard]] bool isOpen() const noexcept;
+
 	void setAutoOpen(bool newAutoOpen) noexcept;
 	void setAutoClose(bool newAutoClose) noexcept;
-	virtual void layout() noexcept override;
 	void setIsVisible(bool visible) noexcept override;
 
 protected:
-	virtual void onCursorLeaveCall() noexcept override; 
+	virtual void onCursorLeaveCall() noexcept override;
 	virtual void onCursorEnterCall() noexcept override;
 
 private:
-	mge::Button mainButton;
-	std::shared_ptr<MgeFrame> rollMenuCollisionFrame;
+	mge::Button m_mainButton;
 
-	std::vector<std::weak_ptr<MgeButton>> rollButtons; //weak ptrs to buttons for easier collision management
+	std::vector<std::weak_ptr<MgeButton>> m_rollButtons; //weak ptrs to the rolled buttons (they are also children)
 
-	std::string mainButtonText = "";
-	bool isRolled = false;
-	bool autoOpen = false;
-	bool autoClose = true;
+	std::string m_mainButtonText = "";
+	bool m_isRolled = false;
+	bool m_autoOpen = false;
+	bool m_autoClose = true;
 
 	void openOrCloseMenu(bool open) noexcept;
-	void generateNewRollMenuCollision();
 	void onRollMenuLMBClick();
+	void onMenuItemCursorLeave() noexcept;
+	[[nodiscard]] bool isCursorOverMenu() const noexcept;
 };
 

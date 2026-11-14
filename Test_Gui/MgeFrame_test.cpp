@@ -1,6 +1,23 @@
 #include "gtest/gtest.h"
 
 #include "MgeFrame_test.h"
+#include "Trigger.h"
+
+TEST(Triggers, rescaleIntBoxKeepsFractionalScale)
+{
+	auto sizeOf = [](const Trigger<int>& trigger)
+		{ return std::get<mgeShape::Rectangle<int>>(trigger.getShape()).getSize(); };
+
+	Trigger<int> trigger(true, mgeShape::Rectangle<int>(mgeType::Point<int>(0, 0), mgeType::Size<int>(90, 60)));
+	trigger.rescaleShape(1.f, 0.5f); //90x60 -> 90x30 (was truncated to 0)
+	EXPECT_EQ(sizeOf(trigger).width, 90);
+	EXPECT_EQ(sizeOf(trigger).height, 30);
+	EXPECT_TRUE(trigger.isPointInside(mgeType::Point<int>(45, 15)));
+
+	trigger.rescaleShape(1.5f, 2.f); //90x30 -> 135x60 (1.5 was truncated to 1)
+	EXPECT_EQ(sizeOf(trigger).width, 135);
+	EXPECT_EQ(sizeOf(trigger).height, 60);
+}
 TEST(Frames, layeredPosition)
 {
 	//todo: Test throw asserts due to lack of real APP! The whole GUI unit-testing approach needs to be reworked.

@@ -1,183 +1,166 @@
 #include "MgeRollMenu.h"
 
+#include "MlWrapper.h"
+
 MgeRollMenu::MgeRollMenu(const FPoint& newPosition, ISize newSize, std::string_view text)
 	: MgeFrame(newPosition, newSize)
 {
-	mainButtonText = text;
+	m_mainButtonText = text;
 }
 
 mge::Button MgeRollMenu::addRollButton(const std::string& butText, VoidCallback onLMBClickFunc, VoidCallback onRMBClickFunc)
 {
 	getMainButton(); //generate main but if not exist
 
-	size_t relativeYpos_pxls = getSize().height * (rollButtons.size() + 1);
+	size_t relativeYpos_pxls = getSize().height * (m_rollButtons.size() + 1);
 	auto newButton = mge::createButton(FPoint(0.f, (float)relativeYpos_pxls), getSize());
-	newButton->setIsVisible(false);
-	newButton->setOnLMBClick(onLMBClickFunc);
-	newButton->setOnRMBClick(onRMBClickFunc);
+	newButton->setOnLMBClick(std::move(onLMBClickFunc));
+	newButton->setOnRMBClick(std::move(onRMBClickFunc));
+	newButton->setOnCursorOver(nullptr, [this]() noexcept { onMenuItemCursorLeave(); }); //auto close
 	newButton->setButtonText(butText, 14, GuiAlign::MiddleCenter);
 
 	addWidget(newButton);
-	rollButtons.push_back(newButton); //due to custom collision management, we need to keep track of buttons in the menu
-	generateNewRollMenuCollision();
+	newButton->setIsVisible(m_isRolled && getIsVisible());
+	m_rollButtons.push_back(newButton);
 	return newButton;
 }
 
 mge::Button MgeRollMenu::getMainButton()
 {
-	if (!mainButton)
+	if (!m_mainButton)
 	{
-		mainButton = mge::createButton(FPoint(0.f, 0.f), getSize());
-		mainButton->setColor(DEFAULT_FRAME_COLOR);
-		mainButton->setHoveredColor(MOUSE_OVER_FRAME_COLOR);
-		mainButton->setButtonTextColors(DEFAULT_TEXT_COLOR, DEFAULT_TEXT_COLOR, DISABLED_TEXT_COLOR,
+		m_mainButton = mge::createButton(FPoint(0.f, 0.f), getSize());
+		m_mainButton->setColor(DEFAULT_FRAME_COLOR);
+		m_mainButton->setHoveredColor(MOUSE_OVER_FRAME_COLOR);
+		m_mainButton->setButtonTextColors(DEFAULT_TEXT_COLOR, DEFAULT_TEXT_COLOR, DISABLED_TEXT_COLOR,
 			DEFAULT_TEXT_COLOR, DEFAULT_TEXT_COLOR);
-		mainButton->setOnLMBClick([this]() { onRollMenuLMBClick(); });
-		mainButton->setOnCursorOver([this]() {onCursorEnterCall(); }); //used for auto opening - if it is set
-		mainButton->setButtonText(mainButtonText, 14, GuiAlign::MiddleCenter);
-		addWidget(mainButton);
+		m_mainButton->setOnLMBClick([this]() { onRollMenuLMBClick(); });
+		m_mainButton->setOnCursorOver(
+			[this]() noexcept { onCursorEnterCall(); },     //auto open - if it is set
+			[this]() noexcept { onMenuItemCursorLeave(); }); //auto close - if it is set
+		m_mainButton->setButtonText(m_mainButtonText, 14, GuiAlign::MiddleCenter);
+		addWidget(m_mainButton);
+		m_mainButton->setIsVisible(getIsVisible());
 	}
-	return mainButton;
+	return m_mainButton;
+}
+
+void MgeRollMenu::setMainButtonText(std::string_view text)
+{
+	m_mainButtonText = text;
+	if (m_mainButton)
+		m_mainButton->setButtonText(m_mainButtonText);
+}
+
+void MgeRollMenu::open() noexcept
+{
+	if (!m_isRolled)
+		openOrCloseMenu(true);
+}
+
+void MgeRollMenu::close() noexcept
+{
+	if (m_isRolled)
+		openOrCloseMenu(false);
+}
+
+bool MgeRollMenu::isOpen() const noexcept
+{
+	return m_isRolled;
 }
 
 void MgeRollMenu::setAutoOpen(bool newAutoOpen) noexcept
 {
-	autoOpen = newAutoOpen;
+	m_autoOpen = newAutoOpen;
 }
 
 void MgeRollMenu::setAutoClose(bool newAutoClose) noexcept
 {
-	autoClose = newAutoClose;
-}
-
-void MgeRollMenu::layout() noexcept
-{
-	try
-	{
-		MgeFrame::layout();
-		generateNewRollMenuCollision();
-	}
-	catch (...)
-	{
-		_ASSERT(false);
-	}
+	m_autoClose = newAutoClose;
 }
 
 void MgeRollMenu::setIsVisible(bool visible) noexcept
 {
-	MgeWidget::setIsVisible(visible);
-	_ASSERT(mainButton && rollMenuCollisionFrame);
-	if (mainButton)
-		mainButton->setIsVisible(visible);
-	if (rollMenuCollisionFrame)
-		rollMenuCollisionFrame->setIsVisible(visible);
-	for (auto& button : rollButtons)
+	MgeFrame::setIsVisible(visible); //shows/hides all children, including the rolled buttons
+	for (auto& button : m_rollButtons)
 	{
 		_ASSERT(button.lock());
 		if (auto but = button.lock())
-			but->setIsVisible(visible);
+			but->setIsVisible(visible && m_isRolled); //a hidden (closed) menu must stay closed when shown again
 	}
 }
 
 void MgeRollMenu::onCursorLeaveCall() noexcept
 {
-	if (autoClose)
-		openOrCloseMenu(false/* = close menu*/);
+	//the menu frame itself is (usually) fully covered by its main button, so this runs rarely;
+	// the leave callbacks of the buttons handle auto close
+	onMenuItemCursorLeave();
 	MgeFrame::onCursorLeaveCall();
 }
 
 void MgeRollMenu::onCursorEnterCall() noexcept
 {
-	if (autoOpen)
+	if (m_autoOpen)
 		openOrCloseMenu(true/* = open menu*/);
 	MgeFrame::onCursorEnterCall();
 }
 
-void MgeRollMenu::openOrCloseMenu(bool open) noexcept
+void MgeRollMenu::onMenuItemCursorLeave() noexcept
 {
-	isRolled = open;
-	for (auto& child : getChildren())
-	{
-		if (!child)
-		{
-			_ASSERT(false); //wrong ptr management
-			continue;
-		}
-
-		if (auto button = std::dynamic_pointer_cast<MgeButton>(child))
-		{
-			if (button != mainButton)
-				button->setIsVisible(open);
-		}
-	}
-
-	if (rollMenuCollisionFrame)
-	{
-		for (auto& col : rollMenuCollisionFrame->editCollisions())
-			col.setEnabled(open);
-	}
+	//leave of one item: moving from the main button onto a row (or between rows) must not close the menu
+	if (m_autoClose && m_isRolled && !isCursorOverMenu())
+		openOrCloseMenu(false/* = close menu*/);
 }
 
-void MgeRollMenu::generateNewRollMenuCollision()
+bool MgeRollMenu::isCursorOverMenu() const noexcept
 {
-	FPoint leftUpCorner = getAbsolutePosition();
-	FPoint rightUpCorner = leftUpCorner + FPoint((float)getSize().width, (float)getSize().height * 2.f);
-
-	for (const auto& child : rollButtons)
+	try
 	{
-		if (auto rollMenuButton = child.lock())
-		{
-			auto childPos = rollMenuButton->getAbsolutePosition();
-			auto childSize = rollMenuButton->getSize();
+		auto mlWrapper = ML_wrapper::getGlobalMlWrapper();
+		if (!mlWrapper)
+			return false;
+		const IPoint& cursorPos = mlWrapper->getCursorGuiPosition();
 
-			if (childPos.x < leftUpCorner.x)
-				leftUpCorner.x = childPos.x;
-			if (childPos.x + childSize.width > rightUpCorner.x)
-				rightUpCorner.x = childPos.x + childSize.width;
+		auto isOver = [&cursorPos](const MgeButton& button) -> bool
+			{
+				if (!button.getIsVisible())
+					return false;
+				for (const auto& col : button.getCollisions())
+				{
+					if (col.isPointInside(cursorPos)) //false for disabled collisions
+						return true;
+				}
+				return false;
+			};
 
-			if (childPos.y < leftUpCorner.y)
-				leftUpCorner.y = childPos.y;
-			if (childPos.y + childSize.height > rightUpCorner.y)
-				rightUpCorner.y = childPos.y + childSize.height;
-		}
-		else
+		if (m_mainButton && isOver(*m_mainButton))
+			return true;
+		for (const auto& button : m_rollButtons)
 		{
-			_ASSERT(false); //wrong ptr management
+			if (auto but = button.lock(); but && isOver(*but))
+				return true;
 		}
 	}
-
-	auto newSize = mgeType::Size<int>(
-		(std::max)(1, (int)rightUpCorner.x - (int)leftUpCorner.x),
-		(std::max)(1, (int)rightUpCorner.y - (int)leftUpCorner.y));
-
-	if (!rollMenuCollisionFrame)
-	{ //invisible frame for non-blocking collision up to buttons
-		//MgeWidget requires a positive size; the real hit area is the custom collision below
-		rollMenuCollisionFrame = mge::createFrame(FPoint(), newSize);
-		rollMenuCollisionFrame->setColor(DEFAULT_FRAME_COLOR);
-		rollMenuCollisionFrame->setOnCursorOver
-			(
-				[this]() noexcept { onCursorEnterCall(); },
-				[this]() noexcept { onCursorLeaveCall(); }
-			);
-		addWidget(rollMenuCollisionFrame);
+	catch (...)
+	{
+		_ASSERT(false);
 	}
-	else
-		rollMenuCollisionFrame->editCollisions().clear();
-	auto newCollision = Trigger<int>
-		(false, mgeShape::Rectangle<int>(leftUpCorner.asInt(), newSize));
-	newCollision.setIsBlocking(false);
-	rollMenuCollisionFrame->editCollisions().push_back(std::move(newCollision));
+	return false;
+}
 
-	//move the collision no-blocking frame to the back of the children,
-	// so it can be affected by the mouse events before buttons
-	auto& children = editChildren();
-	auto it = std::find(children.begin(), children.end(), rollMenuCollisionFrame);
-	if (it != children.end() && it != children.end() - 1)
-		std::iter_swap(it, children.end() - 1);
+void MgeRollMenu::openOrCloseMenu(bool open) noexcept
+{
+	m_isRolled = open;
+	const bool showRows = open && getIsVisible();
+	for (auto& button : m_rollButtons)
+	{
+		_ASSERT(button.lock()); //wrong ptr management
+		if (auto but = button.lock())
+			but->setIsVisible(showRows);
+	}
 }
 
 void MgeRollMenu::onRollMenuLMBClick()
 {
-	openOrCloseMenu(!isRolled);
+	openOrCloseMenu(!m_isRolled);
 }

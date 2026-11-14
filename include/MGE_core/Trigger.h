@@ -9,6 +9,7 @@
 #include <vector>
 #include <memory>
 #include <array>
+#include <type_traits>
 #include <crtdbg.h>
 
 struct CellId
@@ -133,12 +134,21 @@ public:
 			}, collisionShape);
 	}
 
-	void rescaleShape(float scaleX, float scaleY) noexcept
+	void rescaleShape(double scaleX, double scaleY) noexcept
 	{
 		if (std::holds_alternative<mgeShape::Rectangle<T>>(collisionShape))
 		{
 			auto& shape = std::get<mgeShape::Rectangle<T>>(collisionShape);
-			shape.setSize(mgeType::Size<T>(shape.getSize().width * static_cast<T>(scaleX), shape.getSize().height * static_cast<T>(scaleY)));
+			//multiply in double first, then convert - casting the scale to an integral T truncates it (0.5 -> 0, 1.5 -> 1)
+			auto scaleDimension = [](T value, double scale) -> T
+				{
+					const double scaled = static_cast<double>(value) * scale;
+					if constexpr (std::is_integral_v<T>)
+						return static_cast<T>(std::lround(scaled));
+					else
+						return static_cast<T>(scaled);
+				};
+			shape.setSize(mgeType::Size<T>(scaleDimension(shape.getSize().width, scaleX), scaleDimension(shape.getSize().height, scaleY)));
 		}
 		else if (std::holds_alternative<mgeShape::Circle<T>>(collisionShape))
 		{

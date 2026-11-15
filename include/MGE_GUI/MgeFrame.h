@@ -48,7 +48,7 @@ namespace mge
 {
 	using Frame = std::shared_ptr<MgeFrame>;
 	Frame createFrame(const FPoint& newPosition = FPoint(), const ISize& newSize = ISize(1, 1),
-		GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER, MgeColor color = DEFAULT_FRAME_COLOR);
+		GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER, const MgeColor& color = DEFAULT_FRAME_COLOR);
 	Frame createFrame(const FPoint& newPosition, const TextureId& textureId, GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER);
 }
 
@@ -56,7 +56,7 @@ class MgeFrame : public MgeWidget
 {
 public:
 	MgeFrame(const FPoint& newPosition, const ISize& newSize, GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER,
-		MgeColor color = DEFAULT_FRAME_COLOR);
+		const MgeColor& color = DEFAULT_FRAME_COLOR);
 	MgeFrame(const FPoint& newPosition, const TextureId& textureId, GraphicItemLayer layer = GraphicItemLayer::GUI_LAYER);
 
 	void setImage(TextureId textureId);

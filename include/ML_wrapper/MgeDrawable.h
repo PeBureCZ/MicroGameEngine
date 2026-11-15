@@ -2,6 +2,7 @@
 #include <SFML\Graphics.hpp>
 #include <vector>
 #include <variant>  
+#include <optional>
 #include "graphicdependencies.h"
 #include "BasicShapes.h"
 #include "MgeComponents.h"
@@ -12,7 +13,7 @@ class MgeDrawable : public MgeBasicComponent
 {
 public:
     MgeDrawable() = default;
-    MgeDrawable(size_t layer);
+    explicit MgeDrawable(size_t layer);
     MgeDrawable(const MgeVertices<float>& drawable, FPoint absolutePositionOffset, float rotation, size_t layer);
 
     MgeDrawable(const MgeDrawable& other) = delete;
@@ -35,7 +36,8 @@ public:
 
     [[nodiscard]] const std::shared_ptr<MgeLayerObject> getVertices() const noexcept;
     void setColor(const MgeColor& newColor);
-    [[nodiscard]] MgeColor getColor() const noexcept;
+    //logical color (alpha is the set alpha even when the object is hidden)
+    [[nodiscard]] std::optional<MgeColor> getColor() const noexcept;
     void setIsVisible(bool visible) noexcept;
     void moveAbsolutePosition(const FPoint& movedPosBy);
 
@@ -47,7 +49,6 @@ public:
     int64_t getZPosition() const noexcept;
 
 private:
-    MgeColor m_color;
     std::weak_ptr<MgeLayerObject> m_vertices;
     MgeVertices<float> frameObject;
     FPoint m_absolutePositionOffset;
@@ -55,7 +56,9 @@ private:
     std::uint8_t m_alpha = 255;
     bool m_isVisible = true;
 
-    void setVerticesColor() noexcept;
+    void setVerticesColor(const MgeColor& color) noexcept;
+    [[nodiscard]] std::optional<MgeColor> getVerticesColor() const noexcept;
+    void setVerticesVisible(bool visible) noexcept;
     void removeVertices() noexcept;
 };
 

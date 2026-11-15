@@ -31,7 +31,7 @@ public:
 	//get the last parent in the queue of parents
 	[[nodiscard]] const std::shared_ptr<MgeActor> getMasterParent() const noexcept;
 
-	[[nodiscard]] bool removeChild(std::shared_ptr<MgeActor>& child);
+	[[nodiscard]] bool removeChild(std::shared_ptr<MgeActor> child);
 	[[nodiscard]] bool removeChild(MgeObjectId childId);
 
 	[[nodiscard]] FPoint getAbsolutePosition() const noexcept;

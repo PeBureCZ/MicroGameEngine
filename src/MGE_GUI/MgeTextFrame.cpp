@@ -88,6 +88,13 @@ std::deque<MgeText>& MgeTextFrame::editTextLines()
 	return m_frameTexts;
 }
 
+void MgeTextFrame::setIsVisible(bool visible) noexcept
+{
+	for (auto& text : m_frameTexts)
+		text.setIsVisible(visible);
+	MgeFrame::setIsVisible(visible);
+}
+
 void MgeTextFrame::setPadding(int leftPadding_pxls, int topPadding_pxls, int rightPadding_pxls,
 	int bottomPadding_pxls, int betweenTextLine_pxls)
 {

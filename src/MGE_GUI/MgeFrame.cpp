@@ -9,7 +9,7 @@
 
 
 
-MgeFrame::MgeFrame(const FPoint& newPosition, const ISize& newSize, GraphicItemLayer layer, MgeColor color)
+MgeFrame::MgeFrame(const FPoint& newPosition, const ISize& newSize, GraphicItemLayer layer, const MgeColor& color)
 	: MgeWidget(newPosition, newSize)
 {
 	const MgeVertices<float> drawable(mgeShape::Rectangle<float>(FPoint(0,0), FSize((float)newSize.width, (float)newSize.height)), color);
@@ -78,7 +78,7 @@ void MgeFrame::setColor(const MgeColor& newColor) noexcept
 void MgeFrame::setIsVisible(bool visible) noexcept
 {
 	MgeWidget::setIsVisible(visible);
-
+	borderObject.setIsVisible(visible);
 	try
 	{
 		if (auto graphic = getGraphicComponent())
@@ -126,9 +126,9 @@ void MgeFrame::setBorder(BorderSide sides, unsigned int width_pxls, const MgeCol
 	m_borderWidth_pxls = width_pxls;
 	m_borderColor = color;
 
-	if (flags & static_cast<uint8_t>(BorderSide::None))
+	if (sides == BorderSide::None)
 	{
-		borderObject = false;
+		borderObject = MgeDrawable{};
 		return;
 	}
 
@@ -166,6 +166,8 @@ void MgeFrame::setBorder(BorderSide sides, unsigned int width_pxls, const MgeCol
 	MgeDrawable borders(layer);
 	borders.addObjects(std::move(vecVertices));
 	borders.setPosition(getAbsolutePosition());
+	borders.setIsVisible(getIsVisible()); //a border added to a hidden frame must stay hidden
+	borders.setColor(m_borderColor); //sync the stored alpha with the border color
 	borderObject = std::move(borders);
 }
 
@@ -307,7 +309,7 @@ void MgeFrame::setGraphicObject(const MGE_GRAPHIC_PTR& object)
 
 namespace mge
 {
-	Frame createFrame(const FPoint& newPosition, const ISize& newSize, GraphicItemLayer layer, MgeColor color)
+	Frame createFrame(const FPoint& newPosition, const ISize& newSize, GraphicItemLayer layer, const MgeColor& color)
 	{
 		auto newFrame = std::make_shared<MgeFrame>(newPosition, newSize, layer, color);
 		newFrame->initializeSelf(newFrame);

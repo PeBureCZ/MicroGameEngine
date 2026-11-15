@@ -28,7 +28,7 @@ bool MgeWidget::getIsVisible() const noexcept
 bool MgeWidget::removeChildFromWidget(std::variant<WidgetId, std::shared_ptr<MgeActor>> child)
 {
 	if (std::holds_alternative<std::shared_ptr<MgeActor>>(child))
-		return editMgeDefaultComponent().removeChild(std::get<std::shared_ptr<MgeActor>>(child));
+		return editMgeDefaultComponent().removeChild(std::get<std::shared_ptr<MgeActor>>(std::move(child)));
 	else if (std::holds_alternative<WidgetId>(child))
 		return editMgeDefaultComponent().removeChild(std::get<WidgetId>(child));
 	else

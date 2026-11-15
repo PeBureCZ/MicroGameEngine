@@ -138,9 +138,9 @@ void MgeActor::addChild(const std::shared_ptr<MgeActor>& child, std::optional<si
 	}
 }
 
-[[nodiscard]] bool MgeActor::removeChild(std::shared_ptr<MgeActor>& child)
+[[nodiscard]] bool MgeActor::removeChild(std::shared_ptr<MgeActor> child)
 {
-	return editMgeDefaultComponent().removeChild(child);
+	return editMgeDefaultComponent().removeChild(std::move(child));
 }
 
 [[nodiscard]] bool MgeActor::removeChild(MgeObjectId childId)
@@ -232,9 +232,11 @@ namespace mge
 		if (auto parent = actor->getParent())
 		{
 			MgeObjectId id = actor->getId();
+			std::weak_ptr<MgeActor> observer = actor;
 			actor.reset();
 			removed = parent->removeChild(id); //remove self in parent vector (owner)
 			_ASSERT(removed);
+			_ASSERT(observer.expired()); //destroyed actor is still held by someone else (leak / dangling owner)
 		}
 		return removed;
 	}

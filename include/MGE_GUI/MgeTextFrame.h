@@ -50,6 +50,8 @@ public:
 	const std::deque<MgeText>& getTextLines() const;
 	std::deque<MgeText>& editTextLines();
 
+	void setIsVisible(bool visible) noexcept override;
+
 	void setPadding(int leftPadding_pxls = 0, int topPadding_pxls = 0, int rightPadding_pxls = 0,
 		int botPadding_pxls = 0, int betweenTextLine_pxls = 3);
 

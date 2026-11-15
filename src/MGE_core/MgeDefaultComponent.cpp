@@ -71,7 +71,7 @@ const std::shared_ptr<MgeActor> MgeDefaultComponent::getMasterParent() const noe
 	}
 }
 
-[[nodiscard]] bool MgeDefaultComponent::removeChild(std::shared_ptr<MgeActor>& child)
+[[nodiscard]] bool MgeDefaultComponent::removeChild(std::shared_ptr<MgeActor> child)
 {
 	for (auto it = m_children.begin(); it != m_children.end(); ++it)
 	{
@@ -80,11 +80,7 @@ const std::shared_ptr<MgeActor> MgeDefaultComponent::getMasterParent() const noe
 			if (checkedChild && checkedChild == child)
 			{
 				checkedChild->editMgeDefaultComponent().setParent();
-				m_children.erase(it);
-#ifdef _DEBUG
-				[[maybe_unused]] auto count = child.use_count();
-				_ASSERT(count == 1); //input shared_ptr should be the last live element
-#endif //_DEBUG
+				m_children.erase(it); //removal only detaches the child; destroying is done by mge::destroyActor
 				return true;
 			}
 		}
@@ -102,11 +98,7 @@ const std::shared_ptr<MgeActor> MgeDefaultComponent::getMasterParent() const noe
 			if (checkedChild && checkedChild->getId() == childId)
 			{
 				checkedChild->editMgeDefaultComponent().setParent();
-#ifdef _DEBUG
-				[[maybe_unused]] auto count = checkedChild.use_count();
-				_ASSERT(count == 1); //no elements should remain alive AFTER erase
-#endif //_DEBUG
-				m_children.erase(it);
+				m_children.erase(it); //removal only detaches the child; destroying is done by mge::destroyActor
 				return true;
 			}
 		}

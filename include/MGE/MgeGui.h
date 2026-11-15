@@ -74,9 +74,13 @@ private:
 
 	ActualBlockWidget m_actualBlockWidget;
 	bool m_clickEventActive = false;
-	FPoint m_lastGuiMovePos; //used for moving MgeWindows
+
+	//window captured by LMB press: it follows the cursor until LMB release, even if the cursor gets out of it
+	std::weak_ptr<MgeWindow> m_draggedWindow;
+	FPoint m_dragGrabOffset; //cursor position relative to the dragged window (GUI coordinates)
 
 	void tickScreenChildren(const MgeScreen& screen);
+	void moveDraggedWindow();
 	void tickWidgets(const std::vector<std::shared_ptr<MgeActor>>& widgets);
 	[[nodiscard]] bool checkWidgetBlocking(const MgeFrame& frame) const noexcept;
 	//raises the MgeWindow containing the widget (or the widget itself if it is a window)

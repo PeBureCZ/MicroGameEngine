@@ -47,6 +47,7 @@ void MgeGui::tickScreenChildren(const MgeScreen& screen)
             m_focusedWidget.reset();
         }
     }
+    moveDraggedWindow(); //before hit-testing -> collisions are already at the new window position
     tickWidgets(screen.getChildren());
 
     if (lastBlockWidget != m_actualBlockWidget.m_widget && lastBlockWidget)
@@ -57,20 +58,35 @@ void MgeGui::tickScreenChildren(const MgeScreen& screen)
 
     if (m_actualBlockWidget.m_widget)
     { //if actualBlockWidget is not null, it means cursor is over the widget
-        if (m_clickEventActive)
-        {
-            if (const auto& window = std::dynamic_pointer_cast<MgeWindow>(m_actualBlockWidget.m_widget))
-            { //move window
-                const auto& actualCursorPos = ML_wrapper::getGlobalMlWrapper()->getCursorWorldPosition();
-                auto dif = actualCursorPos - m_lastGuiMovePos;
-                window->setAbsolutePosition(window->getAbsolutePosition() + dif);
-                m_lastGuiMovePos = actualCursorPos;
-                window->layout();
-            }
-        }
-
         if (const auto& frame = std::dynamic_pointer_cast<MgeFrame>(m_actualBlockWidget.m_widget))
             frame->setUnderMouseCursor(true);
+    }
+}
+
+void MgeGui::moveDraggedWindow()
+{
+    if (!m_clickEventActive)
+    {
+        m_draggedWindow.reset();
+        return;
+    }
+
+    auto window = m_draggedWindow.lock();
+    if (!window)
+        return;
+
+    if (!window->getIsVisible())
+    {
+        m_draggedWindow.reset();
+        return;
+    }
+
+    //absolute placement (no delta accumulation): the grabbed point stays under the cursor
+    const FPoint newPosition = sharedMlWrapper->getCursorGuiPosition().asFloat() - m_dragGrabOffset;
+    if (!(newPosition == window->getAbsolutePosition()))
+    {
+        window->setAbsolutePosition(newPosition);
+        window->layout();
     }
 }
 
@@ -120,12 +136,20 @@ void MgeGui::sendLmbEventToGui(const IPoint& clickPos, bool clicked)
 {
     m_clickEventActive = clicked;
 
+    if (!clicked)
+        m_draggedWindow.reset();
+
     if (clicked)
         setFocusedWidget(m_actualBlockWidget.m_widget); //non-focusable or empty click -> clears focus
 
     if (clicked && m_actualBlockWidget.m_widget)
     {
-        m_lastGuiMovePos = clickPos;
+        if (const auto& window = std::dynamic_pointer_cast<MgeWindow>(m_actualBlockWidget.m_widget))
+        { //capture the window for dragging; GUI coordinates = the same space as window collisions
+            m_draggedWindow = window;
+            m_dragGrabOffset = sharedMlWrapper->getCursorGuiPosition().asFloat() - window->getAbsolutePosition();
+        }
+
         bringWindowToFront(m_actualBlockWidget.m_widget);
         if (const auto& button = std::dynamic_pointer_cast<MgeButton>(m_actualBlockWidget.m_widget))
             button->onLmbClickCall();

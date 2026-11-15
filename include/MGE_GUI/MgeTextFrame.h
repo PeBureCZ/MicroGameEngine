@@ -97,6 +97,9 @@ public:
 	void onFocusGet() noexcept override;
 	void onFocusLost() noexcept override;
 
+protected:
+	void applyDrawGroupToGraphics() noexcept override;
+
 private:
 	int linePadding_pxls = 3;
 	int m_leftPadding = 0;

@@ -337,6 +337,35 @@ void MgeGraphicComponent::setZPosition(const int64_t newZPosition, size_t index)
 	}
 }
 
+void MgeGraphicComponent::setDrawGroup(const int64_t newDrawGroup) noexcept
+{
+	for (auto& graphic : m_graphic)
+	{
+		if (!graphic)
+			continue;
+
+		if (std::holds_alternative<MgeDrawable>(*graphic))
+		{
+			auto& drawableObject = std::get<MgeDrawable>(*graphic);
+			if (drawableObject.isValid())
+				drawableObject.setDrawGroup(newDrawGroup);
+		}
+		else if (std::holds_alternative<MgeImage>(*graphic))
+		{
+			auto& img = std::get<MgeImage>(*graphic);
+			if (img.isValid())
+				img.setDrawGroup(newDrawGroup);
+		}
+		else if (std::holds_alternative<MgeText>(*graphic))
+		{
+			auto& text = std::get<MgeText>(*graphic);
+			if (text.isValid())
+				text.setDrawGroup(newDrawGroup);
+		}
+		//UNDEFINED_GRAPHIC_OBJECT -> nothing to draw
+	}
+}
+
 std::optional<int64_t> MgeGraphicComponent::getZPosition(size_t index) noexcept
 {
 	_ASSERT(index < m_graphic.size());

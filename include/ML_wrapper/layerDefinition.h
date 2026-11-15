@@ -20,12 +20,16 @@ struct MlVerticesObject
 
 using Z_POSITION = int64_t;
 using LAYER_NUMBER = size_t;
+using DRAW_GROUP = int64_t;
 
 struct MgeLayerObject
 {
     Z_POSITION zPosition = 0;
     LAYER_NUMBER m_layer = 0;
     std::variant<MlVerticesObject, sf::Sprite, sf::Text> data = {}; // MlVerticesObject
+    //draw order inside a layer is (drawGroup, zPosition): objects of one group (eg. one MgeWindow) are drawn together,
+    //so zPosition only orders objects inside their group (0 = not grouped)
+    DRAW_GROUP drawGroup = 0;
 };
 
 struct MgeLayer

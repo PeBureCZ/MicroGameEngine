@@ -68,6 +68,8 @@ public:
 	void setLayer(size_t newLayer);
 	void setZPosition(int64_t newZPosition) noexcept;
 	[[nodiscard]] int64_t getZPosition() const noexcept;
+	void setDrawGroup(int64_t newDrawGroup) noexcept;
+	[[nodiscard]] int64_t getDrawGroup() const noexcept;
 
 	~MgeText();
 

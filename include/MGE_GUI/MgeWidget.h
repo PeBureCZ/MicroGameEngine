@@ -82,10 +82,21 @@ public:
 	//function is called automatically from GUI
 	void setUnderMouseCursor(bool isUnderMouse);
 
+	/**draw group = primary draw / hit-test order inside a layer (higher = on top), z-position orders only inside the group.
+	Set to this widget and to all its children, except children which own their draw group (eg. MgeWindow).
+	Children added by addWidget inherit the group of the parent.*/
+	void setDrawGroup(int64_t newDrawGroup) noexcept;
+	[[nodiscard]] int64_t getDrawGroup() const noexcept;
+	//true = the widget keeps its own draw group, it is not inherited from the parent (eg. MgeWindow)
+	[[nodiscard]] virtual bool ownsDrawGroup() const noexcept;
+
 	virtual ~MgeWidget() = default;
 
 protected:
 	mge::Widget getSelfPtr() const noexcept;
+
+	//applies the current draw group to graphic objects owned directly by this widget (not children)
+	virtual void applyDrawGroupToGraphics() noexcept;
 
 	FPoint lastLayoutAbsolutePosition;
 	ISize lastLayoutSize;
@@ -110,6 +121,7 @@ private:
 	ISize m_maxSize = ISize(7680, 4320);
 	float m_autoSizeFactor = 1.0f; //default value, can be changed by user
 	bool m_isUnderMouseCursor = false;
+	int64_t m_drawGroup = 0;
 
 	std::function<void()> onCursorEnter = nullptr;
 	std::function<void()> onCursorLeave = nullptr;

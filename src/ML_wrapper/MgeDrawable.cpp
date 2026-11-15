@@ -395,7 +395,7 @@ void MgeDrawable::setZPosition(const int64_t newZPosition) noexcept
         if (auto vertices = m_vertices.lock())
         {
             vertices->zPosition = newZPosition;
-            ML_wrapper::getGlobalMlWrapper()->sortLayerByZIndex_delayed(getLayer());
+            ML_wrapper::getGlobalMlWrapper()->sortLayerByGroupAndZ_delayed(getLayer());
         }
     }
     catch (...)
@@ -410,6 +410,35 @@ int64_t MgeDrawable::getZPosition() const noexcept
     _ASSERT(!m_vertices.expired());
     if (auto vertices = m_vertices.lock())
         return vertices->zPosition;
+    return 0;
+}
+
+void MgeDrawable::setDrawGroup(const int64_t newDrawGroup) noexcept
+{
+    MAIN_THREAD_GUARD;
+    _ASSERT(!m_vertices.expired());
+    try
+    {
+        if (auto vertices = m_vertices.lock())
+        {
+            if (vertices->drawGroup == newDrawGroup)
+                return;
+            vertices->drawGroup = newDrawGroup;
+            ML_wrapper::getGlobalMlWrapper()->sortLayerByGroupAndZ_delayed(vertices->m_layer);
+        }
+    }
+    catch (...)
+    {
+        _ASSERT(false);
+    }
+}
+
+int64_t MgeDrawable::getDrawGroup() const noexcept
+{
+    MAIN_THREAD_GUARD;
+    _ASSERT(!m_vertices.expired());
+    if (auto vertices = m_vertices.lock())
+        return vertices->drawGroup;
     return 0;
 }
 

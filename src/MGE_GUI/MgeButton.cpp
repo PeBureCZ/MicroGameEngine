@@ -193,6 +193,7 @@ void MgeButton::addTextToButton(const std::string& butText, unsigned int charact
 		m_buttonText->setAlign(align);
 		m_buttonText->setIsVisible(getIsVisible());
 		m_buttonText->setZPosition(zPos);
+		m_buttonText->setDrawGroup(getDrawGroup());
 		m_buttonText->setColor(col);
 		m_buttonText->setAbsolutePosition(getAlignedPosition(align, m_buttonText->getTextSize()));
 	}
@@ -356,6 +357,13 @@ const MgeColor& MgeButton::getTextColor() const noexcept
 	default:
 		return isUnderCursor() ? m_hoveredTextColor : m_defaultTextColor;
 	}
+}
+
+void MgeButton::applyDrawGroupToGraphics() noexcept
+{
+	MgeFrame::applyDrawGroupToGraphics();
+	if (m_buttonText && m_buttonText->isValid())
+		m_buttonText->setDrawGroup(getDrawGroup());
 }
 
 namespace mge

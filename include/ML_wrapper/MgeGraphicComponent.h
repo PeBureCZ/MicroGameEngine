@@ -65,6 +65,9 @@ public:
 	@return The Z-position, or std::nullopt if the component does not exist */
 	std::optional<int64_t> getZPosition(size_t index) noexcept;
 
+	/**@brief Sets the draw group (primary sort key inside the layer) to all graphic objects of the component. */
+	void setDrawGroup(const int64_t newDrawGroup) noexcept;
+
 	void setOrigin(const FPoint& newOrigin, size_t index);
 	[[nodiscard]] std::optional<float> getRotation(size_t index);
 

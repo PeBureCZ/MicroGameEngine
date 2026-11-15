@@ -279,7 +279,45 @@ void MgeWidget::addWidget(mge::Widget child, std::optional<size_t> toIndex)
 
 		if (child->getAlignment() != GuiAlign::TopLeft)
 			child->setAlignment(child->getAlignment()); //re-align offset due to new parent
+
+		if (!child->ownsDrawGroup())
+			child->setDrawGroup(getDrawGroup()); //drawn (and hit-tested) together with the parent
 	}
+}
+
+void MgeWidget::setDrawGroup(int64_t newDrawGroup) noexcept
+{
+	try
+	{
+		m_drawGroup = newDrawGroup;
+		applyDrawGroupToGraphics();
+
+		for (auto& child : getChildren())
+		{
+			auto widget = std::dynamic_pointer_cast<MgeWidget>(child);
+			if (widget && !widget->ownsDrawGroup())
+				widget->setDrawGroup(newDrawGroup);
+		}
+	}
+	catch (...)
+	{
+		_ASSERT(false); //unexpected exception
+	}
+}
+
+int64_t MgeWidget::getDrawGroup() const noexcept
+{
+	return m_drawGroup;
+}
+
+bool MgeWidget::ownsDrawGroup() const noexcept
+{
+	return false;
+}
+
+void MgeWidget::applyDrawGroupToGraphics() noexcept
+{
+	// no own graphic in the base widget
 }
 
 bool MgeWidget::getIsFocusable() const noexcept

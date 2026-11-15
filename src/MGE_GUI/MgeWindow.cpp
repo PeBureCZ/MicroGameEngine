@@ -3,6 +3,9 @@
 #include "MgeSizer.h"
 #include "MgeButton.h"
 
+//draw group of the front window; every new / raised window takes the next value (GUI runs in the main thread only)
+static int64_t g_frontWindowDrawGroup = 0;
+
 MgeWindow::MgeWindow(const FPoint& newPosition, const ISize& size, GraphicItemLayer layer, MgeColor color)
 	: MgeFrame(newPosition, size, layer, color)
 {
@@ -14,6 +17,38 @@ MgeWindow::MgeWindow(const FPoint& newPosition, const ISize& size, GraphicItemLa
 	}
 
 	setBasicCollision();
+	setDrawGroup(++g_frontWindowDrawGroup); //new window opens in front; content added later inherits the group
+}
+
+//nested windows own their draw group -> they must be raised again to stay above the raised parent window
+static void bringNestedWindowsToFront(const std::vector<std::shared_ptr<MgeActor>>& children) noexcept
+{
+	for (const auto& child : children)
+	{
+		if (auto window = std::dynamic_pointer_cast<MgeWindow>(child))
+			window->bringToFront(); //handles its own nested windows
+		else if (child)
+			bringNestedWindowsToFront(child->getChildren());
+	}
+}
+
+void MgeWindow::bringToFront() noexcept
+{
+	if (isInFront())
+		return;
+
+	setDrawGroup(++g_frontWindowDrawGroup);
+	bringNestedWindowsToFront(getChildren());
+}
+
+bool MgeWindow::isInFront() const noexcept
+{
+	return getDrawGroup() == g_frontWindowDrawGroup;
+}
+
+bool MgeWindow::ownsDrawGroup() const noexcept
+{
+	return true;
 }
 
 void MgeWindow::moveWindowContent(std::shared_ptr<MgeSizer>&& sizerWithContent)

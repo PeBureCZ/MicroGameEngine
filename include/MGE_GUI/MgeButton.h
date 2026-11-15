@@ -90,6 +90,7 @@ public:
 protected:
 	virtual void onCursorEnterCall() noexcept override;
 	virtual void onCursorLeaveCall() noexcept override;
+	void applyDrawGroupToGraphics() noexcept override;
 
 private:
 	MgeColor m_defaultTextColor = DEFAULT_TEXT_COLOR;

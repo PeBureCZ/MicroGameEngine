@@ -47,6 +47,9 @@ public:
     void setLayer(size_t newLayer);
     void setZPosition(const int64_t newZPosition) noexcept;
     int64_t getZPosition() const noexcept;
+    //draw group = primary sort key inside the layer (see MgeLayerObject::drawGroup)
+    void setDrawGroup(const int64_t newDrawGroup) noexcept;
+    [[nodiscard]] int64_t getDrawGroup() const noexcept;
 
 private:
     std::weak_ptr<MgeLayerObject> m_vertices;

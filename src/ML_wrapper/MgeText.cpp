@@ -403,7 +403,7 @@ void MgeText::setZPosition(const int64_t newZPosition) noexcept
 	if (auto text = m_text.lock())
 	{
 		text->zPosition = newZPosition;
-		ML_wrapper::getGlobalMlWrapper()->sortLayerByZIndex_delayed(getLayer());
+		ML_wrapper::getGlobalMlWrapper()->sortLayerByGroupAndZ_delayed(getLayer());
 	}
 }
 
@@ -415,6 +415,26 @@ int64_t MgeText::getZPosition() const noexcept
 	else
 		return 0;
 ;}
+
+void MgeText::setDrawGroup(const int64_t newDrawGroup) noexcept
+{
+	_ASSERT(!m_text.expired());
+	if (auto text = m_text.lock())
+	{
+		if (text->drawGroup == newDrawGroup)
+			return;
+		text->drawGroup = newDrawGroup;
+		ML_wrapper::getGlobalMlWrapper()->sortLayerByGroupAndZ_delayed(getLayer());
+	}
+}
+
+int64_t MgeText::getDrawGroup() const noexcept
+{
+	_ASSERT(!m_text.expired());
+	if (auto text = m_text.lock())
+		return text->drawGroup;
+	return 0;
+}
 
 MgeText::~MgeText()
 {

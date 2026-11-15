@@ -84,6 +84,7 @@ public:
 protected:
 
 	IPoint getAlignedPosition(GuiAlign align, mgeType::Size<int> objectSize);
+	void applyDrawGroupToGraphics() noexcept override;
 
 private:
 

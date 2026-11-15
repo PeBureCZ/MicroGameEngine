@@ -46,6 +46,7 @@ void MgeTextFrame::addTextLine(std::string text_utf8, unsigned int height_pxls, 
 		size_t layer = getLayer();
 		MgeText newText(std::move(text_utf8), height_pxls, FPoint(), bold, layer, m_defaultTextColor);
 		newText.setColor(std::move(color));
+		newText.setDrawGroup(getDrawGroup());
 		m_frameTexts.push_back(std::move(newText));
 		redrawTextFrame();
 	}
@@ -388,6 +389,16 @@ bool MgeTextFrame::isTypedTextAllowed(const std::string& typedText_utf8) const n
 	{
 		_ASSERT(false); //allocation failed
 		return false;
+	}
+}
+
+void MgeTextFrame::applyDrawGroupToGraphics() noexcept
+{
+	MgeFrame::applyDrawGroupToGraphics();
+	for (auto& text : m_frameTexts)
+	{
+		if (text.isValid())
+			text.setDrawGroup(getDrawGroup());
 	}
 }
 

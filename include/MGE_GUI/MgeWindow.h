@@ -47,6 +47,12 @@ public:
 
 	void initialize() noexcept override;
 
+	/**window (with all its content) is drawn and hit-tested above all other windows in the same layer*/
+	void bringToFront() noexcept;
+	[[nodiscard]] bool isInFront() const noexcept;
+	//each window has its own draw group, it is not inherited from the parent
+	[[nodiscard]] bool ownsDrawGroup() const noexcept override;
+
 private:
 
 	std::weak_ptr<MgeButton> m_closeButton;

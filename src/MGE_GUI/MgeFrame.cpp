@@ -168,6 +168,7 @@ void MgeFrame::setBorder(BorderSide sides, unsigned int width_pxls, const MgeCol
 	borders.setPosition(getAbsolutePosition());
 	borders.setIsVisible(getIsVisible()); //a border added to a hidden frame must stay hidden
 	borders.setColor(m_borderColor); //sync the stored alpha with the border color
+	borders.setDrawGroup(getDrawGroup()); //border is re-created in every layout
 	borderObject = std::move(borders);
 }
 
@@ -302,9 +303,28 @@ IPoint MgeFrame::getAlignedPosition(GuiAlign align, mgeType::Size<int> objectSiz
 void MgeFrame::setGraphicObject(const MGE_GRAPHIC_PTR& object)
 {
 	if (auto graphicComponent = getGraphicComponent())
+	{
 		graphicComponent->setVariant(object, BASIC_GRAPHIC_INDEX);
+		graphicComponent->setDrawGroup(getDrawGroup()); //new graphic object has the default draw group
+	}
 	else
 		{ _ASSERT(false); }
+}
+
+void MgeFrame::applyDrawGroupToGraphics() noexcept
+{
+	try
+	{
+		if (auto graphicComponent = getGraphicComponent())
+			graphicComponent->setDrawGroup(getDrawGroup());
+
+		if (borderObject.isValid())
+			borderObject.setDrawGroup(getDrawGroup());
+	}
+	catch (...)
+	{
+		_ASSERT(false); //unexpected exception
+	}
 }
 
 namespace mge

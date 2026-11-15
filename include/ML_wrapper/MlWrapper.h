@@ -87,7 +87,7 @@ namespace ML_wrapper
         MlWrapper operator=(const MlWrapper&) = delete;
         MlWrapper operator=(MlWrapper&&) = delete;
 
-        void sortLayerByZIndex_delayed(size_t layer);
+        void sortLayerByGroupAndZ_delayed(size_t layer);
 
         const sf::Texture& appendTexture(const MgeImage& image);
         [[nodiscard]] mgeType::Size<int> getTextureSize(TextureId id);

@@ -141,6 +141,7 @@ void MgeImage::setTexture(const TextureId& newTextureId)
 	bool isValidTexture = !m_sprite.expired();
 	size_t layer = isValidTexture ? getLayer() : (size_t)GraphicItemLayer::DEFAULT_LAYER;
 	int64_t zPosition = isValidTexture ? getZPosition() : mgeCore::getDefaultZPosition();
+	int64_t drawGroup = isValidTexture ? getDrawGroup() : 0;
 	DSize currentScale = isValidTexture ? getScale() : DSize(1.0, 1.0);
 	MgeColor currentColor = isValidTexture ? getColor() : MgeColor(255, 255, 255, 255);
 	currentColor.a = m_isVisible ? m_alpha : 0;
@@ -150,6 +151,8 @@ void MgeImage::setTexture(const TextureId& newTextureId)
 
 	m_usedTexture = newTextureId;
 	createNewSprite(layer, zPosition, currentScale, currentColor);
+	if (drawGroup != 0 && !m_sprite.expired())
+		setDrawGroup(drawGroup);
 }
 
 const std::shared_ptr<MgeLayerObject> MgeImage::getSprite() const noexcept
@@ -432,7 +435,7 @@ void MgeImage::setZPosition(const int64_t newZPosition) noexcept
 	if (auto sprite = m_sprite.lock())
 	{
 		sprite->zPosition = newZPosition;
-		ML_wrapper::getGlobalMlWrapper()->sortLayerByZIndex_delayed(getLayer());
+		ML_wrapper::getGlobalMlWrapper()->sortLayerByGroupAndZ_delayed(getLayer());
 	}
 }
 
@@ -441,6 +444,26 @@ int64_t MgeImage::getZPosition() const noexcept
 	_ASSERT(!m_sprite.expired());
 	if (auto sprite = m_sprite.lock())
 		return sprite->zPosition;
+	return 0;
+}
+
+void MgeImage::setDrawGroup(const int64_t newDrawGroup) noexcept
+{
+	_ASSERT(!m_sprite.expired());
+	if (auto sprite = m_sprite.lock())
+	{
+		if (sprite->drawGroup == newDrawGroup)
+			return;
+		sprite->drawGroup = newDrawGroup;
+		ML_wrapper::getGlobalMlWrapper()->sortLayerByGroupAndZ_delayed(getLayer());
+	}
+}
+
+int64_t MgeImage::getDrawGroup() const noexcept
+{
+	_ASSERT(!m_sprite.expired());
+	if (auto sprite = m_sprite.lock())
+		return sprite->drawGroup;
 	return 0;
 }
 

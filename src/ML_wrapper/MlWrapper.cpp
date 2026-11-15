@@ -119,7 +119,7 @@ namespace ML_wrapper
             return;
 
         it_layer->m_layerObjects.push_back(newObject);
-        ML_wrapper::getGlobalMlWrapper()->sortLayerByZIndex_delayed(newObject->m_layer);
+        ML_wrapper::getGlobalMlWrapper()->sortLayerByGroupAndZ_delayed(newObject->m_layer);
     }
 
     mgeType::Size<int> MlWrapper::getRenderWindowSize() const noexcept
@@ -570,10 +570,15 @@ namespace ML_wrapper
                 [](auto& a, const auto& b)
                 {
                     if (a && b)
+                    {
+                        if (a->drawGroup != b->drawGroup)
+                            return a->drawGroup < b->drawGroup;
                         return a->zPosition < b->zPosition;
+                    }
                     return false;
                 });
 			delayedSort.erase(it);
+            _ASSERT(delayedSort.size() < 100); // need optimisation?
         }
     }
 
@@ -622,7 +627,7 @@ namespace ML_wrapper
         return mgeType::Size<int>();
     }
 
-    void MlWrapper::sortLayerByZIndex_delayed(size_t layer)
+    void MlWrapper::sortLayerByGroupAndZ_delayed(size_t layer)
     {
         std::lock_guard<std::mutex> lock(delayedSortMutex);
         auto it = std::find(delayedSort.begin(), delayedSort.end(), layer);

@@ -25,17 +25,8 @@
     <ClInclude Include="..\include\MGE_GUI\MgeWindow.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\MGE_GUI\MgeTextValidator.h">
-      <Filter>include\textValidator</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MGE_GUI\MgeCharacterSetValidator.h">
-      <Filter>include\textValidator</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MGE_GUI\MgeMaxLengthValidator.h">
-      <Filter>include\textValidator</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MGE_GUI\MgeNumberValidator.h">
-      <Filter>include\textValidator</Filter>
+    <ClInclude Include="..\include\MGE_GUI\MgeTextInputRules.h">
+      <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\MGE_GUI\MgeMessageWindow.h">
       <Filter>include</Filter>
@@ -47,12 +38,6 @@
     </Filter>
     <Filter Include="src">
       <UniqueIdentifier>{50cfe6c3-94a9-4639-94a3-9ce7d285e2bc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\textValidator">
-      <UniqueIdentifier>{3f9a1a4a-b8ea-4a3b-bb61-10b4109a77df}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\textValidator">
-      <UniqueIdentifier>{fce15836-22b9-4ba3-ac65-af2870dbb415}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -80,17 +65,8 @@
     <ClCompile Include="..\src\MGE_GUI\MgeWindow.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\MGE_GUI\MgeCharacterSetValidator.cpp">
-      <Filter>src\textValidator</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\MGE_GUI\MgeMaxLengthValidator.cpp">
-      <Filter>src\textValidator</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\MGE_GUI\MgeNumberValidator.cpp">
-      <Filter>src\textValidator</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\MGE_GUI\MgeTextValidator.cpp">
-      <Filter>src\textValidator</Filter>
+    <ClCompile Include="..\src\MGE_GUI\MgeTextInputRules.cpp">
+      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\MGE_GUI\MgeMessageWindow.cpp">
       <Filter>src</Filter>

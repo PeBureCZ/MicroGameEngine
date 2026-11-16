@@ -4,15 +4,16 @@
 #include <deque>
 #include <string>
 #include <memory>
+#include <vector>
 
 #include "GraphicDependencies.h"
 #include "MgeText.h"
+#include "MgeTextInputRules.h"
 
 #include "BasicTypes.h"
 
 class MgeText;
 class MgeTextFrame;
-class MgeTextValidator;
 
 constexpr MgeColor INVISIBLE_COLOR = MgeColor(0, 0, 0, 0);
 constexpr MgeColor DEFAULT_TEXT_FRAME_COLOR = MgeColor(160, 160, 160);
@@ -70,19 +71,13 @@ public:
 	@see setEditable()*/
 	void setUnderEditColors(const MgeColor& nonEditColor, const MgeColor& underEditColor);
 
-	/**@brief Sets the strategy that filters characters typed by the user into the last (edited) line.
-	@param newValidator nullptr = no filtering (default)
+	/**@brief Adds a rule that filters characters typed by the user into the last (edited) line.
+	@note A typed character is accepted only if every added rule accepts it. Without rules everything is accepted.
 	@note Only typed characters are filtered. addTextLine(), appendTextToLine(), Enter (new line) and Backspace are not validated.
-	@see MgeTextValidator, mge::createNumberValidator(), mge::createCharacterSetValidator(), mge::createMaxLengthValidator()*/
-	void setValidator(std::shared_ptr<MgeTextValidator> newValidator) noexcept;
-
-	template <typename T>
-	[[nodiscard]] const std::shared_ptr<T> getValidatorAs() const noexcept
-	{
-		return std::dynamic_pointer_cast<T>(m_validator);
-	}
-
-	[[nodiscard]] std::shared_ptr<MgeTextValidator> editValidator() noexcept;
+	@note While at least one rule is set, characters above U+FFFF (surrogate pairs) are rejected.
+	@see TextInputRule, mge::inputRules*/
+	void addInputRule(TextInputRule newRule) noexcept;
+	void clearInputRules() noexcept;
 
 	void removeLine(size_t index) noexcept;
 	void removeFirstLine() noexcept;
@@ -113,7 +108,7 @@ private:
 	MgeColor m_defaultTextColor = DEFAULT_TEXT_COLOR;
 	GuiAlign usedAlign = GuiAlign::TopLeft;
 	std::deque<MgeText> m_frameTexts;
-	std::shared_ptr<MgeTextValidator> m_validator;
+	std::vector<TextInputRule> m_inputRules;
 
 	unsigned int m_defaultNewTextSize_pxls = DEFAULT_TEXT_SIZE_PXLS;
 

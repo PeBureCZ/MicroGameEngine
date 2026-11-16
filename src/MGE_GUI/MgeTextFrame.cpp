@@ -1,9 +1,10 @@
 #include "MgeTextFrame.h"
 
+#include <algorithm>
+
 #include "MlWrapper.h"
 #include "GlobalFunctions.h"
 #include "GraphicDependencies.h"
-#include "MgeTextValidator.h"
 
 MgeTextFrame::MgeTextFrame(const FPoint& newPosition, const ISize& size, std::string text, unsigned int characterSize_pxls,
 	GraphicItemLayer layer, MgeColor textColor, MgeColor frameColor, bool editable)
@@ -189,14 +190,25 @@ void MgeTextFrame::setUnderEditColors(const MgeColor& nonEditColor, const MgeCol
 	m_underEditColor = underEditColor;
 }
 
-void MgeTextFrame::setValidator(std::shared_ptr<MgeTextValidator> newValidator) noexcept
+void MgeTextFrame::addInputRule(TextInputRule newRule) noexcept
 {
-	m_validator = std::move(newValidator);
+	_ASSERT(newRule);
+	if (!newRule)
+		return;
+
+	try
+	{
+		m_inputRules.push_back(std::move(newRule));
+	}
+	catch (...)
+	{
+		_ASSERT(false); //allocation failed
+	}
 }
 
-std::shared_ptr<MgeTextValidator> MgeTextFrame::editValidator() noexcept
+void MgeTextFrame::clearInputRules() noexcept
 {
-	return m_validator;
+	m_inputRules.clear();
 }
 
 void MgeTextFrame::onFocusGet() noexcept
@@ -377,17 +389,25 @@ void MgeTextFrame::processTextKeyEnteredEvent(const TextKeyEnteredEvent& eventDa
 
 bool MgeTextFrame::isTypedTextAllowed(const std::string& typedText_utf8) const noexcept
 {
-	if (!m_validator)
+	if (m_inputRules.empty())
 		return true;
 
 	try
 	{
-		const std::string editedLine_utf8 = (m_frameTexts.empty()) ? std::string() : m_frameTexts.back().getText();
-		return m_validator->isAllowed(typedText_utf8, editedLine_utf8);
+		const std::wstring typedText = mgeCore::fromUTF8(typedText_utf8);
+		if (typedText.size() != 1) //empty, more characters, or a character above U+FFFF (surrogate pair)
+			return false;
+
+		const wchar_t newChar = typedText.front();
+		std::wstring candidateText = (m_frameTexts.empty()) ? std::wstring() : mgeCore::fromUTF8(m_frameTexts.back().getText());
+		candidateText.push_back(newChar);
+
+		return std::all_of(m_inputRules.begin(), m_inputRules.end(),
+			[newChar, &candidateText](const TextInputRule& rule) { return rule(newChar, candidateText); });
 	}
 	catch (...)
 	{
-		_ASSERT(false); //allocation failed
+		_ASSERT(false); //allocation failed or a rule threw
 		return false;
 	}
 }

@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include "GlobalFunctions.h"
+#include "MgeAppIcon.h"
 #include "MlEvent.h"
 #include "MgeDrawable.h"
 #include "MgeText.h"
@@ -73,6 +74,8 @@ namespace ML_wrapper
             }
             else
                 mainWindow = std::make_shared<sf::RenderWindow>(sf::VideoMode(windowSize), m_windowTitle, sf::Style::Default, sf::State::Windowed);
+
+            mgeCore::setWindowIconFromResource(mainWindow->getNativeHandle()); //icon of the exe (app.rc), if it has one
 
             const sf::Vector2i position = mainWindow->getPosition();
             m_windowedPosition = IPoint(position.x, position.y);
@@ -245,6 +248,7 @@ namespace ML_wrapper
 			mainWindow->setPosition(sf::Vector2i(m_windowedPosition.x, m_windowedPosition.y));
 		}
 		m_isFullscreen = isFullscreen;
+		mgeCore::setWindowIconFromResource(mainWindow->getNativeHandle()); //new OS window has no icon
 
 		if (!m_isFullscreen && m_lockedClientSize_opt)
 			applyWindowLock();

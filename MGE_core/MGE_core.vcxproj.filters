@@ -19,6 +19,9 @@
     <ClInclude Include="..\include\MGE_core\MgeActor.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\MGE_core\MgeAppIcon.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\include\MGE_core\MgeObject.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -51,6 +54,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\MGE_core\GlobalFunctions.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MGE_core\MgeAppIcon.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\MGE_core\MgeActor.cpp">
